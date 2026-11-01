@@ -1,0 +1,21 @@
+02/11/2026 10:00 - Ana: hola
+02/11/2026 10:01 - Ana: ¿puedes ayudarme con algo?
+02/11/2026 10:02 - Ana: es sobre el reporte
+02/11/2026 10:08 - Ana: ya lo revisé dos veces
+02/11/2026 10:09 - Ana: pero no me convence
+02/11/2026 10:15 - Beto: claro, mándamelo
+02/11/2026 23:30 - Ana: ya te lo mandé, gracias por todo
+03/11/2026 08:00 - Beto: lo reviso hoy
+03/11/2026 11:00 - Beto: ya vi la primera parte
+03/11/2026 11:01 - Beto: hay cosas por ajustar
+03/11/2026 13:30 - Beto: sigo con la segunda
+03/11/2026 13:31 - Beto: va más lento de lo que pensé
+03/11/2026 16:20 - Beto: ya casi
+03/11/2026 16:45 - Ana: perfecto, gracias. lo vemos mañana
+04/11/2026 09:00 - Ana: ¿ya pudiste revisar lo de ayer?
+04/11/2026 15:30 - Beto: sí, ya lo terminé
+04/11/2026 21:30 - Ana: genial
+05/11/2026 09:00 - Beto: te lo mando hoy
+05/11/2026 09:10 - Ana: recibido
+06/11/2026 18:00 - Ana: ¿ya lo revisaste?
+06/11/2026 18:01 - Ana: avísame cuando puedas

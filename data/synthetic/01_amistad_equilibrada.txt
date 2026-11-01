@@ -1,0 +1,77 @@
+05/10/2026 08:00 - Los mensajes y las llamadas están cifrados de extremo a extremo. Solo las personas en este chat pueden leerlos, escucharlos o compartirlos.
+05/10/2026 09:12 - Lucía: Buenos días! viste el partido anoche?
+05/10/2026 09:12 - Lucía: estuvo increíble
+05/10/2026 09:14 - Marco: Buenas! sí lo vi, el segundo gol fue una locura
+05/10/2026 09:15 - Marco: casi me da algo jajaja
+05/10/2026 09:20 - Lucía: jajaja yo igual
+05/10/2026 09:31 - Marco: oye, ¿vamos al cine el jueves? salió la peli de la que hablamos
+05/10/2026 09:45 - Lucía: va! ¿a qué hora?
+05/10/2026 09:46 - Marco: ¿7:30?
+05/10/2026 09:50 - Lucía: perfecto, yo compro los boletos
+05/10/2026 09:51 - Marco: genial, yo las palomitas 🍿
+05/10/2026 21:40 - Lucía: llegué muy tarde del trabajo, qué día tan largo
+05/10/2026 21:42 - Lucía: ni cené
+05/10/2026 21:58 - Marco: uff ánimo, pide algo
+05/10/2026 22:03 - Lucía: ya pedí pizza jaja gracias
+06/10/2026 08:05 - Marco: ¿me pasas el link del documento que mencionaste?
+06/10/2026 08:40 - Lucía: perdón, apenas veo esto, ahorita te lo mando
+06/10/2026 08:41 - Lucía: https://ejemplo.test/doc
+06/10/2026 08:55 - Marco: gracias!!
+06/10/2026 13:20 - Marco: <Multimedia omitido>
+06/10/2026 13:22 - Lucía: JAJAJA muero
+06/10/2026 13:22 - Lucía: me lo guardo
+06/10/2026 18:10 - Lucía: ¿sigue en pie lo del jueves?
+06/10/2026 18:35 - Marco: sí claro
+07/10/2026 12:00 - Marco: oye cariño ¿tienes cargador de sobra? el mío se murió
+07/10/2026 12:30 - Lucía: sí, te lo llevo mañana
+07/10/2026 12:31 - Marco: eres lo máximo, gracias corazón
+08/10/2026 17:50 - Lucía: voy saliendo
+08/10/2026 17:51 - Marco: yo ya estoy aquí en la entrada
+08/10/2026 22:15 - Lucía: estuvo buenísima la peli
+08/10/2026 22:16 - Marco: sí, el final no me lo esperaba
+08/10/2026 22:17 - Marco: gracias por los boletos, la próxima invito yo
+08/10/2026 22:30 - Lucía: trato hecho
+08/10/2026 22:31 - Lucía: ah y te quedó genial el corte de pelo
+08/10/2026 22:40 - Marco: jaja gracias, me lo hizo mi primo
+09/10/2026 10:02 - Marco: ¿terminaste lo de tu entrega?
+09/10/2026 10:30 - Lucía: casi, me falta lo último
+09/10/2026 10:31 - Lucía: el lunes lo mando
+09/10/2026 10:31 - Marco: tú puedes
+12/10/2026 08:50 - Marco: otro lunes de reuniones, qué bien 🙄
+12/10/2026 09:30 - Lucía: jaja ánimo
+12/10/2026 09:31 - Lucía: yo mando la entrega hoy
+12/10/2026 13:00 - Marco: ¿comemos?
+12/10/2026 15:40 - Lucía: perdón, estaba en junta toda la mañana
+12/10/2026 15:41 - Lucía: mañana sí?
+12/10/2026 15:50 - Marco: dale, mañana
+13/10/2026 13:10 - Lucía: ya estoy en el restaurante
+13/10/2026 13:12 - Marco: voy en camino, 5 min
+13/10/2026 16:45 - Marco: qué rico estuvo, repetimos
+13/10/2026 16:50 - Lucía: cuando quieras
+14/10/2026 20:05 - Lucía: oye, ¿cómo vas con lo de la mudanza?
+14/10/2026 20:07 - Marco: ya casi, me falta empacar la cocina
+14/10/2026 20:08 - Marco: me mudo el sábado
+14/10/2026 20:15 - Lucía: ¿te ayudo con las cajas?
+14/10/2026 20:20 - Marco: ¿en serio? sería genial, gracias
+14/10/2026 20:21 - Lucía: a qué hora llego?
+14/10/2026 20:30 - Marco: ¿10 de la mañana?
+14/10/2026 20:31 - Lucía: ahí estoy
+14/10/2026 20:45 - Marco: te mando la dirección:
+Calle Falsa 123
+Colonia Centro
+17/10/2026 09:55 - Lucía: llegando
+17/10/2026 22:10 - Marco: gracias por todo hoy, de verdad
+17/10/2026 22:25 - Lucía: para eso estamos
+17/10/2026 22:26 - Lucía: descansa
+21/10/2026 11:30 - Marco: ¿viste que sacaron fecha para el concierto?
+21/10/2026 11:35 - Lucía: siiii, ¿vamos?
+21/10/2026 11:36 - Marco: obvio
+21/10/2026 11:50 - Lucía: yo busco boletos
+24/10/2026 19:00 - Lucía: ya conseguí los boletos
+24/10/2026 19:01 - Lucía: son para diciembre
+24/10/2026 19:20 - Marco: eres la mejor
+24/10/2026 19:21 - Marco: te los pago mañana
+26/10/2026 14:00 - Lucía: tú nunca contestas rápido jaja
+26/10/2026 14:40 - Marco: es que me llegan 200 mensajes
+26/10/2026 14:41 - Marco: pero ya estoy aquí
+26/10/2026 14:42 - Lucía: jaja te perdono

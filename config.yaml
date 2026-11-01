@@ -1,0 +1,99 @@
+# Configuración central del analizador de conversaciones.
+# Ningún umbral debe estar fijo en el código: todo se lee de aquí.
+
+privacy:
+  anonymize_participants: true   # nombres reales -> "A" / "B"
+  persist_raw_chat: false        # nunca escribir el chat completo a disco
+  allow_network: false           # el procesamiento es 100% local
+
+segmentation:
+  # RÁFAGA: mensajes consecutivos del mismo autor separados por un
+  # intervalo máximo. Sirve para estudiar hábitos de escritura y
+  # fragmentación. Valor inicial EXPERIMENTAL, no una frontera de turno.
+  burst_max_gap_seconds: 300
+  # TURNO: mensajes consecutivos del mismo autor hasta que interviene el
+  # otro, dentro de una misma sesión. No depende de burst_max_gap_seconds;
+  # un turno puede contener varias ráfagas.
+  # SESIÓN: criterio operativo para segmentar periodos de interacción.
+  # NO se asume que represente una separación real de conversaciones.
+  # Valor inicial PROVISIONAL; se prueba con análisis de sensibilidad.
+  session_gap_hours: 6
+  sensitivity_session_gap_hours: [2, 6, 12]
+  # Reglas de borde: una ráfaga continúa si el intervalo es <= burst_max_gap_seconds;
+  # una sesión continúa si el intervalo es <= session_gap_hours (se corta solo
+  # cuando lo SUPERA).
+  # REGISTRO POR TURNO (duración transcurrida != actividad efectiva): para cada
+  # turno se guardan primer y último timestamp, tiempo transcurrido, número de
+  # mensajes, número de ráfagas, los intervalos de silencio entre mensajes
+  # consecutivos y el tiempo dentro de ráfagas. Un turno de 5 h transcurridas
+  # NO significa 5 h de conversación.
+  turn_record_fields: [first_ts, last_ts, elapsed_minutes, n_messages, n_bursts, silence_intervals_minutes, minutes_within_bursts]
+
+latency:
+  # MÉTRICA: "latencia hasta la siguiente intervención del interlocutor".
+  # Para cada turno cuyo siguiente mensaje (en orden cronológico) es del
+  # otro participante: tiempo entre el último mensaje del turno y ese
+  # mensaje. NO tiene límite máximo ni depende de la sesión: una
+  # intervención 8 h 30 min después cuenta como tal.
+  # Que alguien sea el siguiente en escribir NO demuestra que responda al
+  # mensaje anterior (eso es la "respuesta semántica", que se evalúa aparte).
+  primary_statistic: median      # la mediana es la métrica principal
+  percentiles: [75, 90]
+  # Se reportan SIEMPRE las tres medianas y la proporción por sesión:
+  #   general, dentro de la misma sesión, entre sesiones.
+  # "Dentro de la misma sesión" = latencia <= segmentation.session_gap_hours.
+  report_general: true
+  report_within_session: true
+  report_between_sessions: true
+  report_proportion_within_vs_between: true
+  # Un turno sin intervención posterior observable (p. ej. el último del
+  # chat) es "sin respuesta observada": NO evidencia de indiferencia ni de
+  # rechazo. Un turno seguido por un turno propio posterior a un cambio de
+  # sesión es "sin intervención previa a su nuevo turno": tampoco se
+  # interpreta, y no entra en las medianas.
+
+temporal:
+  period_granularities: [week, month]
+  # Un cambio sostenido exige que la mediana móvil se desvíe más de
+  # `deviation_ratio` respecto a la línea base durante N periodos seguidos.
+  rolling_window_periods: 4
+  sustained_change_min_periods: 3
+  deviation_ratio: 0.5
+
+data_sufficiency:
+  # Debajo de estos mínimos, la métrica se marca "no concluyente".
+  min_messages_for_any_metric: 30
+  min_turns_for_response_time: 20
+  min_sessions_for_initiative: 10
+  min_events_per_period_for_trend: 5
+
+romantic_interest:
+  # Un indicador NO equivale a interés romántico. Un cumplido puede ser
+  # amistoso, romántico, sarcástico o parte del estilo habitual de la
+  # persona. Se exige recurrencia, contexto y análisis de la respuesta.
+  # Un evento aislado se registra pero no pesa.
+  min_events_for_pattern: 3
+  min_distinct_periods: 2
+  # La respuesta a un indicador es la siguiente intervención del otro
+  # participante, sin ventana máxima (ver `latency`). Su demora se reporta
+  # como dato propio. Si esa intervención trata o no del indicador
+  # (respuesta semántica) se evalúa por separado en la Fase 6.
+  # Línea base individual: un indicador se compara con la frecuencia
+  # habitual de esa misma persona dentro del chat y con su estilo general
+  # (p. ej. quien usa apodos o cumplidos de forma constante en todo tipo
+  # de temas). Solo hay datos de este chat; no se infiere cómo habla con
+  # otras personas.
+  require_individual_baseline: true
+  # Si la evidencia no alcanza, el resultado es "no concluyente".
+  allow_inconclusive: true
+
+confidence:
+  # Niveles que se muestran en el reporte.
+  levels: [baja, media, alta]
+  epistemic_labels: [observación, patrón, hipótesis]
+
+parsing:
+  expected_participants: 2
+  invisible_chars: ["\u200e", "\u200f", "\u202f", "\ufeff"]
+  # Patrones para detectar multimedia omitida y mensajes del sistema se
+  # mantienen en parsers/patterns.py y se prueban con exportaciones reales.
