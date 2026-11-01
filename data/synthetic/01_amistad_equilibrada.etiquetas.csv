@@ -1,0 +1,7 @@
+fecha_hora,autor,cuenta_como_candidato,categoria_candidata,nota
+2026-10-07 12:00,Marco,si,apodo_carinoso,"'oye cariño ¿tienes cargador...?': petición de favor"
+2026-10-07 12:31,Marco,si,apodo_carinoso+elogio_generico,"'eres lo máximo, gracias corazón': agradecimiento"
+2026-10-24 19:20,Marco,si,elogio_generico,"'eres la mejor': agradecimiento por los boletos"
+2026-10-08 22:31,Lucía,si,cumplido_personal,"'te quedó genial el corte de pelo': evento aislado; Marco responde con agradecimiento neutral"
+2026-10-12 08:50,Marco,no,sarcasmo,"'otro lunes de reuniones, qué bien 🙄': no es afecto positivo"
+2026-10-26 14:00,Lucía,no,queja_en_broma,"'tú nunca contestas rápido jaja': marcador de broma, se cierra con 'te perdono'"

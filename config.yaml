@@ -46,11 +46,15 @@ latency:
   report_within_session: true
   report_between_sessions: true
   report_proportion_within_vs_between: true
-  # Un turno sin intervención posterior observable (p. ej. el último del
-  # chat) es "sin respuesta observada": NO evidencia de indiferencia ni de
-  # rechazo. Un turno seguido por un turno propio posterior a un cambio de
-  # sesión es "sin intervención previa a su nuevo turno": tampoco se
-  # interpreta, y no entra en las medianas.
+  # ESTADOS de un turno (mutuamente excluyentes):
+  #  - con_intervencion: el siguiente mensaje es del otro; tiene latencia.
+  #  - sin_intervencion_previa_a_su_nuevo_turno: el siguiente mensaje es del
+  #    mismo autor, ya en otra sesión. NO tiene latencia, NO entra en las
+  #    medianas y NO demuestra indiferencia ni rechazo. Es independiente de
+  #    "sin_respuesta_observada" y su clasificación DEPENDE del hueco de
+  #    sesión (cambia al usar 2, 6 o 12 h), por lo que se reporta en cada uno.
+  #  - sin_respuesta_observada: no hay ningún mensaje posterior (último
+  #    turno del chat). Límite de los datos, no evidencia de indiferencia.
 
 temporal:
   period_granularities: [week, month]
@@ -61,19 +65,52 @@ temporal:
   deviation_ratio: 0.5
 
 data_sufficiency:
-  # Debajo de estos mínimos, la métrica se marca "no concluyente".
+  # Debajo de estos mínimos, la dimensión se marca "insuficiente" (suficiencia
+  # de datos) y el resultado es "no concluyente". Valores experimentales.
   min_messages_for_any_metric: 30
   min_turns_for_response_time: 20
   min_sessions_for_initiative: 10
   min_events_per_period_for_trend: 5
 
 romantic_interest:
-  # Un indicador NO equivale a interés romántico. Un cumplido puede ser
-  # amistoso, romántico, sarcástico o parte del estilo habitual de la
+  # Un indicador candidato NO equivale a interés romántico. Un cumplido puede
+  # ser amistoso, romántico, sarcástico o parte del estilo habitual de la
   # persona. Se exige recurrencia, contexto y análisis de la respuesta.
   # Un evento aislado se registra pero no pesa.
+  # EVENTO = un mensaje con al menos una coincidencia (una unidad por mensaje).
+  event_unit: message
+  # PERIODO = semana ISO (lunes a domingo); el mes es una alternativa de sensibilidad.
+  period_unit: week
+  # VALORES EXPERIMENTALES y configurables. Tres eventos en dos semanas NO
+  # constituyen una validación científica de interés romántico: solo deciden
+  # si el sistema reporta una recurrencia descriptiva. Se prueban con la
+  # rejilla de `robustness`.
   min_events_for_pattern: 3
   min_distinct_periods: 2
+  # LÍNEA BASE de comunicación: un saludo convencional ("buenos días",
+  # "buenas noches") y los emojis no afectivos por sí solos no son candidatos.
+  # Un saludo cuenta solo si añade un elemento afectivo (apodo, emoji
+  # afectivo, deseo que excede la convención); esos casos se marcan "límite".
+  greeting_alone_is_candidate: false
+  non_affective_emojis_alone: ["😊", "☀️"]
+  # CATEGORÍAS DE RESPUESTA (una principal y, como máximo, una secundaria).
+  # Describen lo que se comunica, no sentimientos. Una respuesta ambigua no
+  # se clasifica como rechazo.
+  response_categories:
+    - respuesta_directa
+    - reconocimiento_sin_correspondencia_afectiva
+    - correspondencia_afectiva
+    - reciprocidad_amistosa_ambigua
+    - invitacion_aceptada
+    - invitacion_declinada
+    - invitacion_pospuesta_o_no_comprometida
+    - cambio_de_tema
+    - respuesta_no_relacionada
+    - limite_interpersonal_suave
+    - limite_interpersonal_explicito
+    - sin_respuesta_semantica_observable
+  # Un límite se registra con su ALCANCE (apodos, trato, relación romántica,
+  # contacto) y no se extiende automáticamente a otros aspectos.
   # La respuesta a un indicador es la siguiente intervención del otro
   # participante, sin ventana máxima (ver `latency`). Su demora se reporta
   # como dato propio. Si esa intervención trata o no del indicador
@@ -87,10 +124,35 @@ romantic_interest:
   # Si la evidencia no alcanza, el resultado es "no concluyente".
   allow_inconclusive: true
 
-confidence:
-  # Niveles que se muestran en el reporte.
-  levels: [baja, media, alta]
+participation:
+  # BALANCE DE PARTICIPACIÓN: distribución de turnos, mensajes y palabras.
+  # Palabras = fragmentos separados por espacios en mensajes de texto.
+  # No es reciprocidad: tener turnos equilibrados no demuestra amistad recíproca.
+  words_definition: whitespace_tokens_in_text_messages
+
+reciprocity:
+  # RECIPROCIDAD: correspondencia en la interacción (respuestas, seguimiento
+  # de temas, preguntas, iniciativas y apoyo). TODAVÍA SIN definición
+  # operativa ni métricas propias: ningún reporte la afirma como patrón.
+  defined: false
+
+evidence_assessment:
+  # Tres ejes independientes en cada hallazgo. Ninguna etiqueta es una
+  # probabilidad ni está calibrada estadísticamente: son heurísticas
+  # experimentales y configurables.
   epistemic_labels: [observación, patrón, hipótesis]
+  data_sufficiency_labels: [suficiente, insuficiente, no_evaluada]   # ver `data_sufficiency`
+  robustness_labels: [robusto, robusto_en_direccion_magnitud_sensible, sensible_a_umbrales, no_evaluada]
+
+robustness:
+  # Rejilla de sensibilidad. Un hallazgo es "robusto" si mantiene su dirección
+  # o categoría en TODA la rejilla; si solo en parte, "sensible_a_umbrales" y
+  # no puede presentarse como patrón.
+  session_gap_hours: [2, 6, 12]
+  min_events: [2, 3, 4, 5]
+  min_distinct_periods: [1, 2, 3]
+  period_units: [week, month]
+  burst_max_gap_seconds: [120, 300, 600]   # prevista; aún sin ejercitar en los chats sintéticos
 
 parsing:
   expected_participants: 2

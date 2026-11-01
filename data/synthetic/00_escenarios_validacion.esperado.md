@@ -78,6 +78,7 @@ Turnos con intervención: 8 de 11. Los otros 3 son los dos de "sin intervención
 - **La mediana general no cambia (375 min)**: no depende del hueco, como exige la definición.
 - Las otras dos medianas y la proporción sí cambian mucho; es la razón de reportar las tres.
 - Con 2 h el turno #4 de Beto se parte en 4 turnos (la sesión se corta en cada silencio de más de 2 h), lo que muestra cómo la duración y el número de ráfagas por turno dependen del hueco. Con 12 h hay 4 sesiones y el mismo número de turnos que con 6 h.
+- **El estado "sin intervención previa a su nuevo turno" depende del hueco**: 5 turnos con 2 h (los tres primeros turnos partidos de Beto, el turno #5 y el #10), 2 con 6 h y 2 con 12 h. No tiene latencia en ningún caso, y por eso el número de latencias (8) es el mismo con los tres huecos.
 
 ## Lo que el sistema NO debe producir
 

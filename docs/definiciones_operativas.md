@@ -1,8 +1,8 @@
 # Definiciones operativas
 
-Versión 0.3 · 2026-10-31 · **Pendiente de aprobación definitiva** (criterio de salida de la Fase 0). Aprobados conceptualmente: turno, ráfaga, sesión, reanudación y estados epistémicos (v0.2).
+Versión 0.4 · 2026-11-01 · **Pendiente de aprobación definitiva** (criterio de salida de la Fase 0). El registro de cambios está al final.
 
-Fijan qué significa cada término en el código y en los reportes. Los valores numéricos viven en `config.yaml`. Todo valor marcado como *provisional* o *experimental* es un criterio operativo, no una afirmación sobre la realidad.
+Fijan qué significa cada término en el código y en los reportes. Los valores numéricos viven en `config.yaml`. Todo valor marcado como *provisional* o *experimental* es un criterio operativo configurable, no una afirmación sobre la realidad. El sistema analiza **lo que las personas comunican y cómo responden**; no pretende conocer directamente sus sentimientos.
 
 ## 1. Unidades de análisis
 
@@ -15,117 +15,142 @@ Fijan qué significa cada término en el código y en los reportes. Los valores 
 > Ejemplo. A las 10:00, A envía 3 mensajes. A las 10:08, A envía 2 más. A las 10:15, B responde.
 > Resultado: un turno de A (con dos ráfagas, de 3 y 2 mensajes) y luego un turno de B.
 
-Los turnos son la unidad para participación, iniciativa y reciprocidad; así la fragmentación no distorsiona esas métricas. Las ráfagas conservan la información sobre hábitos de escritura.
+**Sesión.** Conjunto de turnos separados entre sí por un intervalo **menor o igual** a `segmentation.session_gap_hours` (valor **provisional** de 6 h; se prueba con 2, 6 y 12 h). La sesión se corta solo cuando el silencio **supera** el umbral. Es un criterio operativo y **no se asume que represente una separación real entre conversaciones**.
 
-**Sesión.** Conjunto de turnos separados entre sí por un intervalo **menor o igual** a `segmentation.session_gap_hours` (valor **provisional** de 6 h; se prueba con 2, 6 y 12 h). La sesión se corta solo cuando el silencio **supera** el umbral. Es un criterio operativo para segmentar periodos de interacción y **no se asume que represente una separación real entre conversaciones**.
-
-**Registro por turno.** De cada turno se conserva, sin interpretarlo:
-
-- primer y último timestamp;
-- **tiempo transcurrido** (último menos primero);
-- número de mensajes y número de ráfagas;
-- **intervalos de silencio** entre mensajes consecutivos del turno;
-- **tiempo dentro de ráfagas** (suma de los intervalos que no superan el de la ráfaga).
-
-El tiempo transcurrido **no equivale a actividad efectiva**: un turno de 10:00 a 15:00 no significa que la persona estuviera cinco horas conversando. Estos datos sirven para estudiar fragmentación y hábitos de escritura, y **no** son por sí solos indicadores de interés o participación.
+**Registro por turno.** De cada turno se conserva, sin interpretarlo: primer y último timestamp, **tiempo transcurrido**, número de mensajes, número de ráfagas, **intervalos de silencio** entre mensajes consecutivos y **tiempo dentro de ráfagas** (suma de los intervalos que no superan el de la ráfaga). El tiempo transcurrido **no equivale a actividad efectiva**: un turno de 10:00 a 15:00 no significa cinco horas de conversación, ni es por sí solo indicador de interés o participación.
 
 ## 2. Eventos de sesión
 
 Se registran por separado y sin atribuir intención:
 
-**Reanudación.** Primer turno de una sesión (quién retoma la comunicación después de un periodo de inactividad). No se interpreta que quien reanuda tenga más interés: puede deberse a horarios, a quien tiene algo que contar, a convenciones entre ambos o a que el otro estaba ocupado.
+**Reanudación.** Primer turno de una sesión (quién retoma la comunicación tras un periodo de inactividad). No se interpreta que quien reanuda tenga más interés.
 
-**Último mensaje de la sesión.** Autor del último turno de una sesión. No se interpreta que esa persona terminó voluntariamente la conversación: la sesión se cierra por el criterio de segmentación, no por decisión de nadie.
+**Último mensaje de la sesión.** Autor del último turno de una sesión. No se interpreta que esa persona terminó voluntariamente la conversación.
 
-Ambos se reportan como **observación**. Cualquier lectura sobre interés o intención requiere recurrencia y línea base individual y es, como mucho, **hipótesis**.
-
-Un mismo turno puede ser a la vez una **reanudación** y la siguiente intervención del interlocutor: si A escribe a las 23:30 y B contesta a las 08:00, ese turno de B es una reanudación de sesión **y** cuenta como intervención con latencia de 8 h 30 min. Ninguna de las dos descripciones excluye a la otra.
+Ambos son **observaciones**. Un mismo turno puede ser a la vez una reanudación y la siguiente intervención del interlocutor (A escribe a las 23:30, B contesta a las 08:00: reanudación **y** latencia de 8 h 30 min).
 
 ## 3. Latencia hasta la siguiente intervención del interlocutor
 
-**Intervención siguiente.** Para un turno de X, el mensaje inmediatamente posterior en el chat, si es del otro participante Y. No hay límite máximo de tiempo ni dependencia de la sesión.
+**Intervención siguiente.** Para un turno de X, el mensaje inmediatamente posterior del chat, si es del otro participante Y. No hay límite máximo de tiempo ni dependencia de la sesión.
 
-**Latencia.** Tiempo entre el **último** mensaje del turno de X y esa intervención de Y.
+**Latencia.** Tiempo entre el **último** mensaje del turno de X y esa intervención de Y. Se asigna a quien interviene.
 
-> Ejemplo. A escribe a las 10:00, 10:00 y 10:01; B interviene a las 10:03. Latencia de B: **2 minutos**.
-> Ejemplo. A escribe a las 23:30; B interviene a las 08:00 del día siguiente. Latencia de B: **8 h 30 min (510 min)**, entre sesiones.
+> A escribe a las 10:00, 10:00 y 10:01; B interviene a las 10:03: latencia de B **2 min**.
+> A escribe a las 23:30; B interviene a las 08:00 del día siguiente: latencia de B **510 min**, entre sesiones.
 
-La latencia se asigna a quien interviene (la latencia "de B" es el tiempo que B tarda en intervenir tras un turno de A).
+**Estados de un turno** (mutuamente excluyentes):
 
-**Estados de un turno** (cada turno tiene exactamente uno):
+1. **Con intervención.** El siguiente mensaje es del otro participante. Tiene latencia.
+2. **Sin intervención previa a su nuevo turno.** El siguiente mensaje es del **mismo autor**, ya en otra sesión: la persona vuelve a escribir tras un periodo de inactividad sin que el otro haya intervenido. Es un estado **independiente** de "sin respuesta observada" y:
+    - **no tiene latencia** y **no entra en las medianas**;
+    - **no demuestra indiferencia ni rechazo** del otro participante;
+    - **su clasificación puede cambiar con el hueco de sesión**: un turno puede ser "con intervención" con 12 h y "sin intervención previa" con 2 h (ver `00_escenarios_validacion`: 5, 2 y 2 turnos en ese estado con 2, 6 y 12 h). Se reporta con cada hueco.
+3. **Sin respuesta observada.** No hay ningún mensaje posterior (solo ocurre en el último turno del chat). Es un límite de los datos y **no** evidencia de indiferencia ni de rechazo.
 
-1. **Con intervención:** el siguiente mensaje es del otro participante. Tiene latencia.
-2. **Sin intervención previa a su nuevo turno:** el siguiente mensaje es del mismo autor, tras un cambio de sesión (el otro participante aún no intervino). No tiene latencia y no entra en las medianas. Se registra como observación; no implica rechazo ni indiferencia del otro.
-3. **Sin respuesta observada:** no hay ningún mensaje posterior (ocurre solo en el último turno del chat). Es un límite de los datos disponibles y **no** evidencia de indiferencia ni de rechazo.
+**Métricas obligatorias**, por participante que interviene: mediana **general**, mediana **dentro de la misma sesión** (latencia ≤ hueco), mediana **entre sesiones** (latencia > hueco), **proporción** de intervenciones dentro y fuera de sesión y número de turnos en cada estado. La mediana general no depende del hueco; las demás sí, y se reportan con 2, 6 y 12 h.
 
-**Métricas obligatorias**, por participante que interviene:
-
-- mediana **general** de latencia;
-- mediana **dentro de la misma sesión** (latencia ≤ hueco de sesión);
-- mediana **entre sesiones** (latencia > hueco de sesión);
-- **proporción** de intervenciones dentro y fuera de sesión, y número de turnos en cada estado.
-
-La mediana general **no depende del hueco de sesión**; las otras dos y la proporción sí, por lo que se reportan para 2, 6 y 12 h. La segmentación en sesiones no debe hacer perder los tiempos reales de interacción.
-
-**Siguiente intervención no equivale a respuesta semántica.** Que B sea el siguiente en escribir no demuestra que conteste el mensaje de A. La **respuesta semántica** es si esa intervención trata del contenido del mensaje anterior (`directa`, `parcial`, `no_relacionada` o `no_determinada`). Su evaluación automática queda para la Fase 6; mientras tanto el valor por defecto es `no_determinada`, y las etiquetas manuales de los chats sintéticos sirven de referencia.
+**Siguiente intervención no equivale a respuesta semántica.** Que B sea el siguiente en escribir no demuestra que conteste el mensaje de A. La **relación semántica** de una intervención con el mensaje anterior puede ser `directa`, `parcial`, `no_relacionada` o `no_determinada` (valor por defecto hasta la Fase 6; las etiquetas manuales de los chats sintéticos sirven de referencia).
 
 **Pregunta.** Mensaje de texto con `?` o que empieza con palabra interrogativa. Aproximación: se revisará con muestras manuales.
 
-## 4. Eventos léxicos e indicadores
+## 4. Eventos léxicos, línea base e indicadores candidatos
 
-**Evento léxico.** Coincidencia entre un mensaje y una regla de diccionario (afecto, apoyo, conflicto, reparación, cumplido, plan, etc.). Guarda mensaje, fecha, categoría y la regla que lo disparó, para poder auditarlo. Es un dato sobre el texto, no sobre la persona.
+**Evento léxico.** Coincidencia entre un mensaje y una regla de diccionario. Guarda mensaje, fecha, categoría y regla. Es un dato sobre el texto, no sobre la persona. **Unidad de conteo: un evento por mensaje**, aunque tenga varias coincidencias.
 
-**Indicador de posible interés romántico.** Evento léxico de una categoría candidata (cumplidos personales o físicos, propuestas de verse a solas, apodos cariñosos, saludos de buenos días y buenas noches, interés en la vida íntima del otro, emojis afectivos).
+**Línea base de comunicación.** Los saludos convencionales ("buenos días", "buenas noches") y los emojis no afectivos por sí solos (😊, ☀️) **no son candidatos**: forman la línea base de esa persona. Un saludo cuenta únicamente si añade un elemento afectivo (apodo cariñoso, emoji afectivo como ❤️, un deseo que excede la convención). Esos casos son *límite* y se marcan como tales con peso bajo.
 
-**Un indicador no equivale a interés romántico.** Un cumplido puede ser amistoso, romántico, sarcástico, cortés o parte de la manera habitual de hablar de alguien. Para que un conjunto de indicadores se considere algo más que ruido, el sistema exige:
+**Indicador candidato de posible interés romántico.** Evento léxico de una categoría candidata: cumplidos personales o físicos, propuestas de verse a solas, apodos cariñosos, saludos con elemento afectivo, interés en la vida íntima del otro, emojis afectivos. **Un candidato no equivale a interés romántico.** Un cumplido puede ser amistoso, romántico, sarcástico, cortés o parte de la manera habitual de hablar de alguien. Para considerarse algo más que ruido se exige:
 
-1. **Recurrencia:** al menos `min_events_for_pattern` eventos en `min_distinct_periods` periodos distintos.
-2. **Línea base individual:** compararlo con el estilo habitual de esa persona en este chat (quien llama "cariño" a todo, o usa corazones en cualquier tema, no aporta señal diferencial).
-3. **Contexto:** a quién, sobre qué y en qué tono; un cumplido en un tema laboral no es igual que uno en un tema personal.
-4. **Respuesta de la otra persona** (ver sección 5).
+1. **Recurrencia:** al menos `min_events_for_pattern` eventos en `min_distinct_periods` periodos (semanas ISO) distintos.
+2. **Línea base individual:** compararlo con el estilo habitual de esa persona en este chat.
+3. **Contexto:** a quién, sobre qué y en qué tono.
+4. **Respuesta de la otra persona** (sección 5).
 
-La recurrencia es **necesaria pero no suficiente**. Si falta alguno de estos elementos, el resultado es **no concluyente**, que es un resultado válido y esperado.
+Los umbrales de recurrencia son **valores experimentales**. Tres eventos en dos semanas no constituyen una validación científica de interés romántico: solo deciden si el sistema reporta una recurrencia **descriptiva**, y esa recurrencia es **necesaria pero no suficiente**. No deben convertir en señal romántica una expresión ligeramente afectuosa. Un resultado que solo se sostiene en el borde de los umbrales es **sensible a umbrales** (sección 8).
 
 ## 5. Respuesta a un indicador
 
-Para cada indicador se registran **dos cosas distintas**:
+Para cada candidato se registran, por separado: (a) la **siguiente intervención y su latencia** (sección 3); (b) su **relación semántica**; (c) la **categoría de respuesta**, que describe lo comunicado y no sentimientos. Hay una categoría principal y, como máximo, una secundaria.
 
-- **La siguiente intervención** del otro participante y su latencia (sección 3), sin ventana máxima.
-- **La naturaleza de esa intervención**, solo si es semánticamente relacionada:
-    - *correspondida:* afecto equivalente.
-    - *reconocida sin correspondencia:* agradecimiento o respuesta neutral.
-    - *reciprocidad ambigua:* devuelve confianza o cordialidad que cabe en una amistad.
-    - *desviada:* cambia de tema, declina con excusa o responde con evasivas.
-    - *límite suave* o *límite explícito:* pide que cese o declara una frontera.
-    - *sin respuesta semántica observada:* hay una siguiente intervención, pero no trata del indicador; o no hay ninguna.
+| Categoría | Qué significa |
+| --- | --- |
+| `respuesta_directa` | Contesta el contenido de la pregunta o petición, sin carga afectiva ni invitación. Ej.: "no, ahorita estoy enfocada en la escuela". |
+| `reconocimiento_sin_correspondencia_afectiva` | Agradece, acusa recibo o devuelve cortesía sin devolver afecto equivalente. |
+| `correspondencia_afectiva` | Devuelve afecto equivalente de forma explícita (apodos, cumplidos, emojis o expresiones propias). No se infiere de la cordialidad. |
+| `reciprocidad_amistosa_ambigua` | Devuelve confianza o cordialidad que cabe en una amistad y en otros vínculos. |
+| `invitacion_aceptada` | Acepta la invitación. |
+| `invitacion_declinada` | Rechaza **esa** invitación concreta, con o sin motivo. No demuestra por sí sola ausencia de interés romántico ni se extiende a otras invitaciones. |
+| `invitacion_pospuesta_o_no_comprometida` | Ni acepta ni rechaza: aplaza o condiciona ("veamos cómo nos va", "no sé"). No es una negativa definitiva. |
+| `cambio_de_tema` | Reconoce o pasa por alto el mensaje y reorienta hacia otro asunto. Suele ser etiqueta secundaria. |
+| `respuesta_no_relacionada` | La siguiente intervención no hace referencia al mensaje. |
+| `limite_interpersonal_suave` / `limite_interpersonal_explicito` | Pide que cese una conducta o delimita la relación. Se registra con su **alcance** (apodos, trato, relación romántica, contacto) y **no se extiende automáticamente** a otros aspectos. |
+| `sin_respuesta_semantica_observable` | No hay intervención evaluable (sin respuesta observada o sin intervención previa a un nuevo turno). |
 
-Ni la demora ni la ausencia de respuesta se interpretan como indiferencia o rechazo por sí solas. Una respuesta corta o lenta puede ser el estilo normal de esa persona, por lo que siempre se compara con su línea base de longitud y de latencia, y con el **tipo de mensaje** al que responde (las tareas suelen contestarse más rápido que los saludos).
+**Reglas.** Una respuesta ambigua no se clasifica como rechazo: si el texto no establece una negativa, se usa `invitacion_pospuesta_o_no_comprometida` o `reciprocidad_amistosa_ambigua`. Ni la demora ni la ausencia de respuesta se interpretan como indiferencia. Una respuesta corta o lenta puede ser el estilo normal de esa persona, por lo que se compara con su línea base de longitud y latencia y con el **tipo de mensaje** al que responde.
 
-## 6. Estados epistémicos
+**Límite de la interpretación.** Con base en las respuestas, el sistema puede decir que **no hay correspondencia romántica explícita en la conversación analizada**; **no puede determinar** que la otra persona carezca de interés romántico. Cuando alguien lo expresa, sí puede reportarse como observación (con cita) que dijo, por ejemplo, que ve a la otra persona como un amigo.
 
-Cada hallazgo del reporte lleva exactamente una de estas etiquetas, con criterios verificables:
+## 6. Balance de participación y reciprocidad
 
-**Observación.** Dato directo, calculable y reproducible a partir de los mensajes, sin interpretación. Ejemplo: "A envió 62 % de los turnos". Solo depende de la calidad del parseo.
+Son conceptos distintos:
 
-**Patrón.** Comportamiento que cumple los criterios de recurrencia (mínimo de eventos, en varios periodos) y se mantiene bajo el análisis de sensibilidad de los umbrales. Sigue siendo descriptivo: dice *qué se repite*, no *por qué*. Ejemplo: "B interviene con mediana de 40 min en 8 de 9 semanas".
+- **Balance de participación:** distribución de turnos, mensajes y palabras entre los participantes (palabras = fragmentos separados por espacios en mensajes de texto). Es una **observación**.
+- **Reciprocidad:** correspondencia en la interacción, incluidos respuestas, seguimiento de temas, preguntas, iniciativas y apoyo. **Todavía no tiene definición operativa ni métricas propias**; hasta entonces ningún reporte la afirma como patrón. Que ambos tengan el mismo número de turnos no demuestra por sí mismo una relación recíproca.
 
-**Hipótesis.** Interpretación sobre intención, sentimiento o naturaleza del vínculo. Puede ser razonable, pero los datos del chat no permiten confirmarla. Siempre se presenta con su evidencia, con explicaciones alternativas y con nivel de confianza. Ejemplo: "los indicadores de A podrían sugerir interés romántico; también son compatibles con un estilo afectuoso general".
+## 7. Frecuencia de comunicación y cercanía (reserva para la clasificación de vínculos)
 
-Reglas:
+Al clasificar relaciones se separan:
 
-- Una observación no puede subir a patrón sin cumplir recurrencia y robustez.
+- **Frecuencia de comunicación:** medición observable (días con mensajes sobre días del periodo, mensajes por día activo, mensajes por semana).
+- **Cercanía interpersonal:** interpretación compleja, siempre **hipótesis**. Hablar a diario no implica una relación cercana, y una relación cercana no requiere hablar a diario; ninguna se infiere de la otra.
+
+## 8. Evaluación de la evidencia
+
+Cada hallazgo del reporte lleva **tres etiquetas independientes**:
+
+**Estado epistémico**
+
+- **Observación:** dato directo, calculable y reproducible, sin interpretación. Ej.: "A envió 52.7 % de los mensajes".
+- **Patrón:** comportamiento que cumple la recurrencia (mínimo de eventos en varios periodos) y es **robusto** ante los umbrales. Es descriptivo: dice *qué se repite*, no *por qué*.
+- **Hipótesis:** interpretación sobre intención, sentimiento o naturaleza del vínculo. Siempre con su evidencia y explicaciones alternativas.
+
+**Suficiencia de datos:** `suficiente`, `insuficiente` o `no_evaluada`, según los mínimos de `data_sufficiency`. Responde si hay información para estudiar la dimensión.
+
+**Robustez:** responde si el hallazgo se mantiene al cambiar parámetros. Se evalúa con la rejilla de `robustness` (hueco de sesión 2, 6 y 12 h; mínimo de eventos de 2 a 5; mínimo de periodos de 1 a 3; semana o mes):
+
+- `robusto`: mantiene dirección y categoría en toda la rejilla.
+- `robusto_en_direccion_magnitud_sensible`: la dirección se mantiene pero la magnitud cambia mucho.
+- `sensible_a_umbrales`: el resultado cambia en parte de la rejilla; **no puede presentarse como patrón**.
+- `no_evaluada`.
+
+**No hay niveles de confianza ni probabilidades.** Las etiquetas son heurísticas experimentales; no están calibradas estadísticamente y no deben leerse como probabilidades. Reglas:
+
+- Una observación no sube a patrón sin recurrencia y robustez.
 - Un patrón nunca sube a hecho sobre intenciones; el máximo es hipótesis.
-- Si el resultado cambia al variar los umbrales de forma importante, se marca como **frágil** y no se presenta como patrón.
-- **No concluyente** es un estado legítimo cuando no hay datos suficientes.
+- **No concluyente** es un resultado legítimo.
 
-El nivel de **confianza** (baja, media, alta) depende de la cantidad de datos, la consistencia y la robustez ante los umbrales.
-
-## 7. Reglas generales
+## 9. Reglas generales
 
 1. Las conclusiones no se apoyan en eventos aislados.
 2. Nunca se afirma un sentimiento o intención ("A está enamorado"); se reportan indicadores y respuestas observables.
-3. Los hábitos individuales cuentan: quien responde siempre tarde o casi no usa emojis no debe leerse como "frío".
-4. Las reglas no se validan solo con ejemplos sencillos: los casos ambiguos y los falsos positivos conocidos deben formar parte de las pruebas.
-5. Los chats sintéticos prueban que las definiciones y los cálculos se comportan como se espera. **No demuestran** que el sistema identifique correctamente relaciones reales.
+3. Los hábitos individuales cuentan: quien responde tarde o casi no usa emojis no debe leerse como "frío".
+4. Las reglas no se validan solo con ejemplos sencillos: los casos ambiguos y los falsos positivos conocidos forman parte de las pruebas.
+5. Los chats sintéticos prueban definiciones y cálculos. **No demuestran** que el sistema identifique correctamente relaciones reales.
 6. Límites de alcance: las reacciones normalmente no aparecen en la exportación de WhatsApp y los stickers solo figuran como multimedia omitida.
 7. Todo el procesamiento es local y los participantes se muestran como A y B.
+
+## Registro de cambios
+
+**v0.4 (2026-11-01)**
+
+- "Sin intervención previa a su nuevo turno" queda como estado independiente, con sus propiedades explícitas, incluida su dependencia del hueco de sesión.
+- Línea base de comunicación: saludos convencionales y 😊/☀️ por sí solos no son candidatos. El evento es un mensaje. Los umbrales de recurrencia son experimentales.
+- Categorías de respuesta refinadas (12; antes "desviada" mezclaba comportamientos distintos); los límites llevan alcance; una respuesta ambigua no se clasifica como rechazo.
+- Límite de la interpretación: sin correspondencia romántica explícita no equivale a ausencia de interés.
+- Balance de participación y reciprocidad se separan; la reciprocidad queda sin definición operativa.
+- Frecuencia y cercanía se separan para la clasificación de vínculos.
+- Se sustituye el nivel de confianza (baja, media, alta) por tres ejes: estado epistémico, suficiencia de datos y robustez, sin probabilidades.
+
+**v0.3 (2026-10-31).** Latencia hasta la siguiente intervención del interlocutor sin ventana; medianas general, dentro y entre sesiones; registro por turno; respuesta semántica separada de la siguiente intervención.
+
+**v0.2 (2026-10-30).** Ráfaga y turno separados; reanudación y último mensaje como eventos independientes; estados epistémicos; un indicador no equivale a interés romántico.
