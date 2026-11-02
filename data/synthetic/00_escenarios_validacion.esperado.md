@@ -6,6 +6,8 @@ Archivo: `00_escenarios_validacion.txt` (21 mensajes, 02/11/2026 10:00 a 06/11/2
 
 **Cómo se verificó.** Primero derivé a mano todos los valores de la tabla de 6 h y la sensibilidad agregada; después los comparé con un script de referencia independiente del código del proyecto. Coincidieron en todos los valores (el script además calculó las variantes por participante). Es una verificación doble hecha por mí, no por una segunda persona.
 
+**Parámetros de las cifras.** Hueco de sesión 6 h (sensibilidad 2 y 12 h), ráfaga 300 s (sensibilidad 120 y 600 s), latencia sin ventana máxima. `python3 -I tools/referencia/ref_latency.py data/synthetic/00_escenarios_validacion.txt detalle` imprime estos parámetros en el bloque `PARAMETROS`; reglas en `docs/definiciones_operativas.md` v0.5.
+
 ## Segmentación con hueco de 6 h
 
 7 sesiones y 11 turnos (Ana 7, Beto 4).
@@ -80,6 +82,18 @@ Turnos con intervención: 8 de 11. Los otros 3 son los dos de "sin intervención
 - Con 2 h el turno #4 de Beto se parte en 4 turnos (la sesión se corta en cada silencio de más de 2 h), lo que muestra cómo la duración y el número de ráfagas por turno dependen del hueco. Con 12 h hay 4 sesiones y el mismo número de turnos que con 6 h.
 - **El estado "sin intervención previa a su nuevo turno" depende del hueco**: 5 turnos con 2 h (los tres primeros turnos partidos de Beto, el turno #5 y el #10), 2 con 6 h y 2 con 12 h. No tiene latencia en ningún caso, y por eso el número de latencias (8) es el mismo con los tres huecos.
 
+## Sensibilidad a la separación de ráfagas (familia segmentación, hueco de 6 h)
+
+Solo este fixture ejercita esa rejilla. La separación de ráfaga **no afecta** a turnos, latencias ni estados: solo al número de ráfagas.
+
+| Separación de ráfaga | Ráfagas totales | Turnos con más de una ráfaga | Turnos |
+| --- | --- | --- | --- |
+| 120 s | 15 | 2 | 11 |
+| **300 s (inicial, experimental)** | **15** | **2** | **11** |
+| 600 s | 14 | 1 | 11 |
+
+Con 600 s los dos mensajes del turno #1 separados por 6 min (360 s) se unen en una sola ráfaga: pasa de 2 ráfagas a 1 y el total baja de 15 a 14. Es consecuencia de elegir 300 s frente a 600 s, no un error. Este resultado describe sensibilidad a un parámetro; no valida que 300 s sea la separación correcta.
+
 ## Lo que el sistema NO debe producir
 
 - Descartar la latencia de 510 min (o la de 390 min) por exceder una ventana.
@@ -87,3 +101,4 @@ Turnos con intervención: 8 de 11. Los otros 3 son los dos de "sin intervención
 - Interpretar el 06/11 18:00 sin respuesta como indiferencia.
 - Reportar el turno de Beto con 500 min transcurridos como "8 horas de actividad" o como señal de participación o de interés.
 - Medir la latencia desde el primer mensaje de un turno en vez del último.
+- Presentar la sensibilidad de las ráfagas como validación de un umbral, o decir "robusto" sin indicar la familia y lo probado.

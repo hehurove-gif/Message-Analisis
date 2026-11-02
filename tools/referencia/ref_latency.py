@@ -1,11 +1,31 @@
 """Cálculo de referencia INDEPENDIENTE (no es el código del sistema) de:
-turnos, ráfagas, registro por turno y latencia hasta la siguiente intervención.
-Implementa literalmente docs/definiciones_operativas.md v0.3."""
+turnos, ráfagas, registro por turno, latencia hasta la siguiente intervención
+y sensibilidad a la SEGMENTACIÓN (huecos de sesión y separación de ráfagas).
+
+Aplica las secciones 1 a 3 de docs/definiciones_operativas.md. No fija un número
+de versión: el historial de git indica qué versión del documento rige para cada
+commit, y los parámetros usados se imprimen siempre en el bloque PARAMETROS.
+
+Uso: python3 -I tools/referencia/ref_latency.py CHAT.txt [detalle]
+"""
 import re, sys, statistics as st
 from datetime import datetime
 
 LINE = re.compile(r'^(\d{2}/\d{2}/\d{4}) (\d{2}:\d{2}) - ([^:]+): (.*)$')
-BURST_S = 300
+
+# ---- Parámetros (espejo de config.yaml; los cambios se hacen en AMBOS sitios) ----
+BURST_S = 300                  # segmentation.burst_max_gap_seconds (experimental)
+SESSION_GAPS_H = (2, 6, 12)    # segmentation.sensitivity_session_gap_hours; 6 h es el inicial
+BURST_GRID_S = (120, 300, 600) # robustness.segmentation.burst_max_gap_seconds (rejilla)
+DEFAULT_GAP_H = 6
+
+
+def params_block():
+    return ('PARAMETROS (segmentación): hueco de sesión en horas = %s (inicial %s; la sesión se corta '
+            'cuando el silencio SUPERA el hueco); ráfaga = intervalo <= %s s; rejilla de ráfaga = %s s; '
+            'latencia sin ventana máxima; latencia dentro de sesión = latencia <= hueco'
+            % (list(SESSION_GAPS_H), DEFAULT_GAP_H, BURST_S, list(BURST_GRID_S)))
+
 
 def load(path):
     out = []
@@ -17,10 +37,12 @@ def load(path):
             out[-1]['txt'] += '\n' + raw
     return out
 
+
 def minutes(a, b):
     return (b - a).total_seconds() / 60
 
-def build(msgs, gap_h):
+
+def build(msgs, gap_h, burst_s=BURST_S):
     """Devuelve lista de turnos; cada turno = dict con índices de mensajes y sesión."""
     sess = 0
     turns = []
@@ -38,9 +60,10 @@ def build(msgs, gap_h):
         t['elapsed'] = minutes(ts[0], ts[-1])
         t['n'] = len(ts)
         t['silences'] = gaps
-        t['bursts'] = 1 + sum(1 for g in gaps if g * 60 > BURST_S)
-        t['in_burst_min'] = sum(g for g in gaps if g * 60 <= BURST_S)
+        t['bursts'] = 1 + sum(1 for g in gaps if g * 60 > burst_s)
+        t['in_burst_min'] = sum(g for g in gaps if g * 60 <= burst_s)
     return turns
+
 
 def latencies(msgs, turns, gap_h):
     res = []
@@ -55,8 +78,10 @@ def latencies(msgs, turns, gap_h):
         res.append((t, 'con_intervencion', lat, nxt['who'], lat <= gap_h * 60))
     return res
 
+
 def med(xs):
     return st.median(xs) if xs else None
+
 
 def summary(msgs, gap_h):
     turns = build(msgs, gap_h)
@@ -73,40 +98,62 @@ def summary(msgs, gap_h):
             'n_entre': len(btw), 'mediana_entre': med(btw),
             'prop_dentro': round(len(win) / len(allv), 3) if allv else None,
         }
-    allL=[x for x in L if x[1]=='con_intervencion']
-    a=[x[2] for x in allL]; w=[x[2] for x in allL if x[4]]; b=[x[2] for x in allL if not x[4]]
-    out['agregado']={'n':len(a),'mediana_general':med(a),'n_dentro':len(w),'mediana_dentro':med(w),'n_entre':len(b),'mediana_entre':med(b),'prop_dentro':round(len(w)/len(a),3) if a else None}
+    allL = [x for x in L if x[1] == 'con_intervencion']
+    a = [x[2] for x in allL]; w = [x[2] for x in allL if x[4]]; b = [x[2] for x in allL if not x[4]]
+    out['agregado'] = {'n': len(a), 'mediana_general': med(a), 'n_dentro': len(w), 'mediana_dentro': med(w),
+                       'n_entre': len(b), 'mediana_entre': med(b), 'prop_dentro': round(len(w) / len(a), 3) if a else None}
     states = {}
     for t, s, *_ in L:
         states.setdefault(s, []).append(t['first'].strftime('%d/%m %H:%M') + ' ' + t['who'])
     out['estados'] = states
+    out['turnos_por_autor'] = {who: sum(1 for t in turns if t['who'] == who) for who in sorted({m['who'] for m in msgs})}
     out['turnos_resumen'] = turns
     out['L'] = L
     return out
 
+
+def burst_sensitivity(msgs, gap_h=DEFAULT_GAP_H):
+    """Ráfagas totales y turnos con más de una ráfaga para cada separación de ráfaga de la rejilla."""
+    res = {}
+    for bs in BURST_GRID_S:
+        turns = build(msgs, gap_h, bs)
+        res[bs] = (sum(t['bursts'] for t in turns), sum(1 for t in turns if t['bursts'] > 1), len(turns))
+    return res
+
+
 def fmt(x):
     return '-' if x is None else (f'{x:.3f}'.rstrip('0').rstrip('.') if isinstance(x, float) else str(x))
 
+
 if __name__ == '__main__':
     msgs = load(sys.argv[1])
+    print(params_block())
     print('mensajes:', len(msgs))
-    for g in (2, 6, 12):
+    for g in SESSION_GAPS_H:
         s = summary(msgs, g)
-        print(f"\n== hueco {g} h: sesiones={s['sesiones']} turnos={s['turnos']}")
+        tp = s['turnos_por_autor']; tt = sum(tp.values())
+        print(f"\n== hueco {g} h: sesiones={s['sesiones']} turnos={s['turnos']} por autor={tp} "
+              f"(% {({k: round(100 * v / tt, 1) for k, v in tp.items()})})")
         for who, d in s['por_autor'].items():
             print(' ', who, {k: fmt(v) for k, v in d.items()})
         print('  AGREGADO', {k: fmt(v) for k, v in s['agregado'].items()})
         for k, v in s['estados'].items():
             if k != 'con_intervencion':
                 print('  estado', k, len(v), v)
-        if g == 6 and len(sys.argv) > 2:
-            print('  -- turnos (6 h) con más de un mensaje:')
-            for t in s['turnos_resumen']:
-                if t['n'] > 1:
-                    print('   ', t['who'], t['first'].strftime('%d/%m %H:%M'), '->', t['last'].strftime('%H:%M'),
-                          'elapsed', fmt(t['elapsed']), 'msgs', t['n'], 'ráfagas', t['bursts'],
-                          'silencios', [fmt(x) for x in t['silences']], 'en_ráfagas', fmt(t['in_burst_min']))
-            print('  -- latencias por turno (6 h):')
-            for t, state, lat, who, within in s['L']:
-                print('   ', t['who'], t['first'].strftime('%d/%m %H:%M'), '->', t['last'].strftime('%d/%m %H:%M'),
-                      state, fmt(lat), who or '', 'dentro' if within else ('entre' if within is False else ''))
+    print('\n== sensibilidad de la separación de ráfaga (hueco de sesión %s h): ráfagas totales / turnos con >1 ráfaga / turnos'
+          % DEFAULT_GAP_H)
+    for bs, (nb, nm, nt) in burst_sensitivity(msgs).items():
+        print(f'  ráfaga <= {bs} s: {nb} ráfagas, {nm} turnos con más de una ráfaga, {nt} turnos')
+    print('  (la separación de ráfaga no afecta a las latencias ni a los estados de turno: solo a las ráfagas)')
+    if len(sys.argv) > 2:
+        s = summary(msgs, DEFAULT_GAP_H)
+        print('\n  -- turnos (6 h, ráfaga %s s) con más de un mensaje:' % BURST_S)
+        for t in s['turnos_resumen']:
+            if t['n'] > 1:
+                print('   ', t['who'], t['first'].strftime('%d/%m %H:%M'), '->', t['last'].strftime('%H:%M'),
+                      'elapsed', fmt(t['elapsed']), 'msgs', t['n'], 'ráfagas', t['bursts'],
+                      'silencios', [fmt(x) for x in t['silences']], 'en_ráfagas', fmt(t['in_burst_min']))
+        print('  -- latencias por turno (6 h):')
+        for t, state, lat, who, within in s['L']:
+            print('   ', t['who'], t['first'].strftime('%d/%m %H:%M'), '->', t['last'].strftime('%d/%m %H:%M'),
+                  state, fmt(lat), who or '', 'dentro' if within else ('entre' if within is False else ''))

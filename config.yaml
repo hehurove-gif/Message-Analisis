@@ -127,7 +127,11 @@ romantic_interest:
 participation:
   # BALANCE DE PARTICIPACIÓN: distribución de turnos, mensajes y palabras.
   # Palabras = fragmentos separados por espacios en mensajes de texto.
+  # Cada unidad se reporta POR SEPARADO; no hay etiqueta única de "equilibrio"
+  # ni indicador compuesto todavía.
   # No es reciprocidad: tener turnos equilibrados no demuestra amistad recíproca.
+  report_units_separately: true
+  composite_balance_index: false
   words_definition: whitespace_tokens_in_text_messages
 
 reciprocity:
@@ -142,17 +146,50 @@ evidence_assessment:
   # experimentales y configurables.
   epistemic_labels: [observación, patrón, hipótesis]
   data_sufficiency_labels: [suficiente, insuficiente, no_evaluada]   # ver `data_sufficiency`
-  robustness_labels: [robusto, robusto_en_direccion_magnitud_sensible, sensible_a_umbrales, no_evaluada]
+  # La robustez se declara POR FAMILIA y nunca como "robusto" a secas:
+  # "robusto ante <familia>" solo describe lo efectivamente probado.
+  robustness_families: [recurrencia, segmentacion, indicadores]
+  robustness_labels: [robusto_ante_familia, robusto_en_direccion_magnitud_sensible, sensible_a_familia, no_probada]
+  # Una configuración que la ventana de datos no permite probar es
+  # "no_evaluable": no cuenta como cumplida ni como validación satisfactoria.
+  robustness_untestable_label: no_evaluable
+  # Robustez ante parámetros NO equivale a validez científica.
+  robustness_is_not_validity: true
 
 robustness:
-  # Rejilla de sensibilidad. Un hallazgo es "robusto" si mantiene su dirección
-  # o categoría en TODA la rejilla; si solo en parte, "sensible_a_umbrales" y
-  # no puede presentarse como patrón.
-  session_gap_hours: [2, 6, 12]
-  min_events: [2, 3, 4, 5]
-  min_distinct_periods: [1, 2, 3]
-  period_units: [week, month]
-  burst_max_gap_seconds: [120, 300, 600]   # prevista; aún sin ejercitar en los chats sintéticos
+  # Las familias se prueban por separado y NO se cruzan entre sí.
+  recurrence:
+    min_events: [2, 3, 4, 5]
+    min_distinct_periods: [1, 2, 3]
+    period_units: [week, month]
+  segmentation:
+    session_gap_hours: [2, 6, 12]
+    burst_max_gap_seconds: [120, 300, 600]   # solo afecta a ráfagas, no a latencias ni a estados
+  indicators:
+    # Variantes de inclusión de candidatos (sobre `clase_evento` y `ambiguo`).
+    variants:
+      P: "clase_evento = indicador_candidato"                      # principal
+      S1: "P + clase_evento = calidez_no_especifica"
+      S2: "P excluyendo ambiguo = si"
+
+event_classes:
+  # Clases de evento y su tratamiento en el conteo principal.
+  linea_base: {main_count: false}
+  calidez_no_especifica: {main_count: false, evidence_contextual: true, in_variant: S1}
+  indicador_candidato: {main_count: true}
+  declaracion_explicita: {main_count: false, reported_apart: true}
+  no_candidato: {main_count: false}
+
+specificity:
+  # FRECUENCIA y ESPECIFICIDAD son dimensiones separadas. La especificidad es
+  # una anotación cualitativa provisional (baja/media/alta), NO una puntuación
+  # científica: no pondera la frecuencia, no forma ningún índice romántico y
+  # no altera métricas sin justificación explícita. Está pendiente investigar
+  # qué rasgos distinguen el afecto general de una señal específicamente
+  # romántica y qué tan fiable es esa distinción.
+  provisional_labels: [baja, media, alta]
+  weights_metrics: false
+  composite_index: false
 
 parsing:
   expected_participants: 2

@@ -1,6 +1,6 @@
 # Definiciones operativas
 
-Versión 0.4 · 2026-11-01 · **Pendiente de aprobación definitiva** (criterio de salida de la Fase 0). El registro de cambios está al final.
+Versión 0.5 · 2026-11-02 · **Pendiente de aprobación definitiva** (criterio de salida de la Fase 0). El registro de cambios está al final.
 
 Fijan qué significa cada término en el código y en los reportes. Los valores numéricos viven en `config.yaml`. Todo valor marcado como *provisional* o *experimental* es un criterio operativo configurable, no una afirmación sobre la realidad. El sistema analiza **lo que las personas comunican y cómo responden**; no pretende conocer directamente sus sentimientos.
 
@@ -53,20 +53,30 @@ Ambos son **observaciones**. Un mismo turno puede ser a la vez una reanudación 
 
 **Pregunta.** Mensaje de texto con `?` o que empieza con palabra interrogativa. Aproximación: se revisará con muestras manuales.
 
-## 4. Eventos léxicos, línea base e indicadores candidatos
+## 4. Eventos léxicos, clases de evento e indicadores candidatos
 
 **Evento léxico.** Coincidencia entre un mensaje y una regla de diccionario. Guarda mensaje, fecha, categoría y regla. Es un dato sobre el texto, no sobre la persona. **Unidad de conteo: un evento por mensaje**, aunque tenga varias coincidencias.
 
-**Línea base de comunicación.** Los saludos convencionales ("buenos días", "buenas noches") y los emojis no afectivos por sí solos (😊, ☀️) **no son candidatos**: forman la línea base de esa persona. Un saludo cuenta únicamente si añade un elemento afectivo (apodo cariñoso, emoji afectivo como ❤️, un deseo que excede la convención). Esos casos son *límite* y se marcan como tales con peso bajo.
+**Clases de evento** (cada evento etiquetado tiene una):
 
-**Indicador candidato de posible interés romántico.** Evento léxico de una categoría candidata: cumplidos personales o físicos, propuestas de verse a solas, apodos cariñosos, saludos con elemento afectivo, interés en la vida íntima del otro, emojis afectivos. **Un candidato no equivale a interés romántico.** Un cumplido puede ser amistoso, romántico, sarcástico, cortés o parte de la manera habitual de hablar de alguien. Para considerarse algo más que ruido se exige:
+| Clase | Qué es | Conteo principal |
+| --- | --- | --- |
+| `linea_base` | Saludo convencional ("buenos días", "buenas noches") o emoji no afectivo por sí solo (😊, ☀️). Forma la línea base de esa persona. | No |
+| `calidez_no_especifica` | Expresión amable que excede la convención pero no apunta a una persona ni a un vínculo en concreto (p. ej. "que tengas un día increíble"). Se conserva como **evidencia contextual**, porque puede indicar un cambio en la comunicación de esa persona. | **No**; sí en la sensibilidad S1 |
+| `indicador_candidato` | Cumplidos personales o físicos, propuestas de verse a solas, apodos cariñosos, saludos con elemento afectivo (apodo, ❤️), interés en la vida íntima del otro. | Sí |
+| `declaracion_explicita` | Manifestación directa de interés. Se reporta como cita y se analiza aparte de la recurrencia. | No (separada) |
+| `no_candidato` | Cualquier otro evento (elogio de una habilidad, sarcasmo, queja en broma). | No |
 
-1. **Recurrencia:** al menos `min_events_for_pattern` eventos en `min_distinct_periods` periodos (semanas ISO) distintos.
-2. **Línea base individual:** compararlo con el estilo habitual de esa persona en este chat.
-3. **Contexto:** a quién, sobre qué y en qué tono.
-4. **Respuesta de la otra persona** (sección 5).
+Un deseo amable no contribuye igual que una invitación explícita a verse a solas: por eso no se cuentan en la misma clase. **No hay suma ponderada ni índice romántico.**
 
-Los umbrales de recurrencia son **valores experimentales**. Tres eventos en dos semanas no constituyen una validación científica de interés romántico: solo deciden si el sistema reporta una recurrencia **descriptiva**, y esa recurrencia es **necesaria pero no suficiente**. No deben convertir en señal romántica una expresión ligeramente afectuosa. Un resultado que solo se sostiene en el borde de los umbrales es **sensible a umbrales** (sección 8).
+**Un candidato no equivale a interés romántico.** Un cumplido puede ser amistoso, romántico, sarcástico, cortés o parte de la manera habitual de hablar de alguien. Para considerarse algo más que ruido se exige: (1) **recurrencia** (`min_events_for_pattern` eventos en `min_distinct_periods` periodos distintos); (2) **línea base individual**; (3) **contexto**; (4) **respuesta de la otra persona** (sección 5). Los umbrales de recurrencia son **valores experimentales**: tres eventos en dos semanas no son una validación científica de interés romántico; solo deciden si el sistema reporta una recurrencia **descriptiva**, necesaria pero no suficiente.
+
+**Dos dimensiones separadas** de los candidatos:
+
+- **Frecuencia:** número de eventos candidatos por persona y periodo (se mide y se compara).
+- **Especificidad provisional:** anotación cualitativa (`baja`, `media`, `alta`) de qué tan específicamente romántico es el evento frente a una expresión afectuosa general. **No es una puntuación científica, no pondera la frecuencia y no altera ninguna métrica**. Se reporta aparte (distribución de valores) y solo puede usarse en una sensibilidad si se justifica explícitamente.
+
+Marca `ambiguo`: un candidato cuya inclusión es discutible (p. ej. un ❤️ en un saludo, un elogio genérico) se marca para la sensibilidad S2, sin quitarlo del conteo principal.
 
 ## 5. Respuesta a un indicador
 
@@ -94,7 +104,7 @@ Para cada candidato se registran, por separado: (a) la **siguiente intervención
 
 Son conceptos distintos:
 
-- **Balance de participación:** distribución de turnos, mensajes y palabras entre los participantes (palabras = fragmentos separados por espacios en mensajes de texto). Es una **observación**.
+- **Balance de participación:** distribución de turnos, mensajes y palabras entre los participantes (palabras = fragmentos separados por espacios en mensajes de texto). Cada unidad se reporta **por separado**, con su distribución. **No se reduce todavía a una etiqueta única** como "participación equilibrada", y no existe un indicador compuesto de equilibrio hasta investigar cómo construirlo. Solo se puede describir, de forma neutra, que las distribuciones están relativamente cercanas o alejadas **en cada unidad medida**. La distribución de turnos depende del hueco de sesión; la de mensajes y palabras no.
 - **Reciprocidad:** correspondencia en la interacción, incluidos respuestas, seguimiento de temas, preguntas, iniciativas y apoyo. **Todavía no tiene definición operativa ni métricas propias**; hasta entonces ningún reporte la afirma como patrón. Que ambos tengan el mismo número de turnos no demuestra por sí mismo una relación recíproca.
 
 ## 7. Frecuencia de comunicación y cercanía (reserva para la clasificación de vínculos)
@@ -106,28 +116,32 @@ Al clasificar relaciones se separan:
 
 ## 8. Evaluación de la evidencia
 
-Cada hallazgo del reporte lleva **tres etiquetas independientes**:
+Cada hallazgo del reporte lleva **tres ejes independientes**:
 
 **Estado epistémico**
 
-- **Observación:** dato directo, calculable y reproducible, sin interpretación. Ej.: "A envió 52.7 % de los mensajes".
-- **Patrón:** comportamiento que cumple la recurrencia (mínimo de eventos en varios periodos) y es **robusto** ante los umbrales. Es descriptivo: dice *qué se repite*, no *por qué*.
+- **Observación:** dato directo, calculable y reproducible, sin interpretación.
+- **Patrón:** comportamiento que cumple la recurrencia y no cambia en la parte de la rejilla que le corresponde. Es descriptivo: dice *qué se repite*, no *por qué*.
 - **Hipótesis:** interpretación sobre intención, sentimiento o naturaleza del vínculo. Siempre con su evidencia y explicaciones alternativas.
 
-**Suficiencia de datos:** `suficiente`, `insuficiente` o `no_evaluada`, según los mínimos de `data_sufficiency`. Responde si hay información para estudiar la dimensión.
+**Suficiencia de datos:** `suficiente`, `insuficiente` o `no_evaluada`, según los mínimos de `data_sufficiency`.
 
-**Robustez:** responde si el hallazgo se mantiene al cambiar parámetros. Se evalúa con la rejilla de `robustness` (hueco de sesión 2, 6 y 12 h; mínimo de eventos de 2 a 5; mínimo de periodos de 1 a 3; semana o mes):
+**Robustez, por familia de parámetros.** Las pruebas de sensibilidad se separan según la métrica y **no se cruzan entre familias**; cada hallazgo declara qué familias le afectan y cuáles se probaron:
 
-- `robusto`: mantiene dirección y categoría en toda la rejilla.
-- `robusto_en_direccion_magnitud_sensible`: la dirección se mantiene pero la magnitud cambia mucho.
-- `sensible_a_umbrales`: el resultado cambia en parte de la rejilla; **no puede presentarse como patrón**.
-- `no_evaluada`.
+| Familia | Parámetros que recorre | Afecta a |
+| --- | --- | --- |
+| **Recurrencia** | mínimo de eventos (2 a 5) × mínimo de periodos (1 a 3) × granularidad (semana, mes) | Si un comportamiento se reporta como recurrente |
+| **Segmentación** | hueco de sesión (2, 6, 12 h) y separación de ráfagas (120, 300, 600 s) | Turnos, sesiones, reanudaciones, estados de turno, latencia dentro y entre sesiones, ráfagas |
+| **Indicadores** | variantes de inclusión: P (principal), S1 (P + calidez no específica), S2 (P sin candidatos ambiguos) | Conteos de candidatos y cualquier comparación que dependa de ellos |
 
-**No hay niveles de confianza ni probabilidades.** Las etiquetas son heurísticas experimentales; no están calibradas estadísticamente y no deben leerse como probabilidades. Reglas:
+Resultado por familia: `robusto ante <familia>` (mantiene dirección y categoría en **toda la parte evaluable** de esa familia), `robusto en dirección, magnitud sensible`, `sensible a <familia>` o `no probada`. Reglas:
 
-- Una observación no sube a patrón sin recurrencia y robustez.
-- Un patrón nunca sube a hecho sobre intenciones; el máximo es hipótesis.
-- **No concluyente** es un resultado legítimo.
+- **"Robusto" nunca se usa solo.** Siempre va con la familia y con lo que se probó (p. ej. "robusto ante recurrencia: 12 de 12 combinaciones semanales; 4 mensuales no evaluables").
+- Una configuración que la ventana de datos no permite probar (la granularidad tiene menos periodos que el mínimo exigido) se marca **no evaluable**. No se cuenta como cumplida ni como incumplida y no equivale a una validación satisfactoria.
+- Un hallazgo `sensible` no puede presentarse como patrón.
+- **La robustez ante parámetros no equivale a validez científica**: indica que un resultado no depende de un parámetro, no que mida lo que se pretende medir.
+
+No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas experimentales; no están calibradas estadísticamente. Reglas generales: una observación no sube a patrón sin recurrencia y sin robustez; un patrón nunca sube a hecho sobre intenciones; **no concluyente** es un resultado legítimo.
 
 ## 9. Reglas generales
 
@@ -136,20 +150,30 @@ Cada hallazgo del reporte lleva **tres etiquetas independientes**:
 3. Los hábitos individuales cuentan: quien responde tarde o casi no usa emojis no debe leerse como "frío".
 4. Las reglas no se validan solo con ejemplos sencillos: los casos ambiguos y los falsos positivos conocidos forman parte de las pruebas.
 5. Los chats sintéticos prueban definiciones y cálculos. **No demuestran** que el sistema identifique correctamente relaciones reales.
-6. Límites de alcance: las reacciones normalmente no aparecen en la exportación de WhatsApp y los stickers solo figuran como multimedia omitida.
-7. Todo el procesamiento es local y los participantes se muestran como A y B.
+6. **Reproducibilidad:** cada cálculo de referencia imprime los parámetros que usa (bloque `PARAMETROS`) y cada tabla de resultados esperados indica el hueco de sesión, la variante de indicadores y la granularidad empleados.
+7. Límites de alcance: las reacciones normalmente no aparecen en la exportación de WhatsApp y los stickers solo figuran como multimedia omitida.
+8. Todo el procesamiento es local y los participantes se muestran como A y B.
+
+## 10. Aspectos abiertos (no determinables todavía)
+
+- Cómo construir un indicador compuesto de balance de participación, si procede.
+- Qué características distinguen una expresión afectuosa general de una señal específicamente romántica, y qué tan fiable puede ser esa distinción (de eso depende cualquier uso de la especificidad).
+- Dónde está el límite entre `calidez_no_especifica` e `indicador_candidato`; por ejemplo, el elogio genérico ("eres la mejor") de un agradecimiento.
+- Definición operativa y métricas de reciprocidad.
+- Cómo estimar automáticamente la relación semántica de una intervención.
+- Calibración de los umbrales experimentales con datos reales.
 
 ## Registro de cambios
 
-**v0.4 (2026-11-01)**
+**v0.5 (2026-11-02)**
 
-- "Sin intervención previa a su nuevo turno" queda como estado independiente, con sus propiedades explícitas, incluida su dependencia del hueco de sesión.
-- Línea base de comunicación: saludos convencionales y 😊/☀️ por sí solos no son candidatos. El evento es un mensaje. Los umbrales de recurrencia son experimentales.
-- Categorías de respuesta refinadas (12; antes "desviada" mezclaba comportamientos distintos); los límites llevan alcance; una respuesta ambigua no se clasifica como rechazo.
-- Límite de la interpretación: sin correspondencia romántica explícita no equivale a ausencia de interés.
-- Balance de participación y reciprocidad se separan; la reciprocidad queda sin definición operativa.
-- Frecuencia y cercanía se separan para la clasificación de vínculos.
-- Se sustituye el nivel de confianza (baja, media, alta) por tres ejes: estado epistémico, suficiencia de datos y robustez, sin probabilidades.
+- Nueva clase `calidez_no_especifica`: evidencia contextual excluida del conteo principal y presente en la sensibilidad S1. Se separan las clases de evento y se añade la marca `ambiguo`.
+- Frecuencia y especificidad provisional quedan como dimensiones separadas; sin suma ponderada ni índice romántico; `peso_esperado` pasa a `especificidad_provisional`.
+- El balance de participación se reporta por unidad, sin etiqueta compuesta.
+- La robustez se evalúa por familia (recurrencia, segmentación, indicadores); "robusto" no se usa solo; las configuraciones que no se pueden probar son "no evaluables"; la robustez no equivale a validez científica.
+- Los scripts de referencia dejan de fijar un número de versión y siempre imprimen sus parámetros. Se añade la sección de aspectos abiertos.
+
+**v0.4 (2026-11-01).** Estado "sin intervención previa" independiente; línea base de saludos; 12 categorías de respuesta con alcance de los límites; balance separado de reciprocidad; frecuencia separada de cercanía; estado epistémico, suficiencia y robustez en lugar de niveles de confianza.
 
 **v0.3 (2026-10-31).** Latencia hasta la siguiente intervención del interlocutor sin ventana; medianas general, dentro y entre sesiones; registro por turno; respuesta semántica separada de la siguiente intervención.
 
