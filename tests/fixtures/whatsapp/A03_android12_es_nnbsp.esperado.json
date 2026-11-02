@@ -1,0 +1,119 @@
+{
+  "fixture": "A03_android12_es_nnbsp",
+  "origen": "simulado",
+  "formato_esperado": "android_12h_es_nnbsp",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 7,
+  "lineas_por_disposicion": {
+    "encabezado": 7,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 6,
+    "media": 0,
+    "system": 1,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:05:00",
+    "ultimo": "2026-10-15T00:01:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {
+    "U+202F": 7
+  },
+  "advertencias": [],
+  "notas": "12 h con \"a. m.\"/\"p. m.\" y U+202F antes del indicador. 12:00 p. m. = 12:00; 12:00 a. m. = 00:00 del día siguiente.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 9:05 a. m.",
+      "timestamp_local": "2026-10-14T09:05:00",
+      "precision": "minuto",
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 9:05 a. m.",
+      "timestamp_local": "2026-10-14T09:05:00",
+      "precision": "minuto",
+      "texto": "Buen día"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 12:00 p. m.",
+      "timestamp_local": "2026-10-14T12:00:00",
+      "precision": "minuto",
+      "texto": "Ya es mediodía"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 12:30 p. m.",
+      "timestamp_local": "2026-10-14T12:30:00",
+      "precision": "minuto",
+      "texto": "Voy a comer"
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 5,
+      "linea_final": 5,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 11:59 p. m.",
+      "timestamp_local": "2026-10-14T23:59:00",
+      "precision": "minuto",
+      "texto": "Última del día"
+    },
+    {
+      "seq": 6,
+      "linea_inicial": 6,
+      "linea_final": 6,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "15/10/2026, 12:00 a. m.",
+      "timestamp_local": "2026-10-15T00:00:00",
+      "precision": "minuto",
+      "texto": "Medianoche exacta"
+    },
+    {
+      "seq": 7,
+      "linea_inicial": 7,
+      "linea_final": 7,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "15/10/2026, 12:01 a. m.",
+      "timestamp_local": "2026-10-15T00:01:00",
+      "precision": "minuto",
+      "texto": "Ya es otro día"
+    }
+  ]
+}

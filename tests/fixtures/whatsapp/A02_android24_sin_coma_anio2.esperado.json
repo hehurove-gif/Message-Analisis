@@ -1,0 +1,84 @@
+{
+  "fixture": "A02_android24_sin_coma_anio2",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_sin_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 4,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:05:00",
+    "ultimo": "2026-10-14T09:09:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "Sin coma tras la fecha y año de 2 dígitos. Es la variante que usan los chats de data/synthetic. Incluye secuencia con ZWJ (👩‍💻).",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/26 09:05",
+      "timestamp_local": "2026-10-14T09:05:00",
+      "precision": "minuto",
+      "texto": "¿Mañana a las 10:30 en la biblioteca?"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/26 09:07",
+      "timestamp_local": "2026-10-14T09:07:00",
+      "precision": "minuto",
+      "texto": "Sí, llevo el café ☕ y la laptop 👩‍💻"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/26 09:08",
+      "timestamp_local": "2026-10-14T09:08:00",
+      "precision": "minuto",
+      "texto": "Ñoño, ¡no olvides la tarea!"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/26 09:09",
+      "timestamp_local": "2026-10-14T09:09:00",
+      "precision": "minuto",
+      "texto": "Jaja, ok. Gracias, José 🙏"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "fixture": "E05_un_solo_autor",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "rejected",
+  "estado_tipo_conversacion": "rejected_fewer_than_two_participants",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 1,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A"
+  },
+  "lineas_totales": 3,
+  "lineas_por_disposicion": {
+    "encabezado": 3,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 2,
+    "media": 0,
+    "system": 1,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:01:00",
+    "ultimo": "2026-10-14T09:02:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "PARTICIPANTS_LT_2"
+  ],
+  "notas": "Un solo autor (por ejemplo, un chat contigo mismo o una exportación incompleta): no hay conversación entre dos personas.",
+  "mensajes_esperados": null
+}

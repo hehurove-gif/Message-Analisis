@@ -1,0 +1,4 @@
+[14/10/26, 9:12:05 a. m.] Ana María: Buen día
+[14/10/26, 12:00:01 p. m.] José Luis: Mediodía
+[14/10/26, 11:59:59 p. m.] Ana María: Antes de medianoche
+[15/10/26, 12:00:00 a. m.] José Luis: Medianoche

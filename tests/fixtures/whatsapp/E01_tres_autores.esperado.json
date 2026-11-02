@@ -1,0 +1,42 @@
+{
+  "fixture": "E01_tres_autores",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "rejected",
+  "estado_tipo_conversacion": "rejected_more_than_two_participants",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 3,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B",
+    "Carlos Ruiz": "C"
+  },
+  "lineas_totales": 4,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:00:00",
+    "ultimo": "2026-10-14T09:03:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "PARTICIPANTS_GT_2"
+  ],
+  "notas": "Más de dos autores: se rechaza. Los conteos se reportan igualmente; no se entrega ningún mensaje.",
+  "mensajes_esperados": null
+}

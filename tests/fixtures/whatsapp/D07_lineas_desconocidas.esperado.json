@@ -1,0 +1,134 @@
+{
+  "fixture": "D07_lineas_desconocidas",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 15,
+  "lineas_por_disposicion": {
+    "encabezado": 5,
+    "continuacion": 1,
+    "en_blanco": 0,
+    "no_procesada": 9
+  },
+  "mensajes_por_tipo": {
+    "texto": 5,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [
+    {
+      "linea": 1,
+      "motivo": "ORPHAN_BEFORE_FIRST_MESSAGE"
+    },
+    {
+      "linea": 4,
+      "motivo": "TIMESTAMP_LIKE_UNRECOGNIZED"
+    },
+    {
+      "linea": 5,
+      "motivo": "ORPHAN_AFTER_UNPROCESSED"
+    },
+    {
+      "linea": 7,
+      "motivo": "TIMESTAMP_INVALID"
+    },
+    {
+      "linea": 8,
+      "motivo": "TIMESTAMP_INVALID"
+    },
+    {
+      "linea": 9,
+      "motivo": "TIMESTAMP_LIKE_UNRECOGNIZED"
+    },
+    {
+      "linea": 10,
+      "motivo": "FORMAT_MISMATCH"
+    },
+    {
+      "linea": 13,
+      "motivo": "TIMESTAMP_LIKE_UNRECOGNIZED"
+    },
+    {
+      "linea": 14,
+      "motivo": "ORPHAN_AFTER_UNPROCESSED"
+    }
+  ],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:10:00",
+    "ultimo": "2026-10-14T09:16:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "UNPROCESSED_LINES"
+  ],
+  "notas": "Ninguna de las 9 líneas no procesadas se anexa a un mensaje. \"14/10/2026 a las 10:30 ...\" podría ser una continuación legítima, pero tiene aspecto de timestamp (fecha + hora al inicio): se reporta, no se adivina.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:10",
+      "timestamp_local": "2026-10-14T09:10:00",
+      "precision": "minuto",
+      "texto": "Hola"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:11",
+      "timestamp_local": "2026-10-14T09:11:00",
+      "precision": "minuto",
+      "texto": "Qué tal"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 6,
+      "linea_final": 6,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:13",
+      "timestamp_local": "2026-10-14T09:13:00",
+      "precision": "minuto",
+      "texto": "Mensaje normal"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 11,
+      "linea_final": 12,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:15",
+      "timestamp_local": "2026-10-14T09:15:00",
+      "precision": "minuto",
+      "texto": "Primer renglón\nSegundo renglón legítimo"
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 15,
+      "linea_final": 15,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:16",
+      "timestamp_local": "2026-10-14T09:16:00",
+      "precision": "minuto",
+      "texto": "Último mensaje válido"
+    }
+  ]
+}

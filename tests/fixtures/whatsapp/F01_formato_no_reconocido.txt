@@ -1,0 +1,3 @@
+fecha;autor;texto
+2026-10-14;Ana;hola
+2026-10-14;Luis;qué tal

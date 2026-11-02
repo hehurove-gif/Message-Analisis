@@ -1,0 +1,84 @@
+{
+  "fixture": "D08_crlf_lineas_en_blanco",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 12,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 2,
+    "en_blanco": 6,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:00:00",
+    "ultimo": "2026-10-14T09:03:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "Saltos de línea \\r\\n. Una línea en blanco inicial, blancos dentro de un mensaje (se conservan) y blancos al final de un mensaje o del archivo (se cuentan como en blanco y no pasan al texto).",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:00",
+      "timestamp_local": "2026-10-14T09:00:00",
+      "precision": "minuto",
+      "texto": "Archivo con saltos CRLF"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 3,
+      "linea_final": 6,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:01",
+      "timestamp_local": "2026-10-14T09:01:00",
+      "precision": "minuto",
+      "texto": "Con párrafos\nuno\n\ndos"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 9,
+      "linea_final": 9,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:02",
+      "timestamp_local": "2026-10-14T09:02:00",
+      "precision": "minuto",
+      "texto": "Penúltimo"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 10,
+      "linea_final": 10,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:03",
+      "timestamp_local": "2026-10-14T09:03:00",
+      "precision": "minuto",
+      "texto": "Último"
+    }
+  ]
+}

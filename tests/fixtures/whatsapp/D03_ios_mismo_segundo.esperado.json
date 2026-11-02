@@ -1,0 +1,84 @@
+{
+  "fixture": "D03_ios_mismo_segundo",
+  "origen": "simulado",
+  "formato_esperado": "ios_24h_corchetes",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 4,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:12:05",
+    "ultimo": "2026-10-14T09:12:06"
+  },
+  "timestamps_consecutivos_iguales": 2,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "Mensajes en el mismo segundo, incluso de autores distintos.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:12:05",
+      "timestamp_local": "2026-10-14T09:12:05",
+      "precision": "segundo",
+      "texto": "A"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:12:05",
+      "timestamp_local": "2026-10-14T09:12:05",
+      "precision": "segundo",
+      "texto": "B"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:12:05",
+      "timestamp_local": "2026-10-14T09:12:05",
+      "precision": "segundo",
+      "texto": "C"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:12:06",
+      "timestamp_local": "2026-10-14T09:12:06",
+      "precision": "segundo",
+      "texto": "D"
+    }
+  ]
+}

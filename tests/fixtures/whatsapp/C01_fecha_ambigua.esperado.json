@@ -1,0 +1,38 @@
+{
+  "fixture": "C01_fecha_ambigua",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "blocked_pending_confirmation",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "ambiguo",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 3,
+  "lineas_por_disposicion": {
+    "encabezado": 3,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 3,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": null,
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "DATE_ORDER_AMBIGUOUS"
+  ],
+  "notas": "03/10, 04/10 y 05/10 son válidos como día/mes y como mes/día. Sin evidencia ni indicación del usuario, el parser no elige: no emite timestamps normalizados.",
+  "mensajes_esperados": null
+}

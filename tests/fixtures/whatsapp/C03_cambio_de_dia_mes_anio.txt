@@ -1,0 +1,6 @@
+14/10/2026, 23:58 - Ana María: Fin del día
+15/10/2026, 00:00 - José Luis: Nuevo día
+31/10/2026, 23:59 - Ana María: Fin de mes
+01/11/2026, 00:01 - José Luis: Nuevo mes
+31/12/2026, 23:59 - Ana María: Fin de año
+01/01/2027, 00:00 - José Luis: Feliz año

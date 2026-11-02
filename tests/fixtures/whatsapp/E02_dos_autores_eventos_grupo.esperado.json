@@ -1,0 +1,62 @@
+{
+  "fixture": "E02_dos_autores_eventos_grupo",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "rejected",
+  "estado_tipo_conversacion": "rejected_possible_group",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 7,
+  "lineas_por_disposicion": {
+    "encabezado": 7,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 2,
+    "media": 0,
+    "system": 5,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [
+    {
+      "linea": 1,
+      "codigo": "GROUP_CREATED"
+    },
+    {
+      "linea": 2,
+      "codigo": "MEMBER_ADDED"
+    },
+    {
+      "linea": 3,
+      "codigo": "MEMBER_ADDED"
+    },
+    {
+      "linea": 6,
+      "codigo": "SUBJECT_CHANGED"
+    },
+    {
+      "linea": 7,
+      "codigo": "MEMBER_LEFT"
+    }
+  ],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:00:00",
+    "ultimo": "2026-10-14T09:01:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "GROUP_EVIDENCE"
+  ],
+  "notas": "Solo hablan dos personas, pero hay creación del grupo, altas, cambio de asunto y una salida: posible grupal, se rechaza.",
+  "mensajes_esperados": null
+}

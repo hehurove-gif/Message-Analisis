@@ -1,0 +1,12 @@
+14/10/2026, 09:00 - Ana María: Hora: 10:30, lugar: aula 5
+14/10/2026, 09:01 - José Luis: https://ejemplo.mx/a?x=1:2&y="3"
+14/10/2026, 09:02 - Ana María: “comillas curvas” 'simples' "dobles"
+14/10/2026, 09:03 - José Luis: Te mandé <Multimedia omitido> por error
+14/10/2026, 09:04 - Ana María: 😂😂😂
+14/10/2026, 09:05 - José Luis: Primer párrafo
+
+Segundo párrafo tras línea en blanco
+14/10/2026, 09:06 - Ana María: Recuerden:
+14/10/2026 fue el cumpleaños de mamá
+14/10/2026, 09:07 - José Luis: .
+14/10/2026, 09:08 - Ana María: Con	tabulador

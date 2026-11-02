@@ -1,0 +1,100 @@
+{
+  "fixture": "D01_invisibles_bom",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 5,
+  "lineas_por_disposicion": {
+    "encabezado": 5,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 1,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:12:00",
+    "ultimo": "2026-10-14T09:15:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {
+    "U+200E": 3,
+    "U+200F": 2,
+    "U+202F": 1,
+    "U+FEFF": 1
+  },
+  "advertencias": [],
+  "notas": "BOM al inicio del archivo (línea 1), U+200E al inicio de línea y dentro del texto, U+200F, y U+202F dentro del texto. El BOM no debe impedir reconocer la primera línea.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 09:12",
+      "timestamp_local": "2026-10-14T09:12:00",
+      "precision": "minuto",
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:12",
+      "timestamp_local": "2026-10-14T09:12:00",
+      "precision": "minuto",
+      "texto": "Texto con marca LRM en medio"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:13",
+      "timestamp_local": "2026-10-14T09:13:00",
+      "precision": "minuto",
+      "texto": "Nos vemos a las 5 p. m."
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:14",
+      "timestamp_local": "2026-10-14T09:14:00",
+      "precision": "minuto",
+      "texto": "مرحبا (árabe con RLM)"
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 5,
+      "linea_final": 5,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:15",
+      "timestamp_local": "2026-10-14T09:15:00",
+      "precision": "minuto",
+      "texto": "Línea final"
+    }
+  ]
+}

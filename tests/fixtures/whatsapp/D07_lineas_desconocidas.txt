@@ -1,0 +1,15 @@
+Exportado el 14 de octubre desde WhatsApp
+14/10/2026, 09:10 - Ana María: Hola
+14/10/2026, 09:11 - José Luis: Qué tal
+14-10-2026 09:12 > Ana María: separadores desconocidos
+esta línea sigue a una no procesada y no debe unirse al mensaje anterior
+14/10/2026, 09:13 - Ana María: Mensaje normal
+31/02/2026, 10:00 - Ana María: fecha imposible
+14/10/2026, 25:61 - José Luis: hora imposible
+14/10/2026, 09:3 - Ana María: minutos malformados
+[14/10/2026, 09:14:00] José Luis: encabezado iOS en archivo Android
+14/10/2026, 09:15 - José Luis: Primer renglón
+Segundo renglón legítimo
+14/10/2026 a las 10:30 se movió la cita
+renglón posterior sin timestamp
+14/10/2026, 09:16 - Ana María: Último mensaje válido

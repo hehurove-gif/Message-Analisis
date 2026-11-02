@@ -1,0 +1,5 @@
+14/10/2026, 09:10 - Ana María: Primero
+14/10/2026, 09:20 - José Luis: Segundo
+14/10/2026, 09:15 - Ana María: Retrocede 5 minutos
+14/10/2026, 09:30 - José Luis: Sigue
+13/10/2026, 09:40 - Ana María: Retrocede un día

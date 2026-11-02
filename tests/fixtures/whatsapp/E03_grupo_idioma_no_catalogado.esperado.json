@@ -1,0 +1,86 @@
+{
+  "fixture": "E03_grupo_idioma_no_catalogado",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 4,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 2,
+    "media": 0,
+    "system": 2,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 2,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:00:00",
+    "ultimo": "2026-10-14T09:01:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "SYSTEM_LINES_UNCLASSIFIED"
+  ],
+  "notas": "LIMITACIÓN: es un grupo, pero los avisos están en un idioma que el catálogo no cubre. Los avisos se reconocen como system por su forma (sin \"autor:\"), no se reconocen como evidencia de grupo y el resultado es \"pendiente de confirmación\" (falso negativo posible). La advertencia indica que hay avisos sin catalogar.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 08:00",
+      "timestamp_local": "2026-10-14T08:00:00",
+      "precision": "minuto",
+      "texto": "Ana María hat die Gruppe „Statistik\" erstellt"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 08:01",
+      "timestamp_local": "2026-10-14T08:01:00",
+      "precision": "minuto",
+      "texto": "Ana María hat Carlos Ruiz hinzugefügt"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:00",
+      "timestamp_local": "2026-10-14T09:00:00",
+      "precision": "minuto",
+      "texto": "Hallo"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:01",
+      "timestamp_local": "2026-10-14T09:01:00",
+      "precision": "minuto",
+      "texto": "Hi"
+    }
+  ]
+}

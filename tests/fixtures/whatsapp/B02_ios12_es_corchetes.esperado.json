@@ -1,0 +1,84 @@
+{
+  "fixture": "B02_ios12_es_corchetes",
+  "origen": "simulado",
+  "formato_esperado": "ios_12h_es_corchetes",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 4,
+  "lineas_por_disposicion": {
+    "encabezado": 4,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 4,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:12:05",
+    "ultimo": "2026-10-15T00:00:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "iOS 12 h con año de 2 dígitos, segundos y \"a. m.\"/\"p. m.\" con espacio normal.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/26, 9:12:05 a. m.",
+      "timestamp_local": "2026-10-14T09:12:05",
+      "precision": "segundo",
+      "texto": "Buen día"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/26, 12:00:01 p. m.",
+      "timestamp_local": "2026-10-14T12:00:01",
+      "precision": "segundo",
+      "texto": "Mediodía"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/26, 11:59:59 p. m.",
+      "timestamp_local": "2026-10-14T23:59:59",
+      "precision": "segundo",
+      "texto": "Antes de medianoche"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "15/10/26, 12:00:00 a. m.",
+      "timestamp_local": "2026-10-15T00:00:00",
+      "precision": "segundo",
+      "texto": "Medianoche"
+    }
+  ]
+}

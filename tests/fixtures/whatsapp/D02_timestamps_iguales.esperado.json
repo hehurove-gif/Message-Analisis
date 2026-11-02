@@ -1,0 +1,95 @@
+{
+  "fixture": "D02_timestamps_iguales",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 5,
+  "lineas_por_disposicion": {
+    "encabezado": 5,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 5,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T10:00:00",
+    "ultimo": "2026-10-14T10:01:00"
+  },
+  "timestamps_consecutivos_iguales": 3,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "Con precisión de minuto es normal que varios mensajes compartan timestamp. Se conserva el orden del archivo (seq); no se reordena.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 10:00",
+      "timestamp_local": "2026-10-14T10:00:00",
+      "precision": "minuto",
+      "texto": "Uno"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 10:00",
+      "timestamp_local": "2026-10-14T10:00:00",
+      "precision": "minuto",
+      "texto": "Dos"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 10:00",
+      "timestamp_local": "2026-10-14T10:00:00",
+      "precision": "minuto",
+      "texto": "Tres"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 10:01",
+      "timestamp_local": "2026-10-14T10:01:00",
+      "precision": "minuto",
+      "texto": "Cuatro"
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 5,
+      "linea_final": 5,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 10:01",
+      "timestamp_local": "2026-10-14T10:01:00",
+      "precision": "minuto",
+      "texto": "Cinco"
+    }
+  ]
+}

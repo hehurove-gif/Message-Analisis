@@ -1,0 +1,38 @@
+{
+  "fixture": "C02_fecha_orden_contradictorio",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "rejected",
+  "estado_tipo_conversacion": "not_evaluated",
+  "orden_fecha": "contradictorio",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 2,
+  "lineas_por_disposicion": {
+    "encabezado": 2,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 2,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": null,
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "DATE_ORDER_CONTRADICTORY"
+  ],
+  "notas": "Se sustituye abajo una línea por \"10/14/2026\" (mes primero) para que el mismo archivo contenga evidencia de ambos órdenes.",
+  "mensajes_esperados": null
+}

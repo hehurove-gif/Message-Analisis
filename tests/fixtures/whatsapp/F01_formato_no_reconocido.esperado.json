@@ -1,0 +1,32 @@
+{
+  "fixture": "F01_formato_no_reconocido",
+  "origen": "simulado",
+  "lineas_totales": 3,
+  "decision_importacion": "rejected",
+  "formato_esperado": null,
+  "advertencias": [
+    "FORMAT_NOT_RECOGNIZED"
+  ],
+  "lineas_por_disposicion": {
+    "encabezado": 0,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 3
+  },
+  "lineas_no_procesadas": [
+    {
+      "linea": 1,
+      "motivo": "FORMAT_NOT_RECOGNIZED"
+    },
+    {
+      "linea": 2,
+      "motivo": "FORMAT_NOT_RECOGNIZED"
+    },
+    {
+      "linea": 3,
+      "motivo": "FORMAT_NOT_RECOGNIZED"
+    }
+  ],
+  "mensajes_esperados": null,
+  "notas": "Un CSV: ninguna línea coincide con un formato. Ninguna línea desaparece: las 3 se reportan."
+}

@@ -1,0 +1,134 @@
+{
+  "fixture": "B01_ios24_corchetes",
+  "origen": "simulado",
+  "formato_esperado": "ios_24h_corchetes",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 9,
+  "lineas_por_disposicion": {
+    "encabezado": 8,
+    "continuacion": 1,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 2,
+    "media": 4,
+    "system": 1,
+    "deleted": 1
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:12:05",
+    "ultimo": "2026-10-14T09:18:45"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {
+    "U+200E": 10
+  },
+  "advertencias": [],
+  "notas": "iOS con corchetes y 24 h. El aviso de cifrado aparece con nombre de persona (hipótesis a verificar con una exportación real): debe tratarse como system, sin autor. Las líneas con LRM al inicio deben reconocerse.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 09:12:00",
+      "timestamp_local": "2026-10-14T09:12:00",
+      "precision": "segundo",
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:12:05",
+      "timestamp_local": "2026-10-14T09:12:05",
+      "precision": "segundo",
+      "texto": "Hola 😊"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "media",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:13:20",
+      "timestamp_local": "2026-10-14T09:13:20",
+      "precision": "segundo",
+      "texto": "imagen omitida",
+      "media_kind": "imagen"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "media",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:14:02",
+      "timestamp_local": "2026-10-14T09:14:02",
+      "precision": "segundo",
+      "texto": "sticker omitido",
+      "media_kind": "sticker"
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 5,
+      "linea_final": 5,
+      "tipo": "media",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:15:11",
+      "timestamp_local": "2026-10-14T09:15:11",
+      "precision": "segundo",
+      "texto": "audio omitido",
+      "media_kind": "audio"
+    },
+    {
+      "seq": 6,
+      "linea_inicial": 6,
+      "linea_final": 6,
+      "tipo": "media",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:16:00",
+      "timestamp_local": "2026-10-14T09:16:00",
+      "precision": "segundo",
+      "texto": "documento omitido",
+      "media_kind": "documento"
+    },
+    {
+      "seq": 7,
+      "linea_inicial": 7,
+      "linea_final": 7,
+      "tipo": "deleted",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:17:30",
+      "timestamp_local": "2026-10-14T09:17:30",
+      "precision": "segundo",
+      "texto": "Se eliminó este mensaje."
+    },
+    {
+      "seq": 8,
+      "linea_inicial": 8,
+      "linea_final": 9,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:18:45",
+      "timestamp_local": "2026-10-14T09:18:45",
+      "precision": "segundo",
+      "texto": "Primera línea\nSegunda línea: con dos puntos"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "fixture": "D09_encabezado_citado",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 3,
+  "lineas_por_disposicion": {
+    "encabezado": 3,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 3,
+    "media": 0,
+    "system": 0,
+    "deleted": 0
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:00:00",
+    "ultimo": "2026-10-14T10:05:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 1,
+  "caracteres_normalizados": {},
+  "advertencias": [
+    "TIMESTAMPS_OUT_OF_ORDER"
+  ],
+  "notas": "Limitación inherente al TXT.",
+  "limitacion_conocida": "En el archivo la línea 2 es una cita pegada dentro del mensaje de Ana María, pero tiene un encabezado válido: el TXT no permite distinguirla de un mensaje real. El parser la procesa como mensaje nuevo de José Luis. Estos esperados reflejan lo que el parser puede determinar, no la realidad.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:00",
+      "timestamp_local": "2026-10-14T09:00:00",
+      "precision": "minuto",
+      "texto": "Te copio lo que dijo:"
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 10:05",
+      "timestamp_local": "2026-10-14T10:05:00",
+      "precision": "minuto",
+      "texto": "mañana sí voy"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:06",
+      "timestamp_local": "2026-10-14T09:06:00",
+      "precision": "minuto",
+      "texto": "Gracias"
+    }
+  ]
+}

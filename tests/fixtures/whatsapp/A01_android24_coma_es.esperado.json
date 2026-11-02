@@ -1,0 +1,140 @@
+{
+  "fixture": "A01_android24_coma_es",
+  "origen": "simulado",
+  "formato_esperado": "android_24h_coma",
+  "decision_importacion": "accepted",
+  "estado_tipo_conversacion": "pending_confirmation",
+  "orden_fecha": "dmy_resuelto_por_dato",
+  "participantes_detectados": 2,
+  "mapa_anonimizacion_esperado": {
+    "Ana María": "A",
+    "José Luis": "B"
+  },
+  "lineas_totales": 12,
+  "lineas_por_disposicion": {
+    "encabezado": 9,
+    "continuacion": 3,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "mensajes_por_tipo": {
+    "texto": 6,
+    "media": 1,
+    "system": 1,
+    "deleted": 1
+  },
+  "lineas_no_procesadas": [],
+  "evidencias_grupo": [],
+  "avisos_sistema_sin_catalogar": 0,
+  "rango_fechas": {
+    "primero": "2026-10-14T09:12:00",
+    "ultimo": "2026-10-15T00:01:00"
+  },
+  "timestamps_consecutivos_iguales": 0,
+  "timestamps_fuera_de_orden": 0,
+  "caracteres_normalizados": {},
+  "advertencias": [],
+  "notas": "Formato base con coma. Cubre texto, multilínea, media, eliminado, aviso de cifrado, cambio de día y emojis.",
+  "mensajes_esperados": [
+    {
+      "seq": 1,
+      "linea_inicial": 1,
+      "linea_final": 1,
+      "tipo": "system",
+      "participante": null,
+      "timestamp_original": "14/10/2026, 09:12",
+      "timestamp_local": "2026-10-14T09:12:00",
+      "precision": "minuto",
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+    },
+    {
+      "seq": 2,
+      "linea_inicial": 2,
+      "linea_final": 2,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:12",
+      "timestamp_local": "2026-10-14T09:12:00",
+      "precision": "minuto",
+      "texto": "Buenos días 😊"
+    },
+    {
+      "seq": 3,
+      "linea_inicial": 3,
+      "linea_final": 3,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:14",
+      "timestamp_local": "2026-10-14T09:14:00",
+      "precision": "minuto",
+      "texto": "Hola, ¿qué tal? ¿Todo bien en casa?"
+    },
+    {
+      "seq": 4,
+      "linea_inicial": 4,
+      "linea_final": 4,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:15",
+      "timestamp_local": "2026-10-14T09:15:00",
+      "precision": "minuto",
+      "texto": "Me dijo: \"no hay problema, ya lo vi\""
+    },
+    {
+      "seq": 5,
+      "linea_inicial": 5,
+      "linea_final": 8,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:16",
+      "timestamp_local": "2026-10-14T09:16:00",
+      "precision": "minuto",
+      "texto": "Te mando la lista:\n- pan\n- leche\n- café ☕"
+    },
+    {
+      "seq": 6,
+      "linea_inicial": 9,
+      "linea_final": 9,
+      "tipo": "media",
+      "participante": "A",
+      "timestamp_original": "14/10/2026, 09:20",
+      "timestamp_local": "2026-10-14T09:20:00",
+      "precision": "minuto",
+      "texto": "<Multimedia omitido>",
+      "media_kind": "desconocido"
+    },
+    {
+      "seq": 7,
+      "linea_inicial": 10,
+      "linea_final": 10,
+      "tipo": "deleted",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 09:21",
+      "timestamp_local": "2026-10-14T09:21:00",
+      "precision": "minuto",
+      "texto": "Se eliminó este mensaje"
+    },
+    {
+      "seq": 8,
+      "linea_inicial": 11,
+      "linea_final": 11,
+      "tipo": "texto",
+      "participante": "B",
+      "timestamp_original": "14/10/2026, 23:59",
+      "timestamp_local": "2026-10-14T23:59:00",
+      "precision": "minuto",
+      "texto": "Buenas noches"
+    },
+    {
+      "seq": 9,
+      "linea_inicial": 12,
+      "linea_final": 12,
+      "tipo": "texto",
+      "participante": "A",
+      "timestamp_original": "15/10/2026, 00:01",
+      "timestamp_local": "2026-10-15T00:01:00",
+      "precision": "minuto",
+      "texto": "¡Buenas noches! 🙂❤️"
+    }
+  ]
+}

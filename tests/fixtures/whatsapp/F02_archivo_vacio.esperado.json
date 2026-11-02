@@ -1,0 +1,19 @@
+{
+  "fixture": "F02_archivo_vacio",
+  "origen": "simulado",
+  "lineas_totales": 0,
+  "decision_importacion": "rejected",
+  "formato_esperado": null,
+  "advertencias": [
+    "EMPTY_FILE"
+  ],
+  "lineas_por_disposicion": {
+    "encabezado": 0,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 0
+  },
+  "lineas_no_procesadas": [],
+  "mensajes_esperados": null,
+  "notas": "Archivo de 0 bytes."
+}

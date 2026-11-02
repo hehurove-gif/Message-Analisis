@@ -1,0 +1,12 @@
+
+14/10/2026, 09:00 - Ana María: Archivo con saltos CRLF
+14/10/2026, 09:01 - José Luis: Con párrafos
+uno
+
+dos
+
+
+14/10/2026, 09:02 - Ana María: Penúltimo
+14/10/2026, 09:03 - José Luis: Último
+
+
