@@ -83,7 +83,7 @@ Los marcadores y los catálogos de avisos son **simulados** (ver el catálogo de
 ## 5. Participantes y anonimización
 
 - Participantes = autores distintos de los mensajes `texto`, `media` y `deleted`. Los de `system` no cuentan.
-- Se etiquetan `A`, `B` por **orden de primera aparición** en el archivo. Con más de dos autores no se etiqueta (se rechaza).
+- Se etiquetan `A`, `B`, `C`… por **orden de primera aparición** en el archivo. Con más de dos autores el chat se rechaza y no se entrega ningún mensaje; el mapa (solo memoria) conserva las etiquetas (E01).
 - La correspondencia nombre-etiqueta vive **solo en memoria**, no se escribe a disco, no aparece en el reporte ni en los registros. (El `.esperado.json` de los fixtures la incluye únicamente porque los nombres son ficticios.)
 - El anonimizado cubre a los participantes. El contenido de `texto` puede nombrar a personas; eso lo procesa solo la memoria local y **no entra a ningún reporte**. Qué hacer con los nombres dentro del texto en la interfaz queda para una fase posterior.
 
@@ -103,7 +103,7 @@ Los marcadores y los catálogos de avisos son **simulados** (ver el catálogo de
 4. No se convierte zona horaria ni se asume una. No se reordena nada por timestamp.
 5. **Timestamps consecutivos iguales:** número de pares de mensajes de persona adyacentes con el mismo timestamp. Es **informativo**: con precisión de minuto es normal. Se conserva el orden del archivo.
 6. **Fuera de orden:** número de mensajes de persona cuyo timestamp es **anterior** al del mensaje de persona anterior. Advertencia `TIMESTAMPS_OUT_OF_ORDER`; el parser no corrige.
-7. **Rango de fechas:** primer y último timestamp de los mensajes de persona (los avisos del sistema no cuentan); nulo si el orden de fecha no se resolvió.
+7. **Rango de fechas:** **mínimo y máximo** timestamp de los mensajes de persona (los avisos del sistema no cuentan; no es el primero y el último del archivo); nulo si el orden de fecha no se resolvió.
 
 ## 7. Tipo de conversación
 
@@ -213,6 +213,8 @@ En `config.yaml`, sección `parsing`: `date_order_hint` (nulo por defecto), `two
 | 9 | Config | `parsing` separa caracteres ignorados y espacios, y ya no dice que los patrones se prueben con exportaciones reales |
 
 Cambios de campo: `caracteres_normalizados` → `caracteres_especiales_en_archivo`; nuevos `texto_normalizado`, `procesamiento_completo`, `estado_calidad`, `analisis_habilitado`, `requisitos_analisis`; nuevo motivo `FORMAT_AMBIGUOUS`; nuevos fixtures F03 y F04.
+
+**Ajustes al implementar el parser (Fase 1.2).** (a) `android_24h_sin_coma` acepta año de 2 o de 4 dígitos: los chats sintéticos de la Fase 0 usan 4 y el catálogo solo cubría 2 (formato simulado). (b) La heurística de "aspecto de timestamp" acepta minutos de 1 dígito (`09:3`), como exige D07. (c) `E01`: se etiqueta a todos los autores aunque el chat se rechace. (d) `rango_fechas` usa mínimo y máximo (D04, D09). (e) Un archivo con solo espacios en blanco es `EMPTY_FILE` y sus líneas cuentan como `en_blanco`. Los 33 fixtures y los tres chats de la Fase 0 pasan sin cambiar su contenido.
 
 **Hallazgo al corregir `ref_latency.py`.** El lector anterior descartaba en silencio el aviso de cifrado (primera línea) de los chats 01 y 02: no afectaba a ningún resultado (un aviso del sistema no es un mensaje de persona), pero era exactamente el tipo de pérdida silenciosa que este contrato prohíbe. Ahora se reconoce y se cuenta aparte.
 

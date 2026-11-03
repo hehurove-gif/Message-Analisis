@@ -33,7 +33,7 @@ _DMY2C = r'(?P<d1>\d{1,2})/(?P<d2>\d{1,2})/(?P<y>\d{2}), '
 
 FORMATS = [
     _f('android_24h_coma', 'android', _AND.format(ts=_DMY4C + r'(?P<H>\d{1,2}):(?P<M>\d{2})'), False, 'minuto'),
-    _f('android_24h_sin_coma', 'android', _AND.format(ts=r'(?P<d1>\d{1,2})/(?P<d2>\d{1,2})/(?P<y>\d{2}) (?P<H>\d{1,2}):(?P<M>\d{2})'), False, 'minuto'),
+    _f('android_24h_sin_coma', 'android', _AND.format(ts=r'(?P<d1>\d{1,2})/(?P<d2>\d{1,2})/(?P<y>\d{4}|\d{2}) (?P<H>\d{1,2}):(?P<M>\d{2})'), False, 'minuto'),
     _f('android_12h_es_nnbsp', 'android', _AND.format(ts=_DMY4C + r'(?P<H>\d{1,2}):(?P<M>\d{2}) (?P<ap>[ap]\. m\.)'), True, 'minuto'),
     _f('android_12h_compacto', 'android', _AND.format(ts=_DMY4C + r'(?P<H>\d{1,2}):(?P<M>\d{2}) (?P<ap>[ap]\.m\.)'), True, 'minuto'),
     _f('android_12h_en_mdy', 'android', _AND.format(ts=_DMY2C + r'(?P<H>\d{1,2}):(?P<M>\d{2}) (?P<ap>[AP]M)'), True, 'minuto'),
