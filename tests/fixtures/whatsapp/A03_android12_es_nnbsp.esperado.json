@@ -32,10 +32,16 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {
+  "caracteres_especiales_en_archivo": {
     "U+202F": 7
   },
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "12 h con \"a. m.\"/\"p. m.\" y U+202F antes del indicador. 12:00 p. m. = 12:00; 12:00 a. m. = 00:00 del día siguiente.",
   "mensajes_esperados": [
     {
@@ -47,7 +53,8 @@
       "timestamp_original": "14/10/2026, 9:05 a. m.",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información.",
+      "texto_normalizado": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
     },
     {
       "seq": 2,
@@ -58,7 +65,8 @@
       "timestamp_original": "14/10/2026, 9:05 a. m.",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "Buen día"
+      "texto": "Buen día",
+      "texto_normalizado": "Buen día"
     },
     {
       "seq": 3,
@@ -69,7 +77,8 @@
       "timestamp_original": "14/10/2026, 12:00 p. m.",
       "timestamp_local": "2026-10-14T12:00:00",
       "precision": "minuto",
-      "texto": "Ya es mediodía"
+      "texto": "Ya es mediodía",
+      "texto_normalizado": "Ya es mediodía"
     },
     {
       "seq": 4,
@@ -80,7 +89,8 @@
       "timestamp_original": "14/10/2026, 12:30 p. m.",
       "timestamp_local": "2026-10-14T12:30:00",
       "precision": "minuto",
-      "texto": "Voy a comer"
+      "texto": "Voy a comer",
+      "texto_normalizado": "Voy a comer"
     },
     {
       "seq": 5,
@@ -91,7 +101,8 @@
       "timestamp_original": "14/10/2026, 11:59 p. m.",
       "timestamp_local": "2026-10-14T23:59:00",
       "precision": "minuto",
-      "texto": "Última del día"
+      "texto": "Última del día",
+      "texto_normalizado": "Última del día"
     },
     {
       "seq": 6,
@@ -102,7 +113,8 @@
       "timestamp_original": "15/10/2026, 12:00 a. m.",
       "timestamp_local": "2026-10-15T00:00:00",
       "precision": "minuto",
-      "texto": "Medianoche exacta"
+      "texto": "Medianoche exacta",
+      "texto_normalizado": "Medianoche exacta"
     },
     {
       "seq": 7,
@@ -113,7 +125,8 @@
       "timestamp_original": "15/10/2026, 12:01 a. m.",
       "timestamp_local": "2026-10-15T00:01:00",
       "precision": "minuto",
-      "texto": "Ya es otro día"
+      "texto": "Ya es otro día",
+      "texto_normalizado": "Ya es otro día"
     }
   ]
 }

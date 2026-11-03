@@ -1,0 +1,17 @@
+{
+  "fixture": "F04_bytes_utf8_invalidos",
+  "origen": "simulado",
+  "decision_importacion": "rejected",
+  "formato_esperado": null,
+  "advertencias": [
+    "ENCODING_ERROR"
+  ],
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
+  "lineas_totales": null,
+  "lineas_no_procesadas": [],
+  "mensajes_esperados": null,
+  "notas": "Contiene el byte 0xE9 aislado (Latin-1), inválido en UTF-8. Se rechaza sin intentar otra codificación; no se cuenta ni se reporta ninguna línea (no hay texto decodificado)."
+}

@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 2,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Mensajes en el mismo segundo, incluso de autores distintos.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 09:12:05",
       "timestamp_local": "2026-10-14T09:12:05",
       "precision": "segundo",
-      "texto": "A"
+      "texto": "A",
+      "texto_normalizado": "A"
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 09:12:05",
       "timestamp_local": "2026-10-14T09:12:05",
       "precision": "segundo",
-      "texto": "B"
+      "texto": "B",
+      "texto_normalizado": "B"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 09:12:05",
       "timestamp_local": "2026-10-14T09:12:05",
       "precision": "segundo",
-      "texto": "C"
+      "texto": "C",
+      "texto_normalizado": "C"
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 09:12:06",
       "timestamp_local": "2026-10-14T09:12:06",
       "precision": "segundo",
-      "texto": "D"
+      "texto": "D",
+      "texto_normalizado": "D"
     }
   ]
 }

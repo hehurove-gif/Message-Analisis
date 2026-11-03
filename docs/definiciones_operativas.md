@@ -1,12 +1,12 @@
 # Definiciones operativas
 
-Versión 0.5 · 2026-11-02 · **Pendiente de aprobación definitiva** (criterio de salida de la Fase 0). El registro de cambios está al final.
+Versión 0.6 · 2026-11-03 · Los tipos de mensaje se alinean con el contrato del parser v0.2 (única enumeración vigente). El resto de definiciones es el de la v0.5 aprobada para iniciar la Fase 1. El registro de cambios está al final.
 
 Fijan qué significa cada término en el código y en los reportes. Los valores numéricos viven en `config.yaml`. Todo valor marcado como *provisional* o *experimental* es un criterio operativo configurable, no una afirmación sobre la realidad. El sistema analiza **lo que las personas comunican y cómo responden**; no pretende conocer directamente sus sentimientos.
 
 ## 1. Unidades de análisis
 
-**Mensaje.** Entrada individual de la exportación, con timestamp y autor. Siempre se conservan los mensajes originales y sus timestamps. Tipos: `texto`, `media` (multimedia omitida, stickers, ubicación), `sistema` y `eliminado`. Solo `texto` entra en las métricas lingüísticas; `media` y `eliminado` cuentan como actividad sin contenido analizable; `sistema` no pertenece a ninguna persona.
+**Mensaje.** Entrada individual de la exportación, con timestamp y autor. Siempre se conservan los mensajes originales y sus timestamps. Tipos (valores canónicos, los mismos que `docs/contrato_parser.md`): `texto`, `media` (multimedia omitida o adjunta), `system` (aviso sin autor) y `deleted` (mensaje eliminado). Solo `texto` entra en las métricas lingüísticas; `media` y `deleted` cuentan como actividad sin contenido analizable; `system` no pertenece a ninguna persona y no cuenta como mensaje de ninguna. El contenido de un mensaje es el **original** (`texto`); cualquier representación normalizada para análisis es un campo derivado aparte (`texto_normalizado`) y no lo sustituye.
 
 **Ráfaga.** Mensajes consecutivos del mismo participante cuyo intervalo es **menor o igual** a `segmentation.burst_max_gap_seconds` (valor inicial **experimental** de 300 s). Sirve para estudiar hábitos de escritura y fragmentación.
 
@@ -164,6 +164,8 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 - Calibración de los umbrales experimentales con datos reales.
 
 ## Registro de cambios
+
+**v0.6 (2026-11-03).** Solo la enumeración de tipos de mensaje: `sistema` → `system` y `eliminado` → `deleted`, para no mantener dos enumeraciones incompatibles con el contrato v0.2; se aclara que el contenido es el original y que la normalización es un campo derivado. No cambia ninguna otra definición, parámetro ni resultado esperado de los tres chats.
 
 **v0.5 (2026-11-02)**
 

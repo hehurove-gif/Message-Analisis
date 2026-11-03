@@ -32,10 +32,16 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {
+  "caracteres_especiales_en_archivo": {
     "U+202F": 4
   },
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Mes/día/año con AM/PM y U+202F antes del indicador, entre corchetes (la familia que documenta chatpack, con U+202F simulado).",
   "mensajes_esperados": [
     {
@@ -47,7 +53,8 @@
       "timestamp_original": "10/14/26, 9:12:05 AM",
       "timestamp_local": "2026-10-14T09:12:05",
       "precision": "segundo",
-      "texto": "Morning"
+      "texto": "Morning",
+      "texto_normalizado": "Morning"
     },
     {
       "seq": 2,
@@ -58,7 +65,8 @@
       "timestamp_original": "10/14/26, 12:00:01 PM",
       "timestamp_local": "2026-10-14T12:00:01",
       "precision": "segundo",
-      "texto": "Noon"
+      "texto": "Noon",
+      "texto_normalizado": "Noon"
     },
     {
       "seq": 3,
@@ -69,7 +77,8 @@
       "timestamp_original": "10/14/26, 11:59:59 PM",
       "timestamp_local": "2026-10-14T23:59:59",
       "precision": "segundo",
-      "texto": "Late"
+      "texto": "Late",
+      "texto_normalizado": "Late"
     },
     {
       "seq": 4,
@@ -80,7 +89,8 @@
       "timestamp_original": "10/15/26, 12:00:00 AM",
       "timestamp_local": "2026-10-15T00:00:00",
       "precision": "segundo",
-      "texto": "Midnight"
+      "texto": "Midnight",
+      "texto_normalizado": "Midnight"
     }
   ]
 }

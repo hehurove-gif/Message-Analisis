@@ -7,6 +7,9 @@ de versión: el historial de git indica qué versión del documento rige para ca
 commit, y los parámetros usados se imprimen siempre en el bloque PARAMETROS.
 
 Uso: python3 -I tools/referencia/ref_latency.py CHAT.txt [detalle]
+
+El lector (`load`) NO es el parser del sistema: solo acepta el formato de los chats sintéticos y
+rechaza (ReferenceLoadError) cualquier línea que no pueda clasificar, sin anexarla ni descartarla.
 """
 import re, sys, statistics as st
 from datetime import datetime
@@ -27,15 +30,78 @@ def params_block():
             % (list(SESSION_GAPS_H), DEFAULT_GAP_H, BURST_S, list(BURST_GRID_S)))
 
 
+class ReferenceLoadError(Exception):
+    """El archivo contiene líneas que el lector de referencia no puede clasificar.
+    El mensaje lista número de línea y motivo; nunca el contenido de la línea."""
+
+
+# Orden de fecha del lector de referencia: parámetro EXPLÍCITO, no un valor por defecto del
+# sistema (el contrato v0.2 prohíbe elegir DMY/MDY por defecto). Los tres chats sintéticos
+# se escribieron en DD/MM/AAAA; el chat 00 es ambiguo por sus datos y solo se lee así por
+# indicación (equivale a date_order_hint=dmy).
+DATE_ORDER = 'dmy'
+
+# Misma forma de encabezado que usan los tres chats de la Fase 0 (formato Android 24 h sin coma).
+HEADER = re.compile(r'^(\d{1,2})/(\d{1,2})/(\d{4}) (\d{1,2}):(\d{2}) - ([^:]+): (.*)$')
+# "Aspecto de timestamp": fecha n/n/n al inicio y una hora h:m en los primeros 40 caracteres.
+TS_LIKE = re.compile(r'^\[?\d{1,2}[/.\-]\d{1,2}[/.\-]\d{2,4}')
+TS_HOUR = re.compile(r'\d{1,2}:\d{2}')
+TS_WINDOW = 40
+# Avisos del sistema reconocidos por el lector de referencia (solo el que traen los chats de la Fase 0).
+# Un encabezado con fecha y hora SIN "Autor:" que no esté aquí se reporta como anomalía.
+SYSTEM_HEADER = re.compile(r'^(\d{1,2})/(\d{1,2})/(\d{4}) (\d{1,2}):(\d{2}) - (Los mensajes y las llamadas están cifrados.*)$')
+
+
+def _parse_header(m):
+    a, b, y, hh, mm = int(m[1]), int(m[2]), int(m[3]), int(m[4]), int(m[5])
+    day, month = (a, b) if DATE_ORDER == 'dmy' else (b, a)
+    return datetime(y, month, day, hh, mm)       # ValueError si la fecha u hora no existe
+
+
+def load_checked(path):
+    """Devuelve (mensajes, anomalias, avisos_sistema). Cada línea física termina en un mensaje de
+    persona, un aviso del sistema, una continuación, en blanco, o en `anomalias` con (línea, motivo).
+    Nada se descarta ni se anexa sin clasificar. Una línea con aspecto de timestamp que no sea un
+    encabezado válido NO se anexa al mensaje anterior y deja de haber mensaje abierto hasta el
+    siguiente encabezado. Los avisos del sistema no son mensajes de persona: se devuelven aparte."""
+    text = open(path, encoding='utf-8').read().lstrip('\ufeff')
+    out, anomalies, system = [], [], []
+    cur, had_header = None, False                 # cur: dict del mensaje o aviso abierto
+    for n, raw in enumerate(text.replace('\r\n', '\n').split('\n'), 1):
+        if not raw.strip():
+            continue
+        m = HEADER.match(raw)
+        sm = None if m else SYSTEM_HEADER.match(raw)
+        if m or sm:
+            try:
+                ts = _parse_header(m or sm)
+            except ValueError:
+                anomalies.append((n, 'TIMESTAMP_INVALID')); cur = None
+                continue
+            had_header = True
+            if m:
+                cur = {'ts': ts, 'who': m[6], 'txt': m[7], 'line': n}; out.append(cur)
+            else:
+                cur = {'ts': ts, 'txt': sm[6], 'line': n}; system.append(cur)
+            continue
+        if TS_LIKE.match(raw) and TS_HOUR.search(raw[:TS_WINDOW]):
+            anomalies.append((n, 'TIMESTAMP_LIKE_UNRECOGNIZED')); cur = None
+        elif cur is not None:
+            cur['txt'] += '\n' + raw              # continuación legítima del mensaje o aviso abierto
+        else:
+            anomalies.append((n, 'ORPHAN_AFTER_UNPROCESSED' if had_header else 'ORPHAN_BEFORE_FIRST_MESSAGE'))
+    return out, anomalies, system
+
+
 def load(path):
-    out = []
-    for raw in open(path, encoding='utf-8').read().split('\n'):
-        m = LINE.match(raw)
-        if m:
-            out.append({'ts': datetime.strptime(m[1] + ' ' + m[2], '%d/%m/%Y %H:%M'), 'who': m[3], 'txt': m[4]})
-        elif raw.strip() and out and not re.match(r'^\d{2}/\d{2}/\d{4} ', raw):
-            out[-1]['txt'] += '\n' + raw
-    return out
+    """Lectura estricta para los cálculos de referencia: si hay una sola línea sin clasificar,
+    se rechaza el archivo (no se calcula sobre datos incompletos)."""
+    msgs, anomalies, _system = load_checked(path)
+    if anomalies:
+        det = ', '.join('línea %d: %s' % a for a in anomalies[:20])
+        raise ReferenceLoadError('%d línea(s) sin clasificar (%s)%s' % (
+            len(anomalies), det, ' …' if len(anomalies) > 20 else ''))
+    return msgs
 
 
 def minutes(a, b):
@@ -126,7 +192,10 @@ def fmt(x):
 
 
 if __name__ == '__main__':
-    msgs = load(sys.argv[1])
+    try:
+        msgs = load(sys.argv[1])
+    except ReferenceLoadError as e:
+        sys.exit('RECHAZADO: %s' % e)
     print(params_block())
     print('mensajes:', len(msgs))
     for g in SESSION_GAPS_H:

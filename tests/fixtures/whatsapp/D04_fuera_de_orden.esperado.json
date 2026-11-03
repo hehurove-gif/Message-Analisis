@@ -32,9 +32,15 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 2,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "TIMESTAMPS_OUT_OF_ORDER"
+  ],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
   ],
   "notas": "Dos retrocesos entre mensajes consecutivos. El parser no reordena ni corrige: reporta.",
   "mensajes_esperados": [
@@ -47,7 +53,8 @@
       "timestamp_original": "14/10/2026, 09:10",
       "timestamp_local": "2026-10-14T09:10:00",
       "precision": "minuto",
-      "texto": "Primero"
+      "texto": "Primero",
+      "texto_normalizado": "Primero"
     },
     {
       "seq": 2,
@@ -58,7 +65,8 @@
       "timestamp_original": "14/10/2026, 09:20",
       "timestamp_local": "2026-10-14T09:20:00",
       "precision": "minuto",
-      "texto": "Segundo"
+      "texto": "Segundo",
+      "texto_normalizado": "Segundo"
     },
     {
       "seq": 3,
@@ -69,7 +77,8 @@
       "timestamp_original": "14/10/2026, 09:15",
       "timestamp_local": "2026-10-14T09:15:00",
       "precision": "minuto",
-      "texto": "Retrocede 5 minutos"
+      "texto": "Retrocede 5 minutos",
+      "texto_normalizado": "Retrocede 5 minutos"
     },
     {
       "seq": 4,
@@ -80,7 +89,8 @@
       "timestamp_original": "14/10/2026, 09:30",
       "timestamp_local": "2026-10-14T09:30:00",
       "precision": "minuto",
-      "texto": "Sigue"
+      "texto": "Sigue",
+      "texto_normalizado": "Sigue"
     },
     {
       "seq": 5,
@@ -91,7 +101,8 @@
       "timestamp_original": "13/10/2026, 09:40",
       "timestamp_local": "2026-10-13T09:40:00",
       "precision": "minuto",
-      "texto": "Retrocede un día"
+      "texto": "Retrocede un día",
+      "texto_normalizado": "Retrocede un día"
     }
   ]
 }

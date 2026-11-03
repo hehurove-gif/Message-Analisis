@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Exportación con adjuntos: el TXT solo enseña el nombre del archivo; el parser no lee los adjuntos (fuera de alcance del MVP).",
   "mensajes_esperados": [
     {
@@ -46,6 +52,7 @@
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "minuto",
       "texto": "IMG-20261014-WA0001.jpg (archivo adjunto)",
+      "texto_normalizado": "IMG-20261014-WA0001.jpg (archivo adjunto)",
       "media_kind": "imagen"
     },
     {
@@ -58,6 +65,7 @@
       "timestamp_local": "2026-10-14T09:13:00",
       "precision": "minuto",
       "texto": "<Multimedia omitido>",
+      "texto_normalizado": "<Multimedia omitido>",
       "media_kind": "desconocido"
     },
     {
@@ -69,7 +77,8 @@
       "timestamp_original": "14/10/2026, 09:14",
       "timestamp_local": "2026-10-14T09:14:00",
       "precision": "minuto",
-      "texto": "Mira esa foto"
+      "texto": "Mira esa foto",
+      "texto_normalizado": "Mira esa foto"
     }
   ]
 }

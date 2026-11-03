@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Saltos de línea \\r\\n. Una línea en blanco inicial, blancos dentro de un mensaje (se conservan) y blancos al final de un mensaje o del archivo (se cuentan como en blanco y no pasan al texto).",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 09:00",
       "timestamp_local": "2026-10-14T09:00:00",
       "precision": "minuto",
-      "texto": "Archivo con saltos CRLF"
+      "texto": "Archivo con saltos CRLF",
+      "texto_normalizado": "Archivo con saltos CRLF"
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 09:01",
       "timestamp_local": "2026-10-14T09:01:00",
       "precision": "minuto",
-      "texto": "Con párrafos\nuno\n\ndos"
+      "texto": "Con párrafos\nuno\n\ndos",
+      "texto_normalizado": "Con párrafos\nuno\n\ndos"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 09:02",
       "timestamp_local": "2026-10-14T09:02:00",
       "precision": "minuto",
-      "texto": "Penúltimo"
+      "texto": "Penúltimo",
+      "texto_normalizado": "Penúltimo"
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 09:03",
       "timestamp_local": "2026-10-14T09:03:00",
       "precision": "minuto",
-      "texto": "Último"
+      "texto": "Último",
+      "texto_normalizado": "Último"
     }
   ]
 }

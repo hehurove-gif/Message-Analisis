@@ -37,6 +37,8 @@ Todos los fixtures son **simulados** (datos ficticios; formatos con el respaldo 
 | E05_un_solo_autor | `android_24h_coma` | Un solo autor | rejected |
 | F01_formato_no_reconocido | ninguno | CSV: ninguna línea coincide; las 3 se reportan | rejected |
 | F02_archivo_vacio | ninguno | 0 bytes | rejected |
+| F03_formato_mixto_empate | ninguno | Un encabezado Android y uno iOS (empate 1-1): `FORMAT_AMBIGUOUS`, las 2 líneas reportadas | rejected |
+| F04_bytes_utf8_invalidos | ninguno | Byte 0xE9 aislado: `ENCODING_ERROR`, sin intentar otra codificación | rejected |
 
 **Fixtures de referencia anteriores** (`data/synthetic/`, formato `android_24h_sin_coma` con año de 4 dígitos, también simulados): `00_escenarios_validacion` (21 líneas; **fechas con orden ambiguo**), `01_amistad_equilibrada` (75 encabezados, 2 continuaciones, 1 multimedia, 1 aviso de cifrado) y `02_interes_romantico_unilateral` (73 encabezados). Aún no tienen `.esperado.json` de parser.
 
@@ -65,7 +67,7 @@ Todos los fixtures son **simulados** (datos ficticios; formatos con el respaldo 
 | Más de dos participantes | E01 |
 | Dos participantes con evidencia de grupo | E02, E04 |
 | Dos participantes sin evidencia (pendiente) | A01, D05, E03 (con la limitación) |
-| Archivo sin formato o vacío | F01, F02 |
+| Archivo sin formato, vacío, formato mixto con empate o codificación inválida | F01, F02, F03, F04 |
 
 ## 3. Limitaciones documentadas con fixture
 
@@ -80,4 +82,4 @@ Un grupo sin avisos en el rango exportado, o donde solo escriben dos personas, e
 
 ## 4. Qué no cubre
 
-Marcadores de multimedia o avisos de otros idiomas; exportaciones reales (ninguna examinada); reacciones, ediciones, respuestas citadas y reenviados; mezcla de formatos en proporciones similares (`FORMAT_AMBIGUOUS`); errores de codificación (`ENCODING_ERROR`); archivos grandes o de rendimiento.
+Marcadores de multimedia o avisos de otros idiomas; exportaciones reales (ninguna examinada); reacciones, ediciones, respuestas citadas y reenviados; mezcla de formatos con proporciones desiguales (el formato mayoritario gana y los demás encabezados son `FORMAT_MISMATCH`, D07); otras codificaciones distintas de UTF-8 (se rechazan); archivos grandes o de rendimiento.

@@ -69,9 +69,16 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "UNPROCESSED_LINES"
+  ],
+  "procesamiento_completo": false,
+  "estado_calidad": "pendiente_revision_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION",
+    "REVISAR_LINEAS_NO_PROCESADAS"
   ],
   "notas": "Ninguna de las 9 líneas no procesadas se anexa a un mensaje. \"14/10/2026 a las 10:30 ...\" podría ser una continuación legítima, pero tiene aspecto de timestamp (fecha + hora al inicio): se reporta, no se adivina.",
   "mensajes_esperados": [
@@ -84,7 +91,8 @@
       "timestamp_original": "14/10/2026, 09:10",
       "timestamp_local": "2026-10-14T09:10:00",
       "precision": "minuto",
-      "texto": "Hola"
+      "texto": "Hola",
+      "texto_normalizado": "Hola"
     },
     {
       "seq": 2,
@@ -95,7 +103,8 @@
       "timestamp_original": "14/10/2026, 09:11",
       "timestamp_local": "2026-10-14T09:11:00",
       "precision": "minuto",
-      "texto": "Qué tal"
+      "texto": "Qué tal",
+      "texto_normalizado": "Qué tal"
     },
     {
       "seq": 3,
@@ -106,7 +115,8 @@
       "timestamp_original": "14/10/2026, 09:13",
       "timestamp_local": "2026-10-14T09:13:00",
       "precision": "minuto",
-      "texto": "Mensaje normal"
+      "texto": "Mensaje normal",
+      "texto_normalizado": "Mensaje normal"
     },
     {
       "seq": 4,
@@ -117,7 +127,8 @@
       "timestamp_original": "14/10/2026, 09:15",
       "timestamp_local": "2026-10-14T09:15:00",
       "precision": "minuto",
-      "texto": "Primer renglón\nSegundo renglón legítimo"
+      "texto": "Primer renglón\nSegundo renglón legítimo",
+      "texto_normalizado": "Primer renglón\nSegundo renglón legítimo"
     },
     {
       "seq": 5,
@@ -128,7 +139,8 @@
       "timestamp_original": "14/10/2026, 09:16",
       "timestamp_local": "2026-10-14T09:16:00",
       "precision": "minuto",
-      "texto": "Último mensaje válido"
+      "texto": "Último mensaje válido",
+      "texto_normalizado": "Último mensaje válido"
     }
   ]
 }

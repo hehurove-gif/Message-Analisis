@@ -113,8 +113,14 @@ def construir(nombre, fmt, items, bom=False, crlf=False, orden_fecha='dmy_resuel
     if no_proc and 'UNPROCESSED_LINES' not in adv: adv.append('UNPROCESSED_LINES')
     emitir = decision == 'accepted'
     def norm(t):
+        # Campo DERIVADO para análisis (contrato v0.2): U+202F -> espacio; se quitan U+200E, U+200F, U+FEFF.
+        # `texto` conserva el contenido original, sin quitar nada.
         for ch in (LRM, RLM, BOM): t = t.replace(ch, '')
         return t.replace(NNBSP, ' ')
+    if decision == 'rejected': calidad, req = 'rechazado', []
+    elif decision == 'blocked_pending_confirmation': calidad, req = 'bloqueado', ['INDICAR_ORDEN_FECHA']
+    elif no_proc: calidad, req = 'pendiente_revision_calidad', ['CONFIRMAR_TIPO_CONVERSACION', 'REVISAR_LINEAS_NO_PROCESADAS']
+    else: calidad, req = 'sin_observaciones_de_calidad', ['CONFIRMAR_TIPO_CONVERSACION']
     exp = dict(
         fixture=nombre, origen=base, formato_esperado=formato_id or fmt,
         decision_importacion=decision, estado_tipo_conversacion=tipo_conv, orden_fecha=orden_fecha,
@@ -125,7 +131,9 @@ def construir(nombre, fmt, items, bom=False, crlf=False, orden_fecha='dmy_resuel
         avisos_sistema_sin_catalogar=sist_sin_cat,
         rango_fechas=(None if (not personas or ambiguo) else dict(primero=min(x['d'] for x in personas).isoformat(), ultimo=max(x['d'] for x in personas).isoformat())),
         timestamps_consecutivos_iguales=mismos, timestamps_fuera_de_orden=desc,
-        caracteres_normalizados=chars, advertencias=sorted(adv), notas=notas,
+        caracteres_especiales_en_archivo=chars, advertencias=sorted(adv),
+        procesamiento_completo=(decision == 'accepted' and not no_proc), estado_calidad=calidad,
+        analisis_habilitado=False, requisitos_analisis=req, notas=notas,
     )
     if limitacion: exp['limitacion_conocida'] = limitacion
     if emitir:
@@ -133,7 +141,7 @@ def construir(nombre, fmt, items, bom=False, crlf=False, orden_fecha='dmy_resuel
             seq=i + 1, linea_inicial=x['linea_inicial'], linea_final=x['linea_final'], tipo=x['tipo'],
             participante=(mapa[x['autor_archivo']] if x['tipo'] != 'system' else None),
             timestamp_original=x['timestamp_original'], timestamp_local=x['d'].isoformat(),
-            precision=prec, texto=norm(x['texto']),
+            precision=prec, texto=x['texto'], texto_normalizado=norm(x['texto']),
             **({'media_kind': x['media_kind']} if x.get('media_kind') else {}))
             for i, x in enumerate(msgs)]
     else:
@@ -153,7 +161,8 @@ def crudo(nombre, contenido, **exp):
     with open(os.path.join(OUT, nombre + '.txt'), 'w', encoding='utf-8', newline='') as f: f.write(contenido)
     lines = contenido.split('\n')
     if lines and lines[-1] == '': lines.pop()
-    exp = dict(fixture=nombre, origen='simulado', lineas_totales=len(lines), **exp)
+    exp = dict(fixture=nombre, origen='simulado', lineas_totales=len(lines), procesamiento_completo=False,
+               estado_calidad='rechazado', analisis_habilitado=False, requisitos_analisis=[], **exp)
     with open(os.path.join(OUT, nombre + '.esperado.json'), 'w', encoding='utf-8') as f:
         json.dump(exp, f, ensure_ascii=False, indent=2); f.write('\n')
 
@@ -390,4 +399,20 @@ if __name__ == '__main__':
     crudo('F02_archivo_vacio', '', decision_importacion='rejected', formato_esperado=None,
           advertencias=['EMPTY_FILE'], lineas_por_disposicion=dict(encabezado=0, continuacion=0, en_blanco=0, no_procesada=0),
           lineas_no_procesadas=[], mensajes_esperados=None, notas='Archivo de 0 bytes.')
+    crudo('F03_formato_mixto_empate',
+          '14/10/2026, 09:12 - Ana María: hola\n[14/10/2026, 09:13:00] José Luis: qué tal\n',
+          decision_importacion='rejected', formato_esperado=None, advertencias=['FORMAT_AMBIGUOUS'],
+          lineas_por_disposicion=dict(encabezado=0, continuacion=0, en_blanco=0, no_procesada=2),
+          lineas_no_procesadas=[dict(linea=i, motivo='FORMAT_AMBIGUOUS') for i in (1, 2)],
+          mensajes_esperados=None, notas='Un encabezado Android 24 h y uno iOS con corchetes: empate 1-1 entre dos formatos. No se elige ninguno: se rechaza y las 2 líneas se reportan.')
+    # F04: bytes que no son UTF-8 válido (0xE9 suelto = "é" en Latin-1). Se escribe en binario.
+    with open(os.path.join(OUT, 'F04_bytes_utf8_invalidos.txt'), 'wb') as f:
+        f.write('14/10/2026, 09:12 - Ana: caf'.encode('utf-8') + b'\xe9' + b'\n')
+    with open(os.path.join(OUT, 'F04_bytes_utf8_invalidos.esperado.json'), 'w', encoding='utf-8') as f:
+        json.dump(dict(fixture='F04_bytes_utf8_invalidos', origen='simulado', decision_importacion='rejected',
+                       formato_esperado=None, advertencias=['ENCODING_ERROR'], procesamiento_completo=False,
+                       estado_calidad='rechazado', analisis_habilitado=False, requisitos_analisis=[],
+                       lineas_totales=None, lineas_no_procesadas=[], mensajes_esperados=None,
+                       notas='Contiene el byte 0xE9 aislado (Latin-1), inválido en UTF-8. Se rechaza sin intentar otra codificación; no se cuenta ni se reporta ninguna línea (no hay texto decodificado).'),
+                  f, ensure_ascii=False, indent=2); f.write('\n')
     print('fixtures generados en', os.path.normpath(OUT))

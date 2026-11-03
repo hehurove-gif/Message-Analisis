@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Mes/día/año con AM/PM. El día 14 en segunda posición fija el orden como mes/día. Mensajes eliminados y multimedia en inglés.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "10/14/26, 9:05 AM",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Learn more."
+      "texto": "Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Learn more.",
+      "texto_normalizado": "Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Learn more."
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "10/14/26, 9:05 AM",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "Good morning!"
+      "texto": "Good morning!",
+      "texto_normalizado": "Good morning!"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "10/14/26, 9:06 AM",
       "timestamp_local": "2026-10-14T09:06:00",
       "precision": "minuto",
-      "texto": "Morning. Did you see this?"
+      "texto": "Morning. Did you see this?",
+      "texto_normalizado": "Morning. Did you see this?"
     },
     {
       "seq": 4,
@@ -79,6 +88,7 @@
       "timestamp_local": "2026-10-14T09:07:00",
       "precision": "minuto",
       "texto": "<Media omitted>",
+      "texto_normalizado": "<Media omitted>",
       "media_kind": "desconocido"
     },
     {
@@ -90,7 +100,8 @@
       "timestamp_original": "10/14/26, 9:08 AM",
       "timestamp_local": "2026-10-14T09:08:00",
       "precision": "minuto",
-      "texto": "You deleted this message"
+      "texto": "You deleted this message",
+      "texto_normalizado": "You deleted this message"
     },
     {
       "seq": 6,
@@ -101,7 +112,8 @@
       "timestamp_original": "10/14/26, 9:30 PM",
       "timestamp_local": "2026-10-14T21:30:00",
       "precision": "minuto",
-      "texto": "This message was deleted"
+      "texto": "This message was deleted",
+      "texto_normalizado": "This message was deleted"
     },
     {
       "seq": 7,
@@ -112,7 +124,8 @@
       "timestamp_original": "10/15/26, 8:00 AM",
       "timestamp_local": "2026-10-15T08:00:00",
       "precision": "minuto",
-      "texto": "See you at 8:00 PM"
+      "texto": "See you at 8:00 PM",
+      "texto_normalizado": "See you at 8:00 PM"
     }
   ]
 }

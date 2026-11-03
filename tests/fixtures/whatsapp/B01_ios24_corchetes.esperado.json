@@ -32,10 +32,16 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {
+  "caracteres_especiales_en_archivo": {
     "U+200E": 10
   },
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "iOS con corchetes y 24 h. El aviso de cifrado aparece con nombre de persona (hipótesis a verificar con una exportación real): debe tratarse como system, sin autor. Las líneas con LRM al inicio deben reconocerse.",
   "mensajes_esperados": [
     {
@@ -47,7 +53,8 @@
       "timestamp_original": "14/10/2026, 09:12:00",
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "segundo",
-      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información.",
+      "texto_normalizado": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
     },
     {
       "seq": 2,
@@ -58,7 +65,8 @@
       "timestamp_original": "14/10/2026, 09:12:05",
       "timestamp_local": "2026-10-14T09:12:05",
       "precision": "segundo",
-      "texto": "Hola 😊"
+      "texto": "Hola 😊",
+      "texto_normalizado": "Hola 😊"
     },
     {
       "seq": 3,
@@ -69,7 +77,8 @@
       "timestamp_original": "14/10/2026, 09:13:20",
       "timestamp_local": "2026-10-14T09:13:20",
       "precision": "segundo",
-      "texto": "imagen omitida",
+      "texto": "‎imagen omitida",
+      "texto_normalizado": "imagen omitida",
       "media_kind": "imagen"
     },
     {
@@ -81,7 +90,8 @@
       "timestamp_original": "14/10/2026, 09:14:02",
       "timestamp_local": "2026-10-14T09:14:02",
       "precision": "segundo",
-      "texto": "sticker omitido",
+      "texto": "‎sticker omitido",
+      "texto_normalizado": "sticker omitido",
       "media_kind": "sticker"
     },
     {
@@ -93,7 +103,8 @@
       "timestamp_original": "14/10/2026, 09:15:11",
       "timestamp_local": "2026-10-14T09:15:11",
       "precision": "segundo",
-      "texto": "audio omitido",
+      "texto": "‎audio omitido",
+      "texto_normalizado": "audio omitido",
       "media_kind": "audio"
     },
     {
@@ -105,7 +116,8 @@
       "timestamp_original": "14/10/2026, 09:16:00",
       "timestamp_local": "2026-10-14T09:16:00",
       "precision": "segundo",
-      "texto": "documento omitido",
+      "texto": "‎documento omitido",
+      "texto_normalizado": "documento omitido",
       "media_kind": "documento"
     },
     {
@@ -117,7 +129,8 @@
       "timestamp_original": "14/10/2026, 09:17:30",
       "timestamp_local": "2026-10-14T09:17:30",
       "precision": "segundo",
-      "texto": "Se eliminó este mensaje."
+      "texto": "‎Se eliminó este mensaje.",
+      "texto_normalizado": "Se eliminó este mensaje."
     },
     {
       "seq": 8,
@@ -128,7 +141,8 @@
       "timestamp_original": "14/10/2026, 09:18:45",
       "timestamp_local": "2026-10-14T09:18:45",
       "precision": "segundo",
-      "texto": "Primera línea\nSegunda línea: con dos puntos"
+      "texto": "Primera línea\nSegunda línea: con dos puntos",
+      "texto_normalizado": "Primera línea\nSegunda línea: con dos puntos"
     }
   ]
 }

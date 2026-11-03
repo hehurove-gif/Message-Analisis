@@ -32,9 +32,15 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 1,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "TIMESTAMPS_OUT_OF_ORDER"
+  ],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
   ],
   "notas": "Limitación inherente al TXT.",
   "limitacion_conocida": "En el archivo la línea 2 es una cita pegada dentro del mensaje de Ana María, pero tiene un encabezado válido: el TXT no permite distinguirla de un mensaje real. El parser la procesa como mensaje nuevo de José Luis. Estos esperados reflejan lo que el parser puede determinar, no la realidad.",
@@ -48,7 +54,8 @@
       "timestamp_original": "14/10/2026, 09:00",
       "timestamp_local": "2026-10-14T09:00:00",
       "precision": "minuto",
-      "texto": "Te copio lo que dijo:"
+      "texto": "Te copio lo que dijo:",
+      "texto_normalizado": "Te copio lo que dijo:"
     },
     {
       "seq": 2,
@@ -59,7 +66,8 @@
       "timestamp_original": "14/10/2026, 10:05",
       "timestamp_local": "2026-10-14T10:05:00",
       "precision": "minuto",
-      "texto": "mañana sí voy"
+      "texto": "mañana sí voy",
+      "texto_normalizado": "mañana sí voy"
     },
     {
       "seq": 3,
@@ -70,7 +78,8 @@
       "timestamp_original": "14/10/2026, 09:06",
       "timestamp_local": "2026-10-14T09:06:00",
       "precision": "minuto",
-      "texto": "Gracias"
+      "texto": "Gracias",
+      "texto_normalizado": "Gracias"
     }
   ]
 }

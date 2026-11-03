@@ -2,6 +2,10 @@
   "fixture": "F02_archivo_vacio",
   "origen": "simulado",
   "lineas_totales": 0,
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
   "decision_importacion": "rejected",
   "formato_esperado": null,
   "advertencias": [

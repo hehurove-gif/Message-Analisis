@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Avisos del sistema propios de chats individuales: no son evidencia de grupo. Dos autores y ninguna evidencia: tipo pendiente de confirmación.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 09:00",
       "timestamp_local": "2026-10-14T09:00:00",
       "precision": "minuto",
-      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información.",
+      "texto_normalizado": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 09:01",
       "timestamp_local": "2026-10-14T09:01:00",
       "precision": "minuto",
-      "texto": "Los mensajes temporales están activados. Los mensajes nuevos desaparecerán de este chat después de 24 horas."
+      "texto": "Los mensajes temporales están activados. Los mensajes nuevos desaparecerán de este chat después de 24 horas.",
+      "texto_normalizado": "Los mensajes temporales están activados. Los mensajes nuevos desaparecerán de este chat después de 24 horas."
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 09:02",
       "timestamp_local": "2026-10-14T09:02:00",
       "precision": "minuto",
-      "texto": "Ana María cambió su número de teléfono. Toca para chatear con el número nuevo."
+      "texto": "Ana María cambió su número de teléfono. Toca para chatear con el número nuevo.",
+      "texto_normalizado": "Ana María cambió su número de teléfono. Toca para chatear con el número nuevo."
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 09:03",
       "timestamp_local": "2026-10-14T09:03:00",
       "precision": "minuto",
-      "texto": "Hola, soy yo con número nuevo"
+      "texto": "Hola, soy yo con número nuevo",
+      "texto_normalizado": "Hola, soy yo con número nuevo"
     },
     {
       "seq": 5,
@@ -89,7 +99,8 @@
       "timestamp_original": "14/10/2026, 09:04",
       "timestamp_local": "2026-10-14T09:04:00",
       "precision": "minuto",
-      "texto": "Anotado"
+      "texto": "Anotado",
+      "texto_normalizado": "Anotado"
     }
   ]
 }

@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Formato base con coma. Cubre texto, multilínea, media, eliminado, aviso de cifrado, cambio de día y emojis.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 09:12",
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "minuto",
-      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información.",
+      "texto_normalizado": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 09:12",
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "minuto",
-      "texto": "Buenos días 😊"
+      "texto": "Buenos días 😊",
+      "texto_normalizado": "Buenos días 😊"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 09:14",
       "timestamp_local": "2026-10-14T09:14:00",
       "precision": "minuto",
-      "texto": "Hola, ¿qué tal? ¿Todo bien en casa?"
+      "texto": "Hola, ¿qué tal? ¿Todo bien en casa?",
+      "texto_normalizado": "Hola, ¿qué tal? ¿Todo bien en casa?"
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 09:15",
       "timestamp_local": "2026-10-14T09:15:00",
       "precision": "minuto",
-      "texto": "Me dijo: \"no hay problema, ya lo vi\""
+      "texto": "Me dijo: \"no hay problema, ya lo vi\"",
+      "texto_normalizado": "Me dijo: \"no hay problema, ya lo vi\""
     },
     {
       "seq": 5,
@@ -89,7 +99,8 @@
       "timestamp_original": "14/10/2026, 09:16",
       "timestamp_local": "2026-10-14T09:16:00",
       "precision": "minuto",
-      "texto": "Te mando la lista:\n- pan\n- leche\n- café ☕"
+      "texto": "Te mando la lista:\n- pan\n- leche\n- café ☕",
+      "texto_normalizado": "Te mando la lista:\n- pan\n- leche\n- café ☕"
     },
     {
       "seq": 6,
@@ -101,6 +112,7 @@
       "timestamp_local": "2026-10-14T09:20:00",
       "precision": "minuto",
       "texto": "<Multimedia omitido>",
+      "texto_normalizado": "<Multimedia omitido>",
       "media_kind": "desconocido"
     },
     {
@@ -112,7 +124,8 @@
       "timestamp_original": "14/10/2026, 09:21",
       "timestamp_local": "2026-10-14T09:21:00",
       "precision": "minuto",
-      "texto": "Se eliminó este mensaje"
+      "texto": "Se eliminó este mensaje",
+      "texto_normalizado": "Se eliminó este mensaje"
     },
     {
       "seq": 8,
@@ -123,7 +136,8 @@
       "timestamp_original": "14/10/2026, 23:59",
       "timestamp_local": "2026-10-14T23:59:00",
       "precision": "minuto",
-      "texto": "Buenas noches"
+      "texto": "Buenas noches",
+      "texto_normalizado": "Buenas noches"
     },
     {
       "seq": 9,
@@ -134,7 +148,8 @@
       "timestamp_original": "15/10/2026, 00:01",
       "timestamp_local": "2026-10-15T00:01:00",
       "precision": "minuto",
-      "texto": "¡Buenas noches! 🙂❤️"
+      "texto": "¡Buenas noches! 🙂❤️",
+      "texto_normalizado": "¡Buenas noches! 🙂❤️"
     }
   ]
 }

@@ -32,13 +32,19 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {
+  "caracteres_especiales_en_archivo": {
     "U+200E": 3,
     "U+200F": 2,
     "U+202F": 1,
     "U+FEFF": 1
   },
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "BOM al inicio del archivo (línea 1), U+200E al inicio de línea y dentro del texto, U+200F, y U+202F dentro del texto. El BOM no debe impedir reconocer la primera línea.",
   "mensajes_esperados": [
     {
@@ -50,7 +56,8 @@
       "timestamp_original": "14/10/2026, 09:12",
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "minuto",
-      "texto": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
+      "texto": "‎Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información.",
+      "texto_normalizado": "Los mensajes y las llamadas están cifrados de extremo a extremo. Nadie fuera de este chat, ni siquiera WhatsApp, puede leerlos ni escucharlos. Toca para obtener más información."
     },
     {
       "seq": 2,
@@ -61,7 +68,8 @@
       "timestamp_original": "14/10/2026, 09:12",
       "timestamp_local": "2026-10-14T09:12:00",
       "precision": "minuto",
-      "texto": "Texto con marca LRM en medio"
+      "texto": "Texto con marca LRM ‎en medio",
+      "texto_normalizado": "Texto con marca LRM en medio"
     },
     {
       "seq": 3,
@@ -72,7 +80,8 @@
       "timestamp_original": "14/10/2026, 09:13",
       "timestamp_local": "2026-10-14T09:13:00",
       "precision": "minuto",
-      "texto": "Nos vemos a las 5 p. m."
+      "texto": "Nos vemos a las 5 p. m.",
+      "texto_normalizado": "Nos vemos a las 5 p. m."
     },
     {
       "seq": 4,
@@ -83,7 +92,8 @@
       "timestamp_original": "14/10/2026, 09:14",
       "timestamp_local": "2026-10-14T09:14:00",
       "precision": "minuto",
-      "texto": "مرحبا (árabe con RLM)"
+      "texto": "‏مرحبا‏ (árabe con RLM)",
+      "texto_normalizado": "مرحبا (árabe con RLM)"
     },
     {
       "seq": 5,
@@ -94,7 +104,8 @@
       "timestamp_original": "14/10/2026, 09:15",
       "timestamp_local": "2026-10-14T09:15:00",
       "precision": "minuto",
-      "texto": "Línea final"
+      "texto": "Línea final",
+      "texto_normalizado": "Línea final"
     }
   ]
 }

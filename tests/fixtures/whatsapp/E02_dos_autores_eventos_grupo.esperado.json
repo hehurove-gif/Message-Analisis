@@ -53,10 +53,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "GROUP_EVIDENCE"
   ],
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
   "notas": "Solo hablan dos personas, pero hay creación del grupo, altas, cambio de asunto y una salida: posible grupal, se rechaza.",
   "mensajes_esperados": null
 }

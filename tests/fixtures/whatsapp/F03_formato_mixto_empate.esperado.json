@@ -1,0 +1,32 @@
+{
+  "fixture": "F03_formato_mixto_empate",
+  "origen": "simulado",
+  "lineas_totales": 2,
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
+  "decision_importacion": "rejected",
+  "formato_esperado": null,
+  "advertencias": [
+    "FORMAT_AMBIGUOUS"
+  ],
+  "lineas_por_disposicion": {
+    "encabezado": 0,
+    "continuacion": 0,
+    "en_blanco": 0,
+    "no_procesada": 2
+  },
+  "lineas_no_procesadas": [
+    {
+      "linea": 1,
+      "motivo": "FORMAT_AMBIGUOUS"
+    },
+    {
+      "linea": 2,
+      "motivo": "FORMAT_AMBIGUOUS"
+    }
+  ],
+  "mensajes_esperados": null,
+  "notas": "Un encabezado Android 24 h y uno iOS con corchetes: empate 1-1 entre dos formatos. No se elige ninguno: se rechaza y las 2 líneas se reportan."
+}

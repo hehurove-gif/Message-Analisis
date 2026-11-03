@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Sin coma tras la fecha y año de 2 dígitos. Es la variante que usan los chats de data/synthetic. Incluye secuencia con ZWJ (👩‍💻).",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/26 09:05",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "¿Mañana a las 10:30 en la biblioteca?"
+      "texto": "¿Mañana a las 10:30 en la biblioteca?",
+      "texto_normalizado": "¿Mañana a las 10:30 en la biblioteca?"
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/26 09:07",
       "timestamp_local": "2026-10-14T09:07:00",
       "precision": "minuto",
-      "texto": "Sí, llevo el café ☕ y la laptop 👩‍💻"
+      "texto": "Sí, llevo el café ☕ y la laptop 👩‍💻",
+      "texto_normalizado": "Sí, llevo el café ☕ y la laptop 👩‍💻"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/26 09:08",
       "timestamp_local": "2026-10-14T09:08:00",
       "precision": "minuto",
-      "texto": "Ñoño, ¡no olvides la tarea!"
+      "texto": "Ñoño, ¡no olvides la tarea!",
+      "texto_normalizado": "Ñoño, ¡no olvides la tarea!"
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/26 09:09",
       "timestamp_local": "2026-10-14T09:09:00",
       "precision": "minuto",
-      "texto": "Jaja, ok. Gracias, José 🙏"
+      "texto": "Jaja, ok. Gracias, José 🙏",
+      "texto_normalizado": "Jaja, ok. Gracias, José 🙏"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Formatos de exportación de WhatsApp
 
-Versión 0.1 · 2026-11-02 · Fase 1, paso 1. **No hay parser todavía.** Este documento dice qué sabemos, qué suponemos y qué no se puede saber de un TXT exportado. El contrato de lo que el parser debe producir está en `contrato_parser.md`; los fixtures, en `tests/fixtures/whatsapp/`.
+Versión 0.2 · 2026-11-03 · Fase 1.2 (el parser existe; todos los formatos siguen siendo simulados o documentados por terceros, ninguno observado). Este documento dice qué sabemos, qué suponemos y qué no se puede saber de un TXT exportado. El contrato de lo que el parser debe producir está en `contrato_parser.md`; los fixtures, en `tests/fixtures/whatsapp/`.
 
 ## 1. Niveles de evidencia
 

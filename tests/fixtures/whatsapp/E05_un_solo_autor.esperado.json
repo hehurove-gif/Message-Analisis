@@ -31,10 +31,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "PARTICIPANTS_LT_2"
   ],
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
   "notas": "Un solo autor (por ejemplo, un chat contigo mismo o una exportación incompleta): no hay conversación entre dos personas.",
   "mensajes_esperados": null
 }

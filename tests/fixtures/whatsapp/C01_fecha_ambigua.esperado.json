@@ -29,9 +29,15 @@
   "rango_fechas": null,
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "DATE_ORDER_AMBIGUOUS"
+  ],
+  "procesamiento_completo": false,
+  "estado_calidad": "bloqueado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "INDICAR_ORDEN_FECHA"
   ],
   "notas": "03/10, 04/10 y 05/10 son válidos como día/mes y como mes/día. Sin evidencia ni indicación del usuario, el parser no elige: no emite timestamps normalizados.",
   "mensajes_esperados": null

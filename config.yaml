@@ -193,6 +193,23 @@ specificity:
 
 parsing:
   expected_participants: 2
-  invisible_chars: ["\u200e", "\u200f", "\u202f", "\ufeff"]
-  # Patrones para detectar multimedia omitida y mensajes del sistema se
-  # mantienen en parsers/patterns.py y se prueban con exportaciones reales.
+  # ORDEN DE FECHA: sin valor por defecto. Con null, un archivo cuyas fechas no permiten distinguir
+  # día/mes de mes/día se BLOQUEA (contrato v0.2). Solo "dmy" o "mdy" lo resuelven, y deben darlo
+  # el usuario o la prueba (p. ej. data/synthetic/00_escenarios_validacion.txt con "dmy").
+  date_order_hint: null
+  two_digit_year_century: 2000
+  # Una línea que no es un encabezado válido pero empieza con una fecha y trae una hora en sus
+  # primeros N caracteres tiene "aspecto de timestamp": se reporta, nunca se anexa. Heurística experimental.
+  timestamp_like_window_chars: 40
+  # Caracteres IGNORADOS al inicio de una línea, solo para reconocer el encabezado (la línea original
+  # no se altera y NO se eliminan del contenido de los mensajes: U+200E/U+200F pueden ser significativos
+  # en idiomas de derecha a izquierda). U+FEFF inicial del archivo se descarta al decodificar.
+  ignored_leading_chars: ["\u200e", "\u200f", "\ufeff"]
+  # Caracteres que se tratan como un ESPACIO ORDINARIO solo al reconocer el timestamp. El
+  # `timestamp_original` conserva el carácter original.
+  space_like_chars: ["\u202f"]
+  # Los formatos, marcadores de multimedia/eliminado y avisos del sistema son tablas en parsers/
+  # (formats.py, patterns.py). Todos son SIMULADOS o documentados por terceros; ninguno está observado
+  # en una exportación real (ver docs/formatos_exportacion_whatsapp.md y docs/validacion_formatos_reales.md).
+  # No hay umbral de líneas no procesadas: cualquiera deja el archivo pendiente de revisión de calidad
+  # y el análisis deshabilitado hasta resolverlas o aceptar expresamente cada pérdida.

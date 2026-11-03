@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 3,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Con precisión de minuto es normal que varios mensajes compartan timestamp. Se conserva el orden del archivo (seq); no se reordena.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 10:00",
       "timestamp_local": "2026-10-14T10:00:00",
       "precision": "minuto",
-      "texto": "Uno"
+      "texto": "Uno",
+      "texto_normalizado": "Uno"
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 10:00",
       "timestamp_local": "2026-10-14T10:00:00",
       "precision": "minuto",
-      "texto": "Dos"
+      "texto": "Dos",
+      "texto_normalizado": "Dos"
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 10:00",
       "timestamp_local": "2026-10-14T10:00:00",
       "precision": "minuto",
-      "texto": "Tres"
+      "texto": "Tres",
+      "texto_normalizado": "Tres"
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 10:01",
       "timestamp_local": "2026-10-14T10:01:00",
       "precision": "minuto",
-      "texto": "Cuatro"
+      "texto": "Cuatro",
+      "texto_normalizado": "Cuatro"
     },
     {
       "seq": 5,
@@ -89,7 +99,8 @@
       "timestamp_original": "14/10/2026, 10:01",
       "timestamp_local": "2026-10-14T10:01:00",
       "precision": "minuto",
-      "texto": "Cinco"
+      "texto": "Cinco",
+      "texto_normalizado": "Cinco"
     }
   ]
 }

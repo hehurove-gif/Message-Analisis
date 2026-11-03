@@ -37,10 +37,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "GROUP_EVIDENCE"
   ],
+  "procesamiento_completo": false,
+  "estado_calidad": "rechazado",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [],
   "notas": "El aviso contiene \": \" y no debe leerse como un autor llamado \"Ana María cambió el asunto a \\\"Equipo\". Se identifica por catálogo antes de separar autor y texto. Sin el catálogo, el autor fantasma haría 3 participantes (rechazo conservador).",
   "mensajes_esperados": null
 }

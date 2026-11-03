@@ -32,8 +32,14 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
+  ],
   "notas": "Un mensaje cuyo cuerpo contiene \"<Multimedia omitido>\" pero no es solo eso es texto. Una continuación que empieza con una fecha SIN hora no parece encabezado y se anexa. La línea en blanco entre párrafos se conserva en el texto.",
   "mensajes_esperados": [
     {
@@ -45,7 +51,8 @@
       "timestamp_original": "14/10/2026, 09:00",
       "timestamp_local": "2026-10-14T09:00:00",
       "precision": "minuto",
-      "texto": "Hora: 10:30, lugar: aula 5"
+      "texto": "Hora: 10:30, lugar: aula 5",
+      "texto_normalizado": "Hora: 10:30, lugar: aula 5"
     },
     {
       "seq": 2,
@@ -56,7 +63,8 @@
       "timestamp_original": "14/10/2026, 09:01",
       "timestamp_local": "2026-10-14T09:01:00",
       "precision": "minuto",
-      "texto": "https://ejemplo.mx/a?x=1:2&y=\"3\""
+      "texto": "https://ejemplo.mx/a?x=1:2&y=\"3\"",
+      "texto_normalizado": "https://ejemplo.mx/a?x=1:2&y=\"3\""
     },
     {
       "seq": 3,
@@ -67,7 +75,8 @@
       "timestamp_original": "14/10/2026, 09:02",
       "timestamp_local": "2026-10-14T09:02:00",
       "precision": "minuto",
-      "texto": "“comillas curvas” 'simples' \"dobles\""
+      "texto": "“comillas curvas” 'simples' \"dobles\"",
+      "texto_normalizado": "“comillas curvas” 'simples' \"dobles\""
     },
     {
       "seq": 4,
@@ -78,7 +87,8 @@
       "timestamp_original": "14/10/2026, 09:03",
       "timestamp_local": "2026-10-14T09:03:00",
       "precision": "minuto",
-      "texto": "Te mandé <Multimedia omitido> por error"
+      "texto": "Te mandé <Multimedia omitido> por error",
+      "texto_normalizado": "Te mandé <Multimedia omitido> por error"
     },
     {
       "seq": 5,
@@ -89,7 +99,8 @@
       "timestamp_original": "14/10/2026, 09:04",
       "timestamp_local": "2026-10-14T09:04:00",
       "precision": "minuto",
-      "texto": "😂😂😂"
+      "texto": "😂😂😂",
+      "texto_normalizado": "😂😂😂"
     },
     {
       "seq": 6,
@@ -100,7 +111,8 @@
       "timestamp_original": "14/10/2026, 09:05",
       "timestamp_local": "2026-10-14T09:05:00",
       "precision": "minuto",
-      "texto": "Primer párrafo\n\nSegundo párrafo tras línea en blanco"
+      "texto": "Primer párrafo\n\nSegundo párrafo tras línea en blanco",
+      "texto_normalizado": "Primer párrafo\n\nSegundo párrafo tras línea en blanco"
     },
     {
       "seq": 7,
@@ -111,7 +123,8 @@
       "timestamp_original": "14/10/2026, 09:06",
       "timestamp_local": "2026-10-14T09:06:00",
       "precision": "minuto",
-      "texto": "Recuerden:\n14/10/2026 fue el cumpleaños de mamá"
+      "texto": "Recuerden:\n14/10/2026 fue el cumpleaños de mamá",
+      "texto_normalizado": "Recuerden:\n14/10/2026 fue el cumpleaños de mamá"
     },
     {
       "seq": 8,
@@ -122,7 +135,8 @@
       "timestamp_original": "14/10/2026, 09:07",
       "timestamp_local": "2026-10-14T09:07:00",
       "precision": "minuto",
-      "texto": "."
+      "texto": ".",
+      "texto_normalizado": "."
     },
     {
       "seq": 9,
@@ -133,7 +147,8 @@
       "timestamp_original": "14/10/2026, 09:08",
       "timestamp_local": "2026-10-14T09:08:00",
       "precision": "minuto",
-      "texto": "Con\ttabulador"
+      "texto": "Con\ttabulador",
+      "texto_normalizado": "Con\ttabulador"
     }
   ]
 }

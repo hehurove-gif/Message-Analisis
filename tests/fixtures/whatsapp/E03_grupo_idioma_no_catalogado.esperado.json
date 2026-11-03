@@ -32,9 +32,15 @@
   },
   "timestamps_consecutivos_iguales": 0,
   "timestamps_fuera_de_orden": 0,
-  "caracteres_normalizados": {},
+  "caracteres_especiales_en_archivo": {},
   "advertencias": [
     "SYSTEM_LINES_UNCLASSIFIED"
+  ],
+  "procesamiento_completo": true,
+  "estado_calidad": "sin_observaciones_de_calidad",
+  "analisis_habilitado": false,
+  "requisitos_analisis": [
+    "CONFIRMAR_TIPO_CONVERSACION"
   ],
   "notas": "LIMITACIÓN: es un grupo, pero los avisos están en un idioma que el catálogo no cubre. Los avisos se reconocen como system por su forma (sin \"autor:\"), no se reconocen como evidencia de grupo y el resultado es \"pendiente de confirmación\" (falso negativo posible). La advertencia indica que hay avisos sin catalogar.",
   "mensajes_esperados": [
@@ -47,7 +53,8 @@
       "timestamp_original": "14/10/2026, 08:00",
       "timestamp_local": "2026-10-14T08:00:00",
       "precision": "minuto",
-      "texto": "Ana María hat die Gruppe „Statistik\" erstellt"
+      "texto": "Ana María hat die Gruppe „Statistik\" erstellt",
+      "texto_normalizado": "Ana María hat die Gruppe „Statistik\" erstellt"
     },
     {
       "seq": 2,
@@ -58,7 +65,8 @@
       "timestamp_original": "14/10/2026, 08:01",
       "timestamp_local": "2026-10-14T08:01:00",
       "precision": "minuto",
-      "texto": "Ana María hat Carlos Ruiz hinzugefügt"
+      "texto": "Ana María hat Carlos Ruiz hinzugefügt",
+      "texto_normalizado": "Ana María hat Carlos Ruiz hinzugefügt"
     },
     {
       "seq": 3,
@@ -69,7 +77,8 @@
       "timestamp_original": "14/10/2026, 09:00",
       "timestamp_local": "2026-10-14T09:00:00",
       "precision": "minuto",
-      "texto": "Hallo"
+      "texto": "Hallo",
+      "texto_normalizado": "Hallo"
     },
     {
       "seq": 4,
@@ -80,7 +89,8 @@
       "timestamp_original": "14/10/2026, 09:01",
       "timestamp_local": "2026-10-14T09:01:00",
       "precision": "minuto",
-      "texto": "Hi"
+      "texto": "Hi",
+      "texto_normalizado": "Hi"
     }
   ]
 }
