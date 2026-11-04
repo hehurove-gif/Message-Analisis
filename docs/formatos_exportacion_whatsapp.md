@@ -125,7 +125,7 @@ Avisos de chat individual que no cuentan como evidencia de grupo (también simul
 
 ## 8. Archivos del repositorio relacionados
 
-- `tests/fixtures/whatsapp/*.txt` y `*.esperado.json`: 31 fixtures simulados y lo que el parser debería producir con cada uno.
+- `tests/fixtures/whatsapp/*.txt` y `*.esperado.json`: 33 fixtures simulados y lo que el parser debería producir con cada uno.
 - `tests/fixtures/whatsapp/MATRIZ_COBERTURA.md`: relación fixture-caso.
 - `tools/fixtures/generar_fixtures_whatsapp.py`: generador (escapes explícitos de caracteres invisibles) **que no es el parser**.
 - `data/synthetic/00-02`: chats de comportamiento de la Fase 0; sirven también como fixtures de referencia del formato `android_24h_sin_coma`.

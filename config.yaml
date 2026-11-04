@@ -210,6 +210,6 @@ parsing:
   space_like_chars: ["\u202f"]
   # Los formatos, marcadores de multimedia/eliminado y avisos del sistema son tablas en parsers/
   # (formats.py, patterns.py). Todos son SIMULADOS o documentados por terceros; ninguno está observado
-  # en una exportación real (ver docs/formatos_exportacion_whatsapp.md y docs/validacion_formatos_reales.md).
+  # en una exportación real (ver docs/formatos_exportacion_whatsapp.md y docs/limitaciones_y_formatos_pendientes.md).
   # No hay umbral de líneas no procesadas: cualquiera deja el archivo pendiente de revisión de calidad
   # y el análisis deshabilitado hasta resolverlas o aceptar expresamente cada pérdida.

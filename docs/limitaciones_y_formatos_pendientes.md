@@ -5,7 +5,7 @@ Versión 0.1 · 2026-11-03. Acompaña al contrato v0.2 y al catálogo de formato
 ## 1. Qué demuestran (y qué no) las pruebas actuales
 
 - **Todos los fixtures son simulados.** Los escribí yo a partir de la documentación de WhatsApp y de proyectos de terceros (chatpack, whatstk). Ninguno procede de una exportación real observada.
-- Que las 461 pruebas pasen demuestra que el parser **cumple el contrato** sobre esos ejemplos. **No demuestra compatibilidad con exportaciones reales de WhatsApp**: si un formato real difiere del simulado, el parser lo rechazará o lo reportará como líneas no procesadas, pero no hay evidencia de que reconozca los reales.
+- Que las 486 pruebas pasen demuestra que el parser **cumple el contrato** sobre esos ejemplos. **No demuestra compatibilidad con exportaciones reales de WhatsApp**: si un formato real difiere del simulado, el parser lo rechazará o lo reportará como líneas no procesadas, pero no hay evidencia de que reconozca los reales.
 - Las marcas de multimedia, los avisos de cifrado y los avisos de grupo (incluidos los de B01) son hipótesis de catálogo, no observaciones.
 
 ## 2. Formatos pendientes de validación con exportaciones reales
