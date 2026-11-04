@@ -33,16 +33,27 @@ class Message:
 
 @dataclass(frozen=True)
 class ImportResult:
-    report: dict                                  # solo números, códigos y números de línea
+    _report: dict                                 # estado interno protegido: solo números, códigos y líneas
     messages: tuple | None                        # None si la importación no se aceptó
     _anonymization: dict = field(default_factory=dict, repr=False)   # nombre real -> etiqueta; solo memoria
     _losses: frozenset = frozenset()
     _confirmed: bool = False
 
+    def __post_init__(self):
+        # Copia profunda al entrar: quien construyó el resultado no conserva una referencia al estado interno.
+        object.__setattr__(self, '_report', copy.deepcopy(self._report))
+        object.__setattr__(self, '_anonymization', dict(self._anonymization))
+
+    @property
+    def report(self):
+        """Vista de lectura del reporte: una copia profunda nueva en cada acceso. Modificarla (campos o listas
+        anidadas) no altera el resultado; las decisiones se toman solo con el estado interno."""
+        return copy.deepcopy(self._report)
+
     # --- lectura ---
     @property
     def accepted(self):
-        return self.report['decision_importacion'] == 'accepted'
+        return self._report['decision_importacion'] == 'accepted'
 
     def anonymization_map(self):
         """Nombre real → etiqueta, solo en memoria. No forma parte del reporte."""
@@ -50,10 +61,10 @@ class ImportResult:
 
     @property
     def pending_requirements(self):
-        req = list(self.report['requisitos_analisis'])
+        req = list(self._report['requisitos_analisis'])
         if self._confirmed and 'CONFIRMAR_TIPO_CONVERSACION' in req:
             req.remove('CONFIRMAR_TIPO_CONVERSACION')
-        unp = {x['linea'] for x in self.report['lineas_no_procesadas']}
+        unp = {x['linea'] for x in self._report['lineas_no_procesadas']}
         if 'REVISAR_LINEAS_NO_PROCESADAS' in req and unp <= set(self._losses):
             req.remove('REVISAR_LINEAS_NO_PROCESADAS')
         return req
@@ -66,20 +77,23 @@ class ImportResult:
     # --- decisiones explícitas del usuario (nunca automáticas) ---
     def accept_losses(self, lines):
         """Acepta expresamente la pérdida de líneas concretas. Debe nombrar líneas realmente no procesadas."""
-        unp = {x['linea'] for x in self.report['lineas_no_procesadas']}
+        unp = {x['linea'] for x in self._report['lineas_no_procesadas']}
         lines = set(lines)
         if not lines <= unp:
             raise ValueError('solo pueden aceptarse líneas que figuran como no procesadas')
         return replace(self, _losses=self._losses | frozenset(lines))
 
     def confirm_individual(self):
-        """El usuario confirma que es una conversación individual. Imposible si el parser ya la rechazó."""
-        if self.report['estado_tipo_conversacion'] != 'pending_confirmation':
-            raise ValueError('la conversación no está pendiente de confirmación (fue rechazada o no se evaluó)')
+        """El usuario confirma que es una conversación individual. Solo sobre importaciones aceptadas con el
+        tipo pendiente de confirmación: no sobre una bloqueada (fechas ambiguas) ni sobre una rechazada."""
+        if not self.accepted:
+            raise ValueError('solo puede confirmarse una importación aceptada (esta fue rechazada o está bloqueada)')
+        if self._report['estado_tipo_conversacion'] != 'pending_confirmation':
+            raise ValueError('la conversación no está pendiente de confirmación')
         return replace(self, _confirmed=True)
 
     def to_report_dict(self):
-        d = copy.deepcopy(self.report)
+        d = copy.deepcopy(self._report)
         d['perdidas_aceptadas'] = sorted(self._losses)
         d['tipo_conversacion_confirmado'] = self._confirmed
         d['analisis_habilitado'] = self.analysis_enabled
@@ -87,6 +101,6 @@ class ImportResult:
         return d
 
     def __repr__(self):
-        r = self.report
+        r = self._report
         return (f"ImportResult(decision={r['decision_importacion']}, calidad={r['estado_calidad']}, "
                 f"mensajes={0 if self.messages is None else len(self.messages)})")

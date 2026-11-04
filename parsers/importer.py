@@ -22,7 +22,7 @@ def _empty_result(warning, *, decoded=None, n_lines=None, disp=None):
         order_state=None, n_lines=n_lines, disp=disp, unprocessed=[], messages=[], group_evidence=[],
         n_uncatalogued=0, date_range=None, n_equal_ts=0, n_out_of_order=0,
         special_chars=report.count_special_chars(decoded) if decoded else {}, warnings=[warning])
-    return ImportResult(report=rep, messages=None)
+    return ImportResult(_report=rep, messages=None)
 
 
 def parse_bytes(data, cfg=None, date_order_hint=None):
@@ -140,7 +140,7 @@ def parse_text(text, cfg=None, date_order_hint=None):
         order_state=order_state, n_lines=n_lines, disp=disp, unprocessed=unproc, messages=messages,
         group_evidence=evidence, n_uncatalogued=n_uncat, date_range=date_range, n_equal_ts=n_equal,
         n_out_of_order=n_out, special_chars=special, warnings=warnings)
-    return ImportResult(report=rep, messages=tuple(messages) if decision == 'accepted' else None,
+    return ImportResult(_report=rep, messages=tuple(messages) if decision == 'accepted' else None,
                         _anonymization=label)
 
 
@@ -157,4 +157,4 @@ def _reject_format(text_lines, motivo, special):
         order_state=None, n_lines=len(text_lines), disp=disp, unprocessed=unproc, messages=[],
         group_evidence=[], n_uncatalogued=0, date_range=None, n_equal_ts=0, n_out_of_order=0,
         special_chars=special, warnings=[motivo])
-    return ImportResult(report=rep, messages=None)
+    return ImportResult(_report=rep, messages=None)
