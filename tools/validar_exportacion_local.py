@@ -37,6 +37,16 @@ def mask(line, limit=60):
     return ''.join(out)
 
 
+def is_inside(path, root, pm=os.path):
+    """¿`path` está dentro de `root`? Ambos deben venir ya resueltos (realpath). Rutas en unidades distintas
+    (Windows: `commonpath` lanza ValueError) son externas al repositorio. `pm` permite probar con `ntpath`."""
+    path, root = pm.normcase(pm.normpath(path)), pm.normcase(pm.normpath(root))
+    try:
+        return pm.commonpath([path, root]) == root
+    except ValueError:            # unidades distintas, o mezcla de rutas absolutas y relativas
+        return False
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('ruta')
@@ -44,8 +54,8 @@ def main(argv=None):
     ap.add_argument('--formas', type=int, default=0, metavar='N')
     a = ap.parse_args(argv)
 
-    real = os.path.realpath(a.ruta)
-    if os.path.commonpath([real, ROOT]) == ROOT:
+    real = os.path.realpath(a.ruta)      # resuelve enlaces simbólicos que terminen dentro del repositorio
+    if is_inside(real, os.path.realpath(ROOT)):
         sys.exit('Por privacidad no se leen archivos dentro del repositorio. Guarda la exportación fuera de él.')
 
     res = parse_file(real, date_order_hint=a.date_order_hint)
