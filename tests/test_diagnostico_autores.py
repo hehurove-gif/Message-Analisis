@@ -26,3 +26,12 @@ def test_diagnostico_sin_nombres_ni_contenido():
 
 def test_formato_no_reconocido():
     assert D.diagnose('nada\n') == {'error': 'FORMAT_NOT_RECOGNIZED'}
+
+
+def test_forma_de_linea_sin_contenido():
+    shapes = D.line_shapes(CHAT, 3)
+    assert [x['linea'] for x in shapes] == [2, 3, 4]
+    blob = json.dumps(shapes, ensure_ascii=False)
+    for s in ('Zoilo', 'Brígida', 'hola', '5678', 'otro'):
+        assert s not in blob
+    assert D.line_shapes(CHAT, 1)[0]['linea'] == 1

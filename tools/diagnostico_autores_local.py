@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Diagnóstico LOCAL de por qué se detectan más (o menos) autores de los esperados, sin mostrar contenido.
 
-Uso:  python tools/diagnostico_autores_local.py RUTA_AL_TXT
+Uso:  python tools/diagnostico_autores_local.py RUTA_AL_TXT [--linea N]
+
+--linea N imprime SOLO la forma enmascarada (dígitos → 9, letras → a) de las líneas N-1, N y N+1,
+para ver la estructura de una línea concreta sin ver su contenido.
 
 Solo LEE el archivo (que debe estar fuera del repositorio). Por cada autor detectado imprime su etiqueta
 (orden de aparición), mensajes por tipo, primera y última línea donde aparece y la FORMA enmascarada de su
@@ -61,8 +64,21 @@ def diagnose(text):
             'avisos_sin_catalogar_por_forma': [{'forma': k, 'cantidad': v} for k, v in notices.most_common(15)]}
 
 
+def line_shapes(text, n, width=140):
+    tl = text.lstrip('\ufeff').replace('\r\n', '\n').split('\n')
+    return [{'linea': k, 'forma': mask(tl[k - 1], width)} for k in (n - 1, n, n + 1) if 1 <= k <= len(tl)]
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    n = None
+    if '--linea' in argv:
+        i = argv.index('--linea')
+        try:
+            n = int(argv[i + 1])
+        except (IndexError, ValueError):
+            sys.exit(__doc__)
+        argv = argv[:i] + argv[i + 2:]
     if len(argv) != 1:
         sys.exit(__doc__)
     real = os.path.realpath(argv[0])
@@ -73,7 +89,10 @@ def main(argv=None):
             text = f.read().decode('utf-8')
         except UnicodeDecodeError:
             sys.exit('ENCODING_ERROR')
-    print(json.dumps(diagnose(text), ensure_ascii=False, indent=2))
+    out = diagnose(text)
+    if n is not None:
+        out['formas_de_lineas'] = line_shapes(text, n)
+    print(json.dumps(out, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':
