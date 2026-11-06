@@ -1,0 +1,113 @@
+"""Latencia hasta la siguiente intervención del interlocutor (Fase 3.2; definiciones v0.6 §3).
+
+Para cada turno de X: el mensaje inmediatamente posterior del chat, si es de Y, es su "siguiente intervención".
+Latencia = tiempo entre el ÚLTIMO mensaje del turno de X y esa intervención; se asigna a quien interviene (Y).
+Sin ventana máxima y sin depender de la sesión. Que Y escriba después NO demuestra que responda a lo anterior
+(respuesta semántica = otra cosa, Fase 6). Estados de cada turno, mutuamente excluyentes:
+  con_intervencion                             hay latencia
+  sin_intervencion_previa_a_su_nuevo_turno     el siguiente mensaje es del MISMO autor (otra sesión): sin latencia,
+                                               fuera de las medianas, no es indiferencia ni rechazo; depende del hueco
+  sin_respuesta_observada                      no hay mensaje posterior (fin de los datos): límite de los datos
+  con_intervencion_fuera_de_orden              (extra) el timestamp de la intervención es ANTERIOR al del turno: no se
+                                               reordena ni se inventa una latencia; se cuenta aparte, fuera de las medianas
+Se reportan SIEMPRE: mediana general, dentro de sesión (<= hueco), entre sesiones (> hueco) y su proporción;
+además los percentiles de config. Cada cifra lleva su n y la suficiencia de datos."""
+import statistics
+from collections import Counter
+from datetime import datetime
+
+import yaml
+
+from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES, build_turns
+
+STATES = ('con_intervencion', 'sin_intervencion_previa_a_su_nuevo_turno', 'sin_respuesta_observada',
+          'con_intervencion_fuera_de_orden')
+
+
+def _cfg(path=None):
+    with open(path or DEFAULT_CONFIG_PATH, encoding='utf-8') as f:
+        raw = yaml.safe_load(f) or {}
+    return (raw.get('latency', {}).get('percentiles', [75, 90]),
+            raw.get('data_sufficiency', {}).get('min_turns_for_response_time', 20),
+            raw.get('segmentation', {}).get('session_gap_hours', 6))
+
+
+def percentile(values, p):
+    """Interpolación lineal entre rangos (método 'inclusive'); None si no hay datos."""
+    if not values:
+        return None
+    xs = sorted(values)
+    k = (len(xs) - 1) * p / 100
+    lo, hi = int(k), min(int(k) + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (k - lo)
+
+
+def _minutes(a, b):
+    return (datetime.fromisoformat(b) - datetime.fromisoformat(a)).total_seconds() / 60
+
+
+def turn_latencies(messages, session_gap_hours=None, cfg_path=None):
+    """Lista de dicts por turno: turno, estado, latencia (min), interviene, dentro_de_sesion."""
+    _p, _m, default_gap = _cfg(cfg_path)
+    gap_h = default_gap if session_gap_hours is None else session_gap_hours
+    people = [m for m in messages if m.tipo in PERSON_TYPES]
+    pos = {m.seq: i for i, m in enumerate(people)}
+    out = []
+    for t in build_turns(people, session_gap_hours=gap_h):
+        j = pos[t.seq_ultimo] + 1
+        row = {'turno': t.index, 'participante': t.participante, 'latencia_minutos': None, 'interviene': None,
+               'dentro_de_sesion': None}
+        if j >= len(people):
+            row['estado'] = 'sin_respuesta_observada'
+        elif people[j].participante == t.participante:
+            row['estado'] = 'sin_intervencion_previa_a_su_nuevo_turno'
+        else:
+            lat = _minutes(t.ultimo_ts, people[j].timestamp_local)
+            row['interviene'] = people[j].participante
+            if lat < 0:
+                row['estado'] = 'con_intervencion_fuera_de_orden'
+            else:
+                row.update(estado='con_intervencion', latencia_minutos=lat, dentro_de_sesion=lat <= gap_h * 60)
+        out.append(row)
+    return out
+
+
+def _stats(rows, percentiles):
+    allv = [r['latencia_minutos'] for r in rows]
+    win = [r['latencia_minutos'] for r in rows if r['dentro_de_sesion']]
+    btw = [r['latencia_minutos'] for r in rows if r['dentro_de_sesion'] is False]
+    med = lambda xs: statistics.median(xs) if xs else None   # noqa: E731
+    return {'n': len(allv), 'mediana_general': med(allv),
+            **{f'p{p}_general': percentile(allv, p) for p in percentiles},
+            'n_dentro': len(win), 'mediana_dentro': med(win), 'n_entre': len(btw), 'mediana_entre': med(btw),
+            'proporcion_dentro': round(len(win) / len(allv), 3) if allv else None}
+
+
+def latency_summary(messages, session_gap_hours=None, cfg_path=None):
+    percentiles, min_turns, default_gap = _cfg(cfg_path)
+    gap_h = default_gap if session_gap_hours is None else session_gap_hours
+    rows = turn_latencies(messages, gap_h, cfg_path)
+    names = sorted({r['participante'] for r in rows})
+    ok = [r for r in rows if r['estado'] == 'con_intervencion']
+    por = {}
+    for n in names:                                  # la latencia se asigna a quien interviene
+        mine = [r for r in ok if r['interviene'] == n]
+        por[n] = {**_stats(mine, percentiles),
+                  'suficiencia_de_datos': 'suficiente' if len(mine) >= min_turns else 'insuficiente'}
+    return {'hueco_horas': gap_h, 'unidad': 'minutos', 'n_turnos': len(rows),
+            'estados': {s: sum(1 for r in rows if r['estado'] == s) for s in STATES},
+            'agregado': _stats(ok, percentiles), 'por_participante_que_interviene': por,
+            'nota': 'latencia hasta la siguiente intervención; no prueba respuesta a lo anterior ni interés'}
+
+
+def latency_sensitivity(messages, gaps=None, cfg_path=None):
+    """El resumen con varios huecos (los estados dependen del hueco)."""
+    with open(cfg_path or DEFAULT_CONFIG_PATH, encoding='utf-8') as f:
+        cfg_gaps = (yaml.safe_load(f) or {}).get('segmentation', {}).get('sensitivity_session_gap_hours', [2, 6, 12])
+    return {g: latency_summary(messages, g, cfg_path) for g in (gaps or cfg_gaps)}
+
+
+def latency_from_result(result, **kwargs):
+    if not result.analysis_enabled:
+        raise ValueError('el análisis no está habilitado: ' + ', '.join(result.pending_requirements or ['importación no aceptada']))
+    return latency_sensitivity(result.messages, **kwargs)
