@@ -52,13 +52,16 @@ def main(argv=None):
     ap.add_argument('ruta')
     ap.add_argument('--date-order-hint', choices=['dmy', 'mdy'])
     ap.add_argument('--formas', type=int, default=0, metavar='N')
+    ap.add_argument('--unir', action='append', default=[], metavar='C=B',
+                    help='decisión EXPLÍCITA: trata al autor con la etiqueta C como el autor B (etiquetas del reporte)')
     a = ap.parse_args(argv)
 
     real = os.path.realpath(a.ruta)      # resuelve enlaces simbólicos que terminen dentro del repositorio
     if is_inside(real, os.path.realpath(ROOT)):
         sys.exit('Por privacidad no se leen archivos dentro del repositorio. Guarda la exportación fuera de él.')
 
-    res = parse_file(real, date_order_hint=a.date_order_hint)
+    merge = dict(x.split('=', 1) for x in a.unir) if a.unir else None
+    res = parse_file(real, date_order_hint=a.date_order_hint, merge_authors=merge)
     print(json.dumps(res.to_report_dict(), ensure_ascii=False, indent=2))
     if a.formas:
         with open(real, 'rb') as f:

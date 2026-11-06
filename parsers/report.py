@@ -46,9 +46,9 @@ def requirements(decision, n_unprocessed):
 
 def build_report(*, formato, n_participants, conv_state, decision, order_state, n_lines, disp, unprocessed,
                  messages, group_evidence, n_uncatalogued, date_range, n_equal_ts, n_out_of_order,
-                 special_chars, warnings):
+                 special_chars, warnings, extra=None):
     n_unp = len(unprocessed)
-    return {
+    rep = {
         'formato_esperado': formato,
         'decision_importacion': decision,
         'estado_tipo_conversacion': conv_state,
@@ -70,3 +70,5 @@ def build_report(*, formato, n_participants, conv_state, decision, order_state, 
         'analisis_habilitado': False,
         'requisitos_analisis': requirements(decision, n_unp),
     }
+    rep.update(extra or {})
+    return rep

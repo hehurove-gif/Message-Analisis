@@ -25,7 +25,7 @@ def _empty_result(warning, *, decoded=None, n_lines=None, disp=None):
     return ImportResult(_report=rep, messages=None)
 
 
-def parse_bytes(data, cfg=None, date_order_hint=None):
+def parse_bytes(data, cfg=None, date_order_hint=None, merge_authors=None):
     cfg = cfg or load_config()
     privacy.enforce(cfg)
     if date_order_hint is not None:
@@ -35,15 +35,15 @@ def parse_bytes(data, cfg=None, date_order_hint=None):
     except UnicodeDecodeError:
         # Sin `from e` ni el mensaje original: la excepción incluye bytes del archivo.
         return _empty_result('ENCODING_ERROR')
-    return parse_text(text, cfg)
+    return parse_text(text, cfg, merge_authors=merge_authors)
 
 
-def parse_file(path, cfg=None, date_order_hint=None):
+def parse_file(path, cfg=None, date_order_hint=None, merge_authors=None):
     with open(path, 'rb') as f:        # solo lectura
-        return parse_bytes(f.read(), cfg, date_order_hint)
+        return parse_bytes(f.read(), cfg, date_order_hint, merge_authors)
 
 
-def parse_text(text, cfg=None, date_order_hint=None):
+def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None):
     cfg = cfg or load_config()
     privacy.enforce(cfg)
     if date_order_hint is not None:
@@ -91,7 +91,18 @@ def parse_text(text, cfg=None, date_order_hint=None):
             raw_msgs.append((d, tipo, info['autor'], kind, texto))
 
     distinct = list(dict.fromkeys(authors))       # orden de primera aparición
-    conv_state, warnings = groups.conversation_state(len(distinct), evidence)
+    for name in distinct:                          # solo memoria; las etiquetas siguen ese orden
+        anon.label(name)
+    label = anon.mapping()
+    suspects = alias_suspects(distinct, label, raw_msgs)
+    final_of, merged = apply_merges(label, merge_authors, raw_msgs)   # decisión EXPLÍCITA del usuario
+    label = {name: final_of[lab] for name, lab in label.items()}
+    n_authors = len(set(label.values()))
+    conv_state, warnings = groups.conversation_state(n_authors, evidence)
+    if suspects:
+        warnings.append('AUTHOR_ALIAS_SUSPECTED')
+    if merged:
+        warnings.append('AUTHORS_MERGED_BY_USER')
     if unproc:
         warnings.append('UNPROCESSED_LINES')
     if n_uncat:
@@ -101,10 +112,6 @@ def parse_text(text, cfg=None, date_order_hint=None):
         warnings.append('DATE_ORDER_CONTRADICTORY')
     elif order_state == 'ambiguo':
         warnings.append('DATE_ORDER_AMBIGUOUS')
-
-    for name in distinct:                          # solo memoria; con >2 autores la importación se rechaza
-        anon.label(name)
-    label = anon.mapping()
 
     messages = []
     for seq, (d, tipo, autor, kind, texto) in enumerate(raw_msgs, 1):
@@ -136,12 +143,43 @@ def parse_text(text, cfg=None, date_order_hint=None):
         conv_state = groups.NOT_EVALUATED
 
     rep = report.build_report(
-        formato=spec_id, n_participants=len(distinct), conv_state=conv_state, decision=decision,
+        formato=spec_id, n_participants=n_authors, conv_state=conv_state, decision=decision,
         order_state=order_state, n_lines=n_lines, disp=disp, unprocessed=unproc, messages=messages,
         group_evidence=evidence, n_uncatalogued=n_uncat, date_range=date_range, n_equal_ts=n_equal,
-        n_out_of_order=n_out, special_chars=special, warnings=warnings)
+        n_out_of_order=n_out, special_chars=special, warnings=warnings,
+        extra={'autores_alias_sospechosos': suspects, 'autores_unidos': merged})
     return ImportResult(_report=rep, messages=tuple(messages) if decision == 'accepted' else None,
                         _anonymization=label)
+
+
+def alias_suspects(distinct, label, raw_msgs):
+    """Autores cuyo nombre es `<prefijo> - <nombre de otro autor>`: posible alias o encabezado con prefijo
+    extra. Solo se REPORTA (por etiqueta, con las líneas donde aparece); nunca se une automáticamente."""
+    out = []
+    for x in distinct:
+        for y in distinct:
+            if x != y and x.endswith(' - ' + y) and len(x) > len(y) + 3:
+                lines_ = [d.first_line for d, _t, a, _k, _x in raw_msgs if a == x]
+                out.append({'etiqueta': label[x], 'posible_de': label[y], 'mensajes': len(lines_),
+                            'lineas': lines_[:20]})
+                break
+    return out
+
+
+def apply_merges(label, merge_authors, raw_msgs):
+    """(etiqueta→etiqueta final, lista de uniones aplicadas). `merge_authors` = {'C': 'B'}: etiquetas del
+    reporte de una importación previa. Se valida y se registra; sin él, cada etiqueta es su propia final."""
+    labels = set(label.values())
+    final = {lab: lab for lab in labels}
+    merged = []
+    for src, dst in (merge_authors or {}).items():
+        if src not in labels or dst not in labels or src == dst or dst in (merge_authors or {}):
+            raise ValueError('unión de autores inválida: usa etiquetas existentes, distintas y sin encadenar')
+        final[src] = dst
+        names = [n for n, lab in label.items() if lab == src]
+        lines_ = [d.first_line for d, _t, a, _k, _x in raw_msgs if a in names]
+        merged.append({'de': src, 'a': dst, 'mensajes': len(lines_), 'lineas': lines_[:20]})
+    return final, merged
 
 
 def _reject_format(text_lines, motivo, special):
