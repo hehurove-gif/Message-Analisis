@@ -120,6 +120,7 @@ def construir(nombre, fmt, items, bom=False, crlf=False, orden_fecha='dmy_resuel
     if decision == 'rejected': calidad, req = 'rechazado', []
     elif decision == 'blocked_pending_confirmation': calidad, req = 'bloqueado', ['INDICAR_ORDEN_FECHA']
     elif no_proc: calidad, req = 'pendiente_revision_calidad', ['CONFIRMAR_TIPO_CONVERSACION', 'REVISAR_LINEAS_NO_PROCESADAS']
+    elif {'SYSTEM_LINES_UNCLASSIFIED', 'TIMESTAMPS_OUT_OF_ORDER'} & set(adv): calidad, req = 'con_observaciones', ['CONFIRMAR_TIPO_CONVERSACION']
     else: calidad, req = 'sin_observaciones_de_calidad', ['CONFIRMAR_TIPO_CONVERSACION']
     exp = dict(
         fixture=nombre, origen=base, formato_esperado=formato_id or fmt,

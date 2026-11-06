@@ -130,6 +130,8 @@ def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None, accept_
                   or (a.timestamp_local and a.timestamp_local == b.timestamp_local))
     n_out = sum(1 for a, b in zip(person, person[1:])
                 if a.timestamp_local and b.timestamp_local and b.timestamp_local < a.timestamp_local)
+    out_lines = [b.linea_inicial for a, b in zip(person, person[1:])
+                 if a.timestamp_local and b.timestamp_local and b.timestamp_local < a.timestamp_local]
     if n_out:
         warnings.append('TIMESTAMPS_OUT_OF_ORDER')
     stamps = [m.timestamp_local for m in person if m.timestamp_local]
@@ -149,7 +151,8 @@ def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None, accept_
         order_state=order_state, n_lines=n_lines, disp=disp, unprocessed=unproc, messages=messages,
         group_evidence=evidence, n_uncatalogued=n_uncat, date_range=date_range, n_equal_ts=n_equal,
         n_out_of_order=n_out, special_chars=special, warnings=warnings,
-        extra={'autores_alias_sospechosos': suspects, 'autores_unidos': merged})
+        extra={'autores_alias_sospechosos': suspects, 'autores_unidos': merged,
+               'lineas_fuera_de_orden': out_lines})
     return ImportResult(_report=rep, messages=tuple(messages) if decision == 'accepted' else None,
                         _anonymization=label)
 

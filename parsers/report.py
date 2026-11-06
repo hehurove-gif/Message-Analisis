@@ -24,12 +24,19 @@ def type_counts(messages):
     return {k: c.get(k, 0) for k in ('texto', 'media', 'system', 'deleted')}
 
 
-def quality_state(decision, n_unprocessed):
+# Advertencias que no impiden importar pero que impiden decir "sin observaciones": algo requiere mirada humana.
+OBSERVATION_WARNINGS = {'SYSTEM_LINES_UNCLASSIFIED', 'TIMESTAMPS_OUT_OF_ORDER', 'AUTHORS_MERGED_BY_USER',
+                        'AUTHOR_ALIAS_SUSPECTED'}
+
+
+def quality_state(decision, n_unprocessed, warnings=()):
     if decision == 'rejected':
         return 'rechazado'
     if decision == 'blocked_pending_confirmation':
         return 'bloqueado'
-    return 'pendiente_revision_calidad' if n_unprocessed else 'sin_observaciones_de_calidad'
+    if n_unprocessed:
+        return 'pendiente_revision_calidad'
+    return 'con_observaciones' if OBSERVATION_WARNINGS & set(warnings) else 'sin_observaciones_de_calidad'
 
 
 def requirements(decision, n_unprocessed):
@@ -66,7 +73,7 @@ def build_report(*, formato, n_participants, conv_state, decision, order_state, 
         'caracteres_especiales_en_archivo': special_chars,
         'advertencias': sorted(set(warnings)),
         'procesamiento_completo': decision == 'accepted' and n_unp == 0,
-        'estado_calidad': quality_state(decision, n_unp),
+        'estado_calidad': quality_state(decision, n_unp, warnings),
         'analisis_habilitado': False,
         'requisitos_analisis': requirements(decision, n_unp),
     }

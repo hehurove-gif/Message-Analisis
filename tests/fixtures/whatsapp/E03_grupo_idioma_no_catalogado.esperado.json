@@ -37,7 +37,7 @@
     "SYSTEM_LINES_UNCLASSIFIED"
   ],
   "procesamiento_completo": true,
-  "estado_calidad": "sin_observaciones_de_calidad",
+  "estado_calidad": "con_observaciones",
   "analisis_habilitado": false,
   "requisitos_analisis": [
     "CONFIRMAR_TIPO_CONVERSACION"

@@ -37,7 +37,7 @@
     "TIMESTAMPS_OUT_OF_ORDER"
   ],
   "procesamiento_completo": true,
-  "estado_calidad": "sin_observaciones_de_calidad",
+  "estado_calidad": "con_observaciones",
   "analisis_habilitado": false,
   "requisitos_analisis": [
     "CONFIRMAR_TIPO_CONVERSACION"
