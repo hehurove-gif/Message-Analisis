@@ -166,7 +166,9 @@ Un reporte por archivo, siempre, aunque se rechace. Contiene solo números, cód
 | `timestamps_consecutivos_iguales`, `timestamps_fuera_de_orden` | Enteros (sección 6) |
 | `caracteres_especiales_en_archivo` | Conteo por punto de código (U+200E, U+200F, U+202F, U+FEFF). Informativo: no implica que se haya eliminado nada |
 | `procesamiento_completo` | `true` solo si la importación se aceptó y **no** hay líneas no procesadas |
-| `estado_calidad` | `rechazado`, `bloqueado`, `pendiente_revision_calidad` o `sin_observaciones_de_calidad` (sección 8) |
+| `estado_calidad` | `rechazado`, `bloqueado`, `pendiente_revision_calidad`, `con_observaciones` (aceptada y sin líneas perdidas, pero con `SYSTEM_LINES_UNCLASSIFIED`, `TIMESTAMPS_OUT_OF_ORDER`, `AUTHORS_MERGED_BY_USER` o `AUTHOR_ALIAS_SUSPECTED`) o `sin_observaciones_de_calidad` (sección 8) |
+| `lineas_fuera_de_orden` | Líneas iniciales de los mensajes de persona cuyo timestamp es anterior al del mensaje de persona anterior |
+| `autores_alias_sospechosos`, `autores_unidos` | Por etiqueta y líneas, sin nombres. La unión solo ocurre por decisión explícita (`merge_authors` / `--unir` / `--aceptar-alias-sospechosos`) |
 | `analisis_habilitado` | Siempre `false` al terminar el parser (sección 8) |
 | `requisitos_analisis` | Lista de lo que falta para habilitarlo (sección 8) |
 | `advertencias` | Códigos ordenados |
@@ -215,6 +217,8 @@ En `config.yaml`, sección `parsing`: `date_order_hint` (nulo por defecto), `two
 Cambios de campo: `caracteres_normalizados` → `caracteres_especiales_en_archivo`; nuevos `texto_normalizado`, `procesamiento_completo`, `estado_calidad`, `analisis_habilitado`, `requisitos_analisis`; nuevo motivo `FORMAT_AMBIGUOUS`; nuevos fixtures F03 y F04.
 
 **Ajustes al implementar el parser (Fase 1.2).** (a) `android_24h_sin_coma` acepta año de 2 o de 4 dígitos: los chats sintéticos de la Fase 0 usan 4 y el catálogo solo cubría 2 (formato simulado). (b) La heurística de "aspecto de timestamp" acepta minutos de 1 dígito (`09:3`), como exige D07. (c) `E01`: se etiqueta a todos los autores aunque el chat se rechace. (d) `rango_fechas` usa mínimo y máximo (D04, D09). (e) Un archivo con solo espacios en blanco es `EMPTY_FILE` y sus líneas cuentan como `en_blanco`. Los 33 fixtures y los tres chats de la Fase 0 pasan sin cambiar su contenido.
+
+**Ajustes tras la primera exportación real (Fase 1.3).** (a) Nuevo `estado_calidad` = `con_observaciones`; (b) nuevo campo `lineas_fuera_de_orden`; (c) un autor con forma `<prefijo> - <otro autor>` se reporta (`AUTHOR_ALIAS_SUSPECTED`) y solo se une por decisión explícita del usuario (`AUTHORS_MERGED_BY_USER`); el tipo de conversación sigue pendiente de confirmación. Caso aún abierto: ver `limitaciones_y_formatos_pendientes.md`.
 
 **Hallazgo al corregir `ref_latency.py`.** El lector anterior descartaba en silencio el aviso de cifrado (primera línea) de los chats 01 y 02: no afectaba a ningún resultado (un aviso del sistema no es un mensaje de persona), pero era exactamente el tipo de pérdida silenciosa que este contrato prohíbe. Ahora se reconoce y se cuenta aparte.
 
