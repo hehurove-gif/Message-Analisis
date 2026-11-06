@@ -61,7 +61,8 @@ def _load_cfg(path=None):
     with open(path or DEFAULT_CONFIG_PATH, encoding='utf-8') as f:
         raw = yaml.safe_load(f) or {}
     return (raw.get('segmentation', {}).get('sensitivity_session_gap_hours', [2, 6, 12]),
-            raw.get('data_sufficiency', {}).get('min_sessions_for_initiative', 10))
+            raw.get('data_sufficiency', {}).get('min_sessions_for_initiative', 10),
+            raw.get('segmentation', {}).get('min_margin_for_robust', 0.10))
 
 
 def _leader(counts):
@@ -74,12 +75,19 @@ def summarize(sessions, participantes):
     rean = {p: sum(1 for s in sessions if not s.es_primera and s.reanuda == p) for p in participantes}
     ult = {p: sum(1 for s in sessions if not s.es_ultima and s.ultimo_mensaje == p) for p in participantes}
     return {'n_sesiones': len(sessions), 'reanudaciones': rean, 'ultimos_mensajes': ult,
-            'mayor_reanudador': _leader(rean), 'mayor_ultimo_mensaje': _leader(ult)}
+            'mayor_reanudador': _leader(rean), 'mayor_ultimo_mensaje': _leader(ult),
+            'margen_reanudaciones': _margin(rean), 'margen_ultimos_mensajes': _margin(ult)}
+
+
+def _margin(counts):
+    """Diferencia relativa |a-b|/(a+b); 0 si no hay datos."""
+    a, b = counts.values()
+    return round(abs(a - b) / (a + b), 3) if a + b else 0.0
 
 
 def sensitivity(messages, gaps=None, cfg_path=None, burst_max_gap_seconds=None):
     """Resumen por hueco de sesión + fragilidad. Devuelve dict serializable (sin texto de mensajes)."""
-    cfg_gaps, min_sessions = _load_cfg(cfg_path)
+    cfg_gaps, min_sessions, min_margin = _load_cfg(cfg_path)
     gaps = list(gaps or cfg_gaps)
     people = sorted({m.participante for m in messages if m.participante})
     if len(people) != 2:
@@ -92,14 +100,17 @@ def sensitivity(messages, gaps=None, cfg_path=None, burst_max_gap_seconds=None):
         r['suficiencia_de_datos'] = 'suficiente' if len(sess) >= min_sessions else 'insuficiente'
         per_gap[g] = r
 
-    def stable(key):
-        vals = {per_gap[g][key] for g in gaps}
-        return len(vals) == 1 and 'empate' not in vals
+    def robustness(leader_key, margin_key):
+        vals = {per_gap[g][leader_key] for g in gaps}
+        if len(vals) != 1 or 'empate' in vals:
+            return 'sensible_a_umbrales'
+        ok = all(per_gap[g][margin_key] >= min_margin for g in gaps)
+        return 'robusto' if ok else 'robusto_en_direccion_magnitud_sensible'
 
-    return {'participantes': people, 'huecos_horas': gaps, 'por_hueco': per_gap,
-            'robustez': {'reanudaciones': 'robusto' if stable('mayor_reanudador') else 'sensible_a_umbrales',
-                         'ultimos_mensajes': 'robusto' if stable('mayor_ultimo_mensaje') else 'sensible_a_umbrales'},
-            'nota': 'robusto = misma dirección con todos los huecos probados; no es validez ni interpretación'}
+    return {'participantes': people, 'huecos_horas': gaps, 'por_hueco': per_gap, 'margen_minimo_para_robusto': min_margin,
+            'robustez': {'reanudaciones': robustness('mayor_reanudador', 'margen_reanudaciones'),
+                         'ultimos_mensajes': robustness('mayor_ultimo_mensaje', 'margen_ultimos_mensajes')},
+            'nota': 'robusto = misma dirección y margen suficiente con todos los huecos; no es validez ni interpretación'}
 
 
 def sensitivity_from_result(result, **kwargs):

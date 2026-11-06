@@ -27,6 +27,11 @@ segmentation:
   # mensajes, número de ráfagas, los intervalos de silencio entre mensajes
   # consecutivos y el tiempo dentro de ráfagas. Un turno de 5 h transcurridas
   # NO significa 5 h de conversación.
+  # SENSIBILIDAD de reanudaciones/últimos mensajes: la dirección es estable si el mismo participante lidera con
+  # todos los huecos. Para llamarla "robusto" además la diferencia relativa |A-B|/(A+B) debe ser >= este valor en
+  # TODOS los huecos; si la dirección se mantiene pero algún margen es menor, "robusto_en_direccion_magnitud_sensible".
+  # Valor EXPERIMENTAL y configurable; no es un umbral estadístico.
+  min_margin_for_robust: 0.10
   turn_record_fields: [first_ts, last_ts, elapsed_minutes, n_messages, n_bursts, silence_intervals_minutes, minutes_within_bursts]
 
 latency:
