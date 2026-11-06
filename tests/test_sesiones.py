@@ -110,3 +110,11 @@ def test_margen_grande_y_misma_direccion_es_robusto():
     s = sensitivity(parse_text(texto).messages, gaps=[2, 6, 12])
     assert s['robustez']['reanudaciones'] == 'robusto'
     assert s['por_hueco'][6]['margen_reanudaciones'] == 1.0
+
+
+def test_sin_datos_suficientes_no_se_llama_robusto():
+    corto = sensitivity(chat_por_iniciador(['Ana'] + ['Beto'] * 5), gaps=[6, 12])      # 6 sesiones < 10
+    assert corto['por_hueco'][6]['suficiencia_de_datos'] == 'insuficiente'
+    assert corto['robustez']['reanudaciones'] == 'no_evaluada'
+    largo = sensitivity(chat_por_iniciador(['Ana'] + ['Beto'] * 11), gaps=[6, 12])     # 12 sesiones >= 10
+    assert largo['robustez']['reanudaciones'] == 'robusto'

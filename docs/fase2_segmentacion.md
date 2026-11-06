@@ -13,7 +13,7 @@ Versión 0.1 · 2026-11-05. Implementa las definiciones operativas v0.6 (seccion
 
 **Fuera de orden.** No se reordena por timestamp. Un retroceso no corta la sesión; el turno queda con `tiene_fuera_de_orden`.
 
-**Robustez** (tres niveles, de `config.yaml` → `evidence_assessment`): `robusto` = el mismo participante lidera con todos los huecos y la diferencia relativa |A−B|/(A+B) es ≥ `segmentation.min_margin_for_robust` (0,10, experimental) en todos; `robusto_en_direccion_magnitud_sensible` = misma dirección pero algún margen menor; `sensible_a_umbrales` = la dirección cambia o hay empate. No es validez científica ni una interpretación. `suficiencia_de_datos` usa `data_sufficiency.min_sessions_for_initiative` (10).
+**Robustez** (tres niveles, de `config.yaml` → `evidence_assessment`): `robusto` = el mismo participante lidera con todos los huecos y la diferencia relativa |A−B|/(A+B) es ≥ `segmentation.min_margin_for_robust` (0,10, experimental) en todos; `robusto_en_direccion_magnitud_sensible` = misma dirección pero algún margen menor; `sensible_a_umbrales` = la dirección cambia o hay empate; `no_evaluada` = la dirección es la misma pero algún hueco no alcanza la suficiencia de datos (no se llama robusto con pocos datos). No es validez científica ni una interpretación. `suficiencia_de_datos` usa `data_sufficiency.min_sessions_for_initiative` (10).
 
 **Candado.** `turns_from_result` y `sensitivity_from_result` solo trabajan con importaciones con el análisis habilitado (tipo de conversación confirmado por el usuario y líneas perdidas resueltas o aceptadas).
 

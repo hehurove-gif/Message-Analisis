@@ -104,6 +104,8 @@ def sensitivity(messages, gaps=None, cfg_path=None, burst_max_gap_seconds=None):
         vals = {per_gap[g][leader_key] for g in gaps}
         if len(vals) != 1 or 'empate' in vals:
             return 'sensible_a_umbrales'
+        if any(per_gap[g]['suficiencia_de_datos'] == 'insuficiente' for g in gaps):
+            return 'no_evaluada'                      # misma dirección, pero con algún hueco sin datos suficientes
         ok = all(per_gap[g][margin_key] >= min_margin for g in gaps)
         return 'robusto' if ok else 'robusto_en_direccion_magnitud_sensible'
 
