@@ -36,6 +36,10 @@ Hasta observar exportaciones reales, ninguno de estos formatos debe describirse 
 9. **Nombres dentro del texto.** El anonimizado cubre a los participantes, no los nombres que aparezcan en el contenido de los mensajes.
 10. **Cálculo de `rango_fechas`.** Es el mínimo y el máximo de los mensajes de persona, no el primero y el último del archivo.
 
+### Caso en observación: autor con prefijo extra (1.ª exportación real)
+
+En la primera exportación real (Android) 1 de 27.569 encabezados traía un autor de la forma `<prefijo> - <nombre del otro autor>`, y el parser lo contó como tercer autor. Origen desconocido. Se reporta como `AUTHOR_ALIAS_SUSPECTED`; el usuario puede unirlo con `--unir C=B` o aceptar los sospechosos con `--aceptar-alias-sospechosos` (decisión explícita, registrada en el reporte; nunca por defecto). **Abierto:** con más exportaciones reales hay que ver si es un caso raro o algo normal; si se repite, hay que estudiar su causa antes de cambiar el parser.
+
 ## 4. Procedimiento local para contrastar exportaciones propias
 
 Objetivo: comprobar el parser con exportaciones reales **sin subirlas al repositorio ni a ningún servicio**.

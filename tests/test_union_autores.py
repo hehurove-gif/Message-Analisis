@@ -46,3 +46,18 @@ def test_uniones_invalidas(merge):
 def test_tres_autores_sin_parecido_no_se_marcan_como_alias():
     res = parse_text('5/13/26, 9:10 AM - Ana: a\n5/13/26, 9:11 AM - Beto: b\n5/13/26, 9:12 AM - Caro: c\n')
     assert res.report['autores_alias_sospechosos'] == [] and not res.accepted
+
+
+def test_aceptar_alias_sospechosos_es_opcional_y_queda_registrado():
+    assert parse_text(CHAT).accepted is False                     # por defecto no se une nada
+    res = parse_text(CHAT, accept_suspected_aliases=True)
+    assert res.accepted and res.report['participantes_detectados'] == 2
+    assert res.report['autores_unidos'] == [{'de': 'C', 'a': 'B', 'mensajes': 1, 'lineas': [4]}]
+    assert 'AUTHORS_MERGED_BY_USER' in res.report['advertencias']
+    assert res.analysis_enabled is False
+
+
+def test_aceptar_alias_sospechosos_no_une_autores_sin_parecido():
+    res = parse_text('5/13/26, 9:10 AM - Ana: a\n5/13/26, 9:11 AM - Beto: b\n5/13/26, 9:12 AM - Caro: c\n',
+                     accept_suspected_aliases=True)
+    assert not res.accepted and res.report['autores_unidos'] == []

@@ -25,7 +25,7 @@ def _empty_result(warning, *, decoded=None, n_lines=None, disp=None):
     return ImportResult(_report=rep, messages=None)
 
 
-def parse_bytes(data, cfg=None, date_order_hint=None, merge_authors=None):
+def parse_bytes(data, cfg=None, date_order_hint=None, merge_authors=None, accept_suspected_aliases=False):
     cfg = cfg or load_config()
     privacy.enforce(cfg)
     if date_order_hint is not None:
@@ -35,15 +35,15 @@ def parse_bytes(data, cfg=None, date_order_hint=None, merge_authors=None):
     except UnicodeDecodeError:
         # Sin `from e` ni el mensaje original: la excepción incluye bytes del archivo.
         return _empty_result('ENCODING_ERROR')
-    return parse_text(text, cfg, merge_authors=merge_authors)
+    return parse_text(text, cfg, merge_authors=merge_authors, accept_suspected_aliases=accept_suspected_aliases)
 
 
-def parse_file(path, cfg=None, date_order_hint=None, merge_authors=None):
+def parse_file(path, cfg=None, date_order_hint=None, merge_authors=None, accept_suspected_aliases=False):
     with open(path, 'rb') as f:        # solo lectura
-        return parse_bytes(f.read(), cfg, date_order_hint, merge_authors)
+        return parse_bytes(f.read(), cfg, date_order_hint, merge_authors, accept_suspected_aliases)
 
 
-def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None):
+def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None, accept_suspected_aliases=False):
     cfg = cfg or load_config()
     privacy.enforce(cfg)
     if date_order_hint is not None:
@@ -95,6 +95,8 @@ def parse_text(text, cfg=None, date_order_hint=None, merge_authors=None):
         anon.label(name)
     label = anon.mapping()
     suspects = alias_suspects(distinct, label, raw_msgs)
+    if accept_suspected_aliases:                    # opción EXPLÍCITA: solo une lo que el parser mismo reportó como sospechoso
+        merge_authors = {**{x['etiqueta']: x['posible_de'] for x in suspects}, **(merge_authors or {})}
     final_of, merged = apply_merges(label, merge_authors, raw_msgs)   # decisión EXPLÍCITA del usuario
     label = {name: final_of[lab] for name, lab in label.items()}
     n_authors = len(set(label.values()))
@@ -178,7 +180,7 @@ def apply_merges(label, merge_authors, raw_msgs):
         final[src] = dst
         names = [n for n, lab in label.items() if lab == src]
         lines_ = [d.first_line for d, _t, a, _k, _x in raw_msgs if a in names]
-        merged.append({'de': src, 'a': dst, 'mensajes': len(lines_), 'lineas': lines_[:20]})
+        merged.append({'de': src, 'a': dst, 'mensajes': len(lines_), 'lineas': lines_[:20]})   # lineas: máx. 20
     return final, merged
 
 

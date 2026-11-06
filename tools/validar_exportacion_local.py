@@ -52,6 +52,8 @@ def main(argv=None):
     ap.add_argument('ruta')
     ap.add_argument('--date-order-hint', choices=['dmy', 'mdy'])
     ap.add_argument('--formas', type=int, default=0, metavar='N')
+    ap.add_argument('--aceptar-alias-sospechosos', action='store_true',
+                    help='decisión EXPLÍCITA: une los autores que el parser reporta como posible alias (autores_alias_sospechosos)')
     ap.add_argument('--unir', action='append', default=[], metavar='C=B',
                     help='decisión EXPLÍCITA: trata al autor con la etiqueta C como el autor B (etiquetas del reporte)')
     a = ap.parse_args(argv)
@@ -61,7 +63,8 @@ def main(argv=None):
         sys.exit('Por privacidad no se leen archivos dentro del repositorio. Guarda la exportación fuera de él.')
 
     merge = dict(x.split('=', 1) for x in a.unir) if a.unir else None
-    res = parse_file(real, date_order_hint=a.date_order_hint, merge_authors=merge)
+    res = parse_file(real, date_order_hint=a.date_order_hint, merge_authors=merge,
+                     accept_suspected_aliases=a.aceptar_alias_sospechosos)
     print(json.dumps(res.to_report_dict(), ensure_ascii=False, indent=2))
     if a.formas:
         with open(real, 'rb') as f:
