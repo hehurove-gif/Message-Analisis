@@ -117,6 +117,9 @@ def resumen(out, gap=None):
     lines.append('  reparto entre ambos: ' + '; '.join(
         f"{u.replace('_', ' ')} " + ' / '.join(f'{lab[k]} {_fmt(pe[u][k], True)}' for k in lab)
         for u in ('turnos', 'turnos_no_minimos', 'turnos_desarrollados', 'palabras_sustantivas')))
+    lines.append('  desarrollados con umbral ' + '; '.join(
+        f'{th}: ' + ' / '.join(f'{lab[k]} {_fmt(v[k], True)}' for k in lab)
+        for th, v in tc['sensibilidad_desarrollados'].items()) + f" -> dirección {tc['direccion_desarrollados']}")
 
     lat = out['latencias']
     gaps = sorted(lat, key=float)

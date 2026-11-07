@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compara TODAS las exportaciones de una carpeta en una sola tabla (solo números, sin nombres de archivo).
+r"""Compara TODAS las exportaciones de una carpeta en una sola tabla (solo números, sin nombres de archivo).
 
 Uso:  python tools/comparar_local.py RUTA [RUTA ...] --confirmo-individual [--hint 4=dmy] [--alias 0]
       PowerShell (recomendado, mismos índices que $archivos[N]):
@@ -21,7 +21,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from metricas_local import analizar  # noqa: E402
 
-COLS = ['#', 'KB', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'palabras A', 'p90 lat A/B', 'retoma A/B',
+COLS = ['#', 'KB', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'desarr. A 10/15/25', 'palabras A', 'p90 lat A/B', 'retoma A/B',
         'inicia día A', 'pausas >30d']
 
 
@@ -41,6 +41,7 @@ def fila(i, out, kb=''):
     lp, h = lat['por_participante_que_interviene'], out['habitos']['por_participante']
     return [str(i), kb, {'sin_observaciones_de_calidad': 'ok', 'con_observaciones': 'con obs.'}.get(out['estado_calidad'], out['estado_calidad']), _pct(p['mensajes']['A']), _pct(p['turnos']['A']),
             _pct(tc['turnos_no_minimos']['A']), _pct(tc['turnos_desarrollados']['A']),
+            '/'.join(_pct(v['A']).rstrip('%') for v in out['contenido_turnos']['sensibilidad_desarrollados'].values()),
             _pct(tc['palabras_sustantivas']['A']),
             f"{_num(lp['A']['p90_general'])}/{_num(lp['B']['p90_general'])}",
             f"{lp['A']['n_entre']}/{lp['B']['n_entre']}", _pct(h['A']['proporcion_inicia_el_dia']),

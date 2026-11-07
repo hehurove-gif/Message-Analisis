@@ -71,6 +71,7 @@ turn_content:
   # CONTENIDO DE TURNOS (provisional). Turno "minimo" = sin palabras sustantivas ni pregunta; "desarrollado" =
   # >= developed_min_words palabras sustantivas sumando sus mensajes; el resto, "breve". Experimental.
   developed_min_words: 15
+  sensitivity_developed_min_words: [10, 15, 25]
   # Acuses breves que NO cuentan como palabra sustantiva (comparación en minúsculas, sin puntuación).
   # Entre comillas: sin ellas YAML lee no/yes como booleanos.
   acknowledgements: ["ok", "oki", "okey", "okay", "okk", "okis", "va", "vale", "sale", "sí", "si", "no", "ya", "aja", "ajá", "claro", "bueno", "bien", "ah", "oh", "eh", "mmm", "mm", "k", "sip", "nop", "simon", "simón", "neta", "yes", "yep", "nope", "cool", "gracias", "grax", "perfecto", "listo"]

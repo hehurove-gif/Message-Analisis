@@ -51,5 +51,13 @@ def test_pausas_largas():
 
 def test_config_acuses_son_texto():
     from metrics.turn_content import _cfg
-    acks, dev, _ = _cfg()
+    acks, dev, _, sens = _cfg()
     assert all(isinstance(a, str) for a in acks) and 'no' in acks and dev == 15
+
+
+def test_sensibilidad_del_umbral():
+    tc = turn_content(parse_text(T).messages)
+    assert list(tc['sensibilidad_desarrollados']) == [10, 15, 25]
+    assert tc['sensibilidad_desarrollados'][15] == {'A': 1.0, 'B': 0.0}
+    assert tc['sensibilidad_desarrollados'][25] == {'A': None, 'B': None}
+    assert tc['direccion_desarrollados'] == 'estable'

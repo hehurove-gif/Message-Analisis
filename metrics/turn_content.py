@@ -8,7 +8,9 @@ turnos no distingue un "ok" de una respuesta elaborada. Aquí cada turno se clas
   desarrollado  >= `developed_min_words` palabras sustantivas en el turno (sumando sus mensajes)
 Palabras sustantivas: ver metrics/text_units.py. Umbrales EXPERIMENTALES en config; no miden calidad ni interés,
 solo extensión del contenido. Se reporta por participante: conteos, proporciones dentro de sus turnos y
-proporción de cada participante entre los turnos no mínimos (eso sí puede alejarse del 50/50)."""
+proporción de cada participante entre los turnos no mínimos (eso sí puede alejarse del 50/50).
+SENSIBILIDAD: el reparto de turnos desarrollados se recalcula con `turn_content.sensitivity_developed_min_words`
+(10/15/25); si la dirección cambia entre umbrales, la diferencia depende del umbral y no debe leerse como patrón."""
 import statistics
 from collections import Counter
 
@@ -27,7 +29,8 @@ def _cfg(path=None):
         raw = yaml.safe_load(f) or {}
     tc = raw.get('turn_content', {})
     return (tc.get('acknowledgements', DEFAULT_ACKS), tc.get('developed_min_words', 15),
-            raw.get('data_sufficiency', {}).get('min_turns_for_response_time', 20))
+            raw.get('data_sufficiency', {}).get('min_turns_for_response_time', 20),
+            tc.get('sensitivity_developed_min_words', [10, 15, 25]))
 
 
 def classify_turn(msgs, acks=DEFAULT_ACKS, developed_min=15):
@@ -39,16 +42,18 @@ def classify_turn(msgs, acks=DEFAULT_ACKS, developed_min=15):
 
 
 def turn_content(messages, session_gap_hours=None, cfg_path=None):
-    acks, dev_min, min_turns = _cfg(cfg_path)
+    acks, dev_min, min_turns, sens = _cfg(cfg_path)
     people = [m for m in messages if m.tipo in PERSON_TYPES]
     by_seq = {m.seq: i for i, m in enumerate(people)}
     turns = build_turns(people, session_gap_hours=session_gap_hours)
     names = sorted({t.participante for t in turns})
     cls, words, nmsg = {n: Counter() for n in names}, {n: [] for n in names}, {n: [] for n in names}
+    pairs = []                                       # (participante, palabras, tiene_contenido)
     for t in turns:
         msgs = people[by_seq[t.seq_primero]:by_seq[t.seq_ultimo] + 1]
         c, w = classify_turn(msgs, acks, dev_min)
         cls[t.participante][c] += 1
+        pairs.append((t.participante, w, c != 'minimo'))
         words[t.participante].append(w)
         nmsg[t.participante].append(t.n_mensajes)
 
@@ -57,6 +62,12 @@ def turn_content(messages, session_gap_hours=None, cfg_path=None):
         s = sum(tot.values())
         return {n: (round(v / s, 4) if s else None) for n, v in tot.items()}
 
+    sensitivity = {}
+    for th in sens:
+        dev = Counter(p for p, w, ok in pairs if ok and w >= th)
+        s_ = sum(dev.values())
+        sensitivity[th] = {n: (round(dev[n] / s_, 4) if s_ else None) for n in names}
+    leaders = {max(v, key=lambda n: v[n] or 0) for v in sensitivity.values() if any(v.values())}
     por = {}
     for n in names:
         tot = sum(cls[n].values())
@@ -72,4 +83,7 @@ def turn_content(messages, session_gap_hours=None, cfg_path=None):
                 'turnos_no_minimos': share(lambda n: cls[n]['breve'] + cls[n]['desarrollado']),
                 'turnos_desarrollados': share(lambda n: cls[n]['desarrollado']),
                 'palabras_sustantivas': share(lambda n: sum(words[n]))},
+            'sensibilidad_desarrollados': sensitivity,
+            'direccion_desarrollados': ('estable' if len(leaders) == 1 else
+                                        'sin_datos' if not leaders else 'cambia_con_el_umbral'),
             'nota': 'clasificación por extensión del contenido; no mide calidad, interés ni reciprocidad'}
