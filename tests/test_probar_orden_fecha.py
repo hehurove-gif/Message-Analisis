@@ -60,3 +60,16 @@ def test_solo_numeros_y_fechas(tmp_path, capsys):
 def test_se_niega_a_leer_dentro_del_repo():
     with pytest.raises(SystemExit):
         P.main([os.path.join(ROOT, 'tests', 'fixtures', 'whatsapp', 'A01_android24_coma_es.txt')])
+
+
+def test_campos_muestra_cual_campo_varia_mas():
+    chat = ''.join(f'{d}/9/25, 9:00 AM - Zoilo: x\n' for d in range(3, 13))     # día 3..12 de septiembre
+    c = P.campos(chat)
+    assert c['segundo_campo'] == {9: 10} and len(c['primer_campo']) == 10
+    frase = ' '.join(P.lectura_de_campos(c))
+    assert 'segundo_campo varía menos' in frase and 'Zoilo' not in frase
+
+
+def test_campos_cuenta_lineas_con_marca_invisible_y_corchetes():
+    c = P.campos('\u200e[3/4/26, 9:00:00 AM] Ana: a\n13/4/26, 9:00 AM - Ana: b\nsin fecha\n')
+    assert c['lineas_con_fecha'] == 2 and c['primer_campo'] == {3: 1, 13: 1}
