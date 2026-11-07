@@ -19,6 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from metrics.participants import participant_guide  # noqa: E402
 from parsers import parse_file  # noqa: E402
 from segmentation.sessions import sensitivity  # noqa: E402
 from segmentation.turns import build_turns  # noqa: E402
@@ -42,6 +43,7 @@ def main(argv=None):
     ap.add_argument('--aceptar-alias-sospechosos', action='store_true')
     ap.add_argument('--unir', action='append', default=[], metavar='C=B')
     ap.add_argument('--aceptar-perdidas', default='', metavar='L1,L2')
+    ap.add_argument('--yo', choices=['A', 'B'], help='cuál etiqueta eres tú (A = quien escribe primero en el archivo)')
     a = ap.parse_args(argv)
 
     real = os.path.realpath(a.ruta)
@@ -57,6 +59,7 @@ def main(argv=None):
     out = {'importacion': res.report['decision_importacion'], 'estado_calidad': res.report['estado_calidad'],
            'analisis_habilitado': res.analysis_enabled, 'requisitos_pendientes': res.pending_requirements}
     if res.analysis_enabled:
+        out['participantes'] = participant_guide(res.messages, yo=a.yo)
         out['turnos'] = resumen_turnos(res.messages)
         out['sesiones'] = sensitivity(res.messages)
     print(json.dumps(out, ensure_ascii=False, indent=2))

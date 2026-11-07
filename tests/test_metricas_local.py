@@ -36,3 +36,25 @@ def test_con_confirmacion_solo_numeros(tmp_path, capsys):
 def test_se_niega_a_leer_dentro_del_repo():
     with pytest.raises(SystemExit):
         M.main([os.path.join(ROOT, 'tests', 'fixtures', 'whatsapp', 'A01_android24_coma_es.txt')])
+
+
+def test_incluye_guia_habitos_y_estilo_sin_texto(tmp_path, capsys):
+    raw = correr(tmp_path, capsys, '--confirmo-individual', '--yo', 'B')
+    out = json.loads(raw)
+    assert out['participantes']['roles'] == {'A': 'otra_persona', 'B': 'yo'}
+    assert out['participantes']['por_participante']['A']['primer_mensaje_linea'] == 1
+    assert set(out) >= {'habitos', 'estilo'}
+    for s in ('Zoilo', 'Brígida', 'secreto', 'hola'):
+        assert s not in raw
+
+
+def test_resumen_legible_sin_texto(tmp_path, capsys):
+    raw = correr(tmp_path, capsys, '--confirmo-individual', '--yo', 'A', '--resumen')
+    assert 'Quién es quién' in raw and 'A (yo)' in raw and 'B (otra_persona)' in raw and 'Latencia' in raw
+    for s in ('Zoilo', 'Brígida', 'secreto', 'hola'):
+        assert s not in raw
+
+
+def test_resumen_sin_confirmacion(tmp_path, capsys):
+    raw = correr(tmp_path, capsys, '--resumen')
+    assert 'análisis: NO' in raw
