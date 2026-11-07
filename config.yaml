@@ -48,6 +48,8 @@ latency:
   # DISTRIBUCIÓN: proporción ACUMULADA de latencias <= cada corte (minutos). Cortes descriptivos,
   # EXPERIMENTALES; no son umbrales de "rápido" o "lento".
   buckets_minutes: [0, 1, 5, 15, 60]
+  # PAUSA LARGA: latencia mayor a N días = el chat estuvo parado; se reporta aparte. Experimental.
+  long_pause_days: 30
   # Se reportan SIEMPRE las tres medianas y la proporción por sesión:
   #   general, dentro de la misma sesión, entre sesiones.
   # "Dentro de la misma sesión" = latencia <= segmentation.session_gap_hours.
@@ -64,6 +66,14 @@ latency:
   #    sesión (cambia al usar 2, 6 o 12 h), por lo que se reporta en cada uno.
   #  - sin_respuesta_observada: no hay ningún mensaje posterior (último
   #    turno del chat). Límite de los datos, no evidencia de indiferencia.
+
+turn_content:
+  # CONTENIDO DE TURNOS (provisional). Turno "minimo" = sin palabras sustantivas ni pregunta; "desarrollado" =
+  # >= developed_min_words palabras sustantivas sumando sus mensajes; el resto, "breve". Experimental.
+  developed_min_words: 15
+  # Acuses breves que NO cuentan como palabra sustantiva (comparación en minúsculas, sin puntuación).
+  # Entre comillas: sin ellas YAML lee no/yes como booleanos.
+  acknowledgements: ["ok", "oki", "okey", "okay", "okk", "okis", "va", "vale", "sale", "sí", "si", "no", "ya", "aja", "ajá", "claro", "bueno", "bien", "ah", "oh", "eh", "mmm", "mm", "k", "sip", "nop", "simon", "simón", "neta", "yes", "yep", "nope", "cool", "gracias", "grax", "perfecto", "listo"]
 
 habits:
   # HÁBITOS TEMPORALES (provisional): mensajes por hora local, día y franja. Franjas [inicio, fin) en horas,

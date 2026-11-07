@@ -18,6 +18,9 @@ RESOLUCIÓN: WhatsApp exporta con precisión de minuto, así que una latencia de
 (no instantánea) y las medianas son enteras. Por eso se agrega `distribucion`: proporción acumulada de latencias
 <= cada corte de `latency.buckets_minutes` (config). Es descriptiva: no distingue rapidez de interés.
 
+PAUSAS LARGAS: una latencia > `latency.long_pause_days` (config, 30) no es "tardar en contestar": el chat estuvo
+parado. Se cuenta aparte en `pausas_largas` (siguen dentro de las medianas entre sesiones, sin cambiar su definición).
+
 LECTURA de `por_participante_que_interviene`: la latencia de X es cuánto tarda X en escribir después de que
 termina un turno del otro. A/B son etiquetas por orden de primera aparición (ver metrics/participants.py)."""
 import statistics
@@ -37,6 +40,10 @@ DEFAULT_BUCKETS = [0, 1, 5, 15, 60]
 def _raw(path=None):
     with open(path or DEFAULT_CONFIG_PATH, encoding='utf-8') as f:
         return yaml.safe_load(f) or {}
+
+
+def _long_pause_days(path=None):
+    return _raw(path).get('latency', {}).get('long_pause_days', 30)
 
 
 def _cfg(path=None):
@@ -141,9 +148,15 @@ def latency_summary(messages, session_gap_hours=None, cfg_path=None):
         mine = [r for r in ok if r['interviene'] == n]
         por[n] = {**_stats(mine, percentiles, min_turns, buckets), 'suficiencia_de_datos': _suf(len(mine), min_turns)}
     resolution = _resolution(messages)
+    lp_days = _long_pause_days(cfg_path)
+    long_ = [r for r in ok if r['latencia_minutos'] > lp_days * 1440]
+    pausas = {'umbral_dias': lp_days, 'n': len(long_),
+              'maxima_dias': round(max(r['latencia_minutos'] for r in long_) / 1440, 1) if long_ else None,
+              'por_participante_que_retoma': {n: sum(r['interviene'] == n for r in long_) for n in names}}
     return {'hueco_horas': gap_h, 'unidad': 'minutos', 'resolucion': resolution, 'n_turnos': len(rows),
             'estados': {s: sum(1 for r in rows if r['estado'] == s) for s in STATES},
             'agregado': _stats(ok, percentiles, min_turns, buckets), 'por_participante_que_interviene': por,
+            'pausas_largas': pausas,
             'nota': ('latencia de X = minutos que tarda X en escribir tras el turno del otro; '
                      + ('0 = en el mismo minuto (la exportación no trae segundos); ' if resolution == 'minuto' else '')
                      + 'no prueba respuesta a lo anterior ni interés')}

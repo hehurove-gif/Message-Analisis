@@ -3,7 +3,12 @@
 Cuenta MENSAJES de persona por hora local del timestamp (0–23), por día de la semana y por franja del día
 (config `habits.day_parts`). Hora local = la del teléfono que exportó; no se corrige zona horaria y, si las
 personas viven en zonas distintas, la hora del otro está desplazada. Descriptivo: escribir de madrugada no
-significa nada por sí solo. Proporciones dentro de cada participante (suman 1 por participante)."""
+significa nada por sí solo. Proporciones dentro de cada participante (suman 1 por participante).
+
+Como dos personas que conversan escriben a las MISMAS horas, la distribución horaria casi no las distingue. Por
+eso se agrega, por día calendario con mensajes: quién escribe el PRIMER mensaje del día (`inicia_el_dia`) y el
+ÚLTIMO (`cierra_el_dia`), y la hora mediana de su primer mensaje cuando abre el día. "Día" = fecha local 00–24 h;
+una conversación que cruza la medianoche cuenta en dos días (límite conocido)."""
 from collections import Counter
 from datetime import datetime
 
@@ -49,5 +54,23 @@ def habits(messages, cfg_path=None):
                   'proporcion_por_franja': _props(franjas, list(parts)),
                   'proporcion_por_dia': _props(days, DAYS),
                   'suficiencia_de_datos': 'suficiente' if len(dts) >= min_msgs else 'insuficiente'}
-    return {'unidad': 'mensajes', 'franjas_horas': parts, 'por_participante': por,
+    first, last, open_hours = Counter(), Counter(), {n: [] for n in names}
+    by_day = {}
+    for m in people:
+        by_day.setdefault(m.timestamp_local[:10], []).append(m)
+    for msgs in by_day.values():
+        f = msgs[0]
+        first[f.participante] += 1
+        last[msgs[-1].participante] += 1
+        d = datetime.fromisoformat(f.timestamp_local)
+        open_hours[f.participante].append(d.hour + d.minute / 60)
+    nd = len(by_day)
+    for n in names:
+        oh = sorted(open_hours[n])
+        por[n].update({
+            'inicia_el_dia': first[n], 'proporcion_inicia_el_dia': round(first[n] / nd, 3) if nd else None,
+            'cierra_el_dia': last[n], 'proporcion_cierra_el_dia': round(last[n] / nd, 3) if nd else None,
+            'hora_mediana_al_iniciar_el_dia': round(oh[len(oh) // 2] if len(oh) % 2 else
+                                                    (oh[len(oh) // 2 - 1] + oh[len(oh) // 2]) / 2, 2) if oh else None})
+    return {'unidad': 'mensajes', 'franjas_horas': parts, 'dias_con_mensajes': nd, 'por_participante': por,
             'nota': 'hora local del teléfono que exportó; descriptivo, no interpreta disponibilidad ni interés'}

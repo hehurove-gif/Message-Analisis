@@ -5,21 +5,26 @@ Sobre mensajes `texto` de cada participante:
   preguntas               definiciones §4: contiene "?" / "¿" o empieza con palabra interrogativa (lista en
                           config `style.interrogatives`). Aproximación; se revisará con muestras manuales.
   con_emoji               al menos un carácter en rangos de emoji Unicode (aproximación, sin librería externa)
-  mayusculas              >= `style.min_letters_uppercase` letras y todas en mayúscula
+  mayusculas              >= `style.min_letters_uppercase` letras y todas en mayúscula, SIN contar las risas
+                          ("JAJAJA" no es un mensaje en mayúsculas)
+  con_risa                al menos un token de risa (jaja, jeje, haha, jsjs, xd; ver metrics/text_units.py)
+  solo_minimo             sin palabras sustantivas (solo ok/va/sí, risas o emojis)
+Multimedia: además de la proporción, `multimedia_por_tipo` (sticker, imagen…) cuando el marcador lo distingue;
+en Android en español suele ser genérico ("<Multimedia omitido>") y no separa stickers.
 Sobre todos sus mensajes de persona: proporción de `media` y `deleted`.
 Regla general (§9.3): estos son hábitos individuales; usar pocos emojis o mensajes cortos no es "frialdad"."""
-import re
 import statistics
+from collections import Counter
 
 import yaml
 
 from metrics.latency import percentile
+from metrics.text_units import EMOJI, has_laugh, strip_laughs, substantive_words
 from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES
 
 DEFAULT_INTERROGATIVES = ['qué', 'cómo', 'cuándo', 'dónde', 'adónde', 'por qué', 'cuál', 'cuáles', 'quién',
                           'quiénes', 'cuánto', 'cuánta', 'cuántos', 'cuántas', 'what', 'how', 'when', 'where',
                           'why', 'who', 'which']
-EMOJI = re.compile('[\U0001F300-\U0001FAFF\U00002600-\U000027BF\U0001F1E6-\U0001F1FF\U00002B50\U00002764]')
 
 
 def _cfg(path=None):
@@ -63,8 +68,11 @@ def style(messages, cfg_path=None):
             'caracteres_mediana': statistics.median(chars) if chars else None,
             'proporcion_preguntas': _share(sum(is_question(t, inter) for t in texts), len(texts)),
             'proporcion_con_emoji': _share(sum(bool(EMOJI.search(t)) for t in texts), len(texts)),
-            'proporcion_mayusculas': _share(sum(is_uppercase(t, min_up) for t in texts), len(texts)),
+            'proporcion_mayusculas': _share(sum(is_uppercase(strip_laughs(t), min_up) for t in texts), len(texts)),
+            'proporcion_con_risa': _share(sum(has_laugh(t) for t in texts), len(texts)),
+            'proporcion_solo_minimo': _share(sum(not substantive_words(t) for t in texts), len(texts)),
             'proporcion_media': _share(sum(m.tipo == 'media' for m in mine), len(mine)),
+            'multimedia_por_tipo': dict(Counter(m.media_kind or 'sin_tipo' for m in mine if m.tipo == 'media')),
             'proporcion_eliminados': _share(sum(m.tipo == 'deleted' for m in mine), len(mine)),
             'suficiencia_de_datos': 'suficiente' if len(texts) >= min_msgs else 'insuficiente'}
     return {'por_participante': por,
