@@ -79,6 +79,8 @@ turn_content:
 habits:
   # HÁBITOS TEMPORALES (provisional): mensajes por hora local, día y franja. Franjas [inicio, fin) en horas,
   # EXPERIMENTALES. Hora local del teléfono que exportó (sin corrección de zona horaria).
+  # DÍA LÓGICO: empieza a esta hora (mensajes de 00:00–04:59 cuentan en el día anterior). 0 = día calendario.
+  day_start_hour: 5
   day_parts: {madrugada: [0, 6], manana: [6, 12], tarde: [12, 19], noche: [19, 24]}
 
 style:

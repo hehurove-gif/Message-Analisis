@@ -19,7 +19,8 @@ RESOLUCIÓN: WhatsApp exporta con precisión de minuto, así que una latencia de
 <= cada corte de `latency.buckets_minutes` (config). Es descriptiva: no distingue rapidez de interés.
 
 PAUSAS LARGAS: una latencia > `latency.long_pause_days` (config, 30) no es "tardar en contestar": el chat estuvo
-parado. Se cuenta aparte en `pausas_largas` (siguen dentro de las medianas entre sesiones, sin cambiar su definición).
+parado. Se cuenta aparte en `pausas_largas`. Siguen dentro de las medianas generales (la definición no cambia), pero
+cada participante tiene además `mediana_entre_sin_pausas_largas` y su n, que es lo que muestra el resumen.
 
 LECTURA de `por_participante_que_interviene`: la latencia de X es cuánto tarda X en escribir después de que
 termina un turno del otro. A/B son etiquetas por orden de primera aparición (ver metrics/participants.py)."""
@@ -146,7 +147,11 @@ def latency_summary(messages, session_gap_hours=None, cfg_path=None):
     por = {}
     for n in names:                                  # la latencia se asigna a quien interviene
         mine = [r for r in ok if r['interviene'] == n]
-        por[n] = {**_stats(mine, percentiles, min_turns, buckets), 'suficiencia_de_datos': _suf(len(mine), min_turns)}
+        btw_short = [r['latencia_minutos'] for r in mine if r['dentro_de_sesion'] is False
+                     and r['latencia_minutos'] <= _long_pause_days(cfg_path) * 1440]
+        por[n] = {**_stats(mine, percentiles, min_turns, buckets), 'suficiencia_de_datos': _suf(len(mine), min_turns),
+                  'n_entre_sin_pausas_largas': len(btw_short),
+                  'mediana_entre_sin_pausas_largas': statistics.median(btw_short) if btw_short else None}
     resolution = _resolution(messages)
     lp_days = _long_pause_days(cfg_path)
     long_ = [r for r in ok if r['latencia_minutos'] > lp_days * 1440]

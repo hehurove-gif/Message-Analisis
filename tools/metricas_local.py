@@ -132,17 +132,18 @@ def resumen(out, gap=None):
                      f"p90 {_fmt(v.get('p90_general'))} | mismo minuto {_fmt(d.get('mismo_minuto'), True)}, "
                      f"<=5 min {_fmt(d.get('hasta_5_min'), True)}, <=60 min {_fmt(d.get('hasta_60_min'), True)} "
                      f"(n={v['n']}, {v['suficiencia_de_datos']})")
-        lines.append(f"      al volver tras > {L['hueco_horas']} h: mediana {_fmt(v['mediana_entre'])} min "
-                     f"(n={v['n_entre']}, {v['suficiencia_entre']})")
+        ms, ns = v['mediana_entre_sin_pausas_largas'], v['n_entre_sin_pausas_largas']
+        lines.append(f"      al volver tras > {L['hueco_horas']} h (sin pausas largas): mediana {_fmt(ms)} min "
+                     f"(n={ns}, {'suficiente' if ns >= 20 else 'insuficiente'})")
     pl = L['pausas_largas']
     if pl['n']:
         lines.append(f"  pausas largas (> {pl['umbral_dias']} días, chat parado): {pl['n']}, máxima {pl['maxima_dias']} días; "
                      'retoma: ' + ', '.join(f'{lab[k]} {v}' for k, v in pl['por_participante_que_retoma'].items()))
-    lines.append('  sensibilidad (mediana entre sesiones por hueco): ' + '; '.join(
-        f"{h} h: " + ', '.join(f"{k} {_fmt(lat[h]['por_participante_que_interviene'][k]['mediana_entre'])}"
+    lines.append('  sensibilidad (mediana al volver, sin pausas largas, por hueco): ' + '; '.join(
+        f"{h} h: " + ', '.join(f"{k} {_fmt(lat[h]['por_participante_que_interviene'][k]['mediana_entre_sin_pausas_largas'])}"
                                for k in lab) for h in gaps))
 
-    lines += ['', '== Hábitos (días calendario; hora local del teléfono que exportó) ==']
+    lines += ['', ('== Hábitos (día lógico desde las {}:00; hora local del teléfono que exportó) ==').format(out['habitos']['inicio_del_dia_hora'])]
     for k, v in out['habitos']['por_participante'].items():
         fr = ', '.join(f'{n} {_fmt(x, True)}' for n, x in v['proporcion_por_franja'].items())
         lines.append(f"  {lab[k]}: inicia el día {_fmt(v['proporcion_inicia_el_dia'], True)}, lo cierra "

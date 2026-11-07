@@ -61,3 +61,19 @@ def test_sensibilidad_del_umbral():
     assert tc['sensibilidad_desarrollados'][15] == {'A': 1.0, 'B': 0.0}
     assert tc['sensibilidad_desarrollados'][25] == {'A': None, 'B': None}
     assert tc['direccion_desarrollados'] == 'estable'
+
+
+def test_dia_logico_no_cuenta_la_madrugada_como_inicio():
+    t = ('5/13/26, 10:00 PM - Beto: hola\n5/13/26, 11:50 PM - Ana: oye\n5/14/26, 12:56 AM - Ana: sigo\n'
+         '5/14/26, 9:00 AM - Beto: buenos días\n')
+    h = habits(parse_text(t).messages)['por_participante']
+    # Beto escribe primero: Beto = A. Ana a las 00:56 pertenece al día lógico 13, no abre el 14
+    assert (h['A']['inicia_el_dia'], h['B']['inicia_el_dia']) == (2, 0)
+    assert h['A']['hora_mediana_al_iniciar_el_dia'] == 15.5                    # mediana de 22:00 y 09:00 en día lógico
+
+
+def test_mediana_entre_sin_pausas_largas():
+    s = latency_summary(parse_text('1/13/26, 9:00 AM - Ana: a\n3/20/26, 9:00 AM - Beto: b\n'
+                                   '3/20/26, 9:01 AM - Ana: c\n3/20/26, 8:00 PM - Beto: d\n').messages)
+    b = s['por_participante_que_interviene']['B']
+    assert (b['n_entre'], b['n_entre_sin_pausas_largas'], b['mediana_entre_sin_pausas_largas']) == (2, 1, 659)
