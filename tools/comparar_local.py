@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Compara TODAS las exportaciones de una carpeta en una sola tabla (solo números, sin nombres de archivo).
 
-Uso:  python tools/comparar_local.py CARPETA --confirmo-individual [--hint 4=dmy] [--alias 0]
+Uso:  python tools/comparar_local.py RUTA [RUTA ...] --confirmo-individual [--hint 4=dmy] [--alias 0]
+      PowerShell (recomendado, mismos índices que $archivos[N]):
+        py -3 tools\comparar_local.py $archivos.FullName --confirmo-individual --hint 4=dmy
+      Con UNA carpeta se listan sus .txt (orden aproximado al de PowerShell; verifica con la columna KB).
 
 Los archivos .txt se ordenan por nombre SIN distinguir mayúsculas y se identifican SOLO por índice (0, 1, …), igual que $archivos[N] en
 PowerShell: el nombre del archivo suele traer el nombre de la persona y nunca se imprime.
@@ -52,7 +55,7 @@ def tabla(rows):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('carpeta')
+    ap.add_argument('rutas', nargs='+')
     ap.add_argument('--confirmo-individual', action='store_true')
     ap.add_argument('--hint', action='append', default=[], metavar='N=dmy')
     ap.add_argument('--alias', action='append', default=[], type=int, metavar='N')
@@ -60,12 +63,16 @@ def main(argv=None):
     hints = {int(k): v for k, v in (x.split('=', 1) for x in a.hint)}
     # Orden SIN distinguir mayúsculas (como Sort-Object de PowerShell). Puede diferir en casos raros de acentos o
     # símbolos: por eso se imprime el tamaño en KB, para cruzar cada fila con $archivos[N].Length sin ver nombres.
-    files = sorted((f for f in os.listdir(a.carpeta) if f.lower().endswith('.txt')), key=lambda f: (f.casefold(), f))
+    if len(a.rutas) == 1 and os.path.isdir(a.rutas[0]):
+        d = a.rutas[0]
+        files = [os.path.join(d, f) for f in sorted((f for f in os.listdir(d) if f.lower().endswith('.txt')),
+                                                    key=lambda f: (f.casefold(), f))]
+    else:
+        files = list(a.rutas)              # orden EXACTO en que llegan (p. ej. $archivos.FullName)
     if not files:
         sys.exit('No hay archivos .txt en esa carpeta.')
-    rows = [fila(i, analizar(os.path.join(a.carpeta, f), confirmo=a.confirmo_individual,
-                             date_order_hint=hints.get(i), aceptar_alias=i in a.alias),
-                 str(round(os.path.getsize(os.path.join(a.carpeta, f)) / 1024)))
+    rows = [fila(i, analizar(f, confirmo=a.confirmo_individual, date_order_hint=hints.get(i),
+                             aceptar_alias=i in a.alias), str(round(os.path.getsize(f) / 1024)))
             for i, f in enumerate(files)]
     print(tabla(rows))
     print('\nA = primer autor de cada archivo. Columnas en % de A (B = resto). Solo descriptivo.')

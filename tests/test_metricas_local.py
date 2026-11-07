@@ -89,3 +89,13 @@ def test_comparar_ordena_sin_mayusculas_y_da_kb(tmp_path, capsys):
     C.main([str(d), '--confirmo-individual'])
     rows = [l.split() for l in capsys.readouterr().out.splitlines()[2:4]]
     assert rows[0][0] == '0' and int(rows[0][1]) > int(rows[1][1])   # el 0 es 'A chat' (el grande)
+
+
+def test_comparar_respeta_el_orden_de_las_rutas(tmp_path, capsys):
+    import comparar_local as C
+    chico, grande = tmp_path / 'z.txt', tmp_path / 'a.txt'
+    chico.write_text(CHAT, encoding='utf-8')
+    grande.write_text(CHAT * 50, encoding='utf-8')
+    C.main([str(chico), str(grande), '--confirmo-individual'])
+    rows = [l.split() for l in capsys.readouterr().out.splitlines()[2:4]]
+    assert int(rows[0][1]) < int(rows[1][1])          # índice 0 = la primera ruta dada, no la primera alfabética
