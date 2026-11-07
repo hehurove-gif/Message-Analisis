@@ -62,6 +62,10 @@ def tabla(rows):
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')   # consola Windows cp1252
+    if hasattr(sys.stdout, 'reconfigure'):          # Windows/cp1252 al redirigir: no fallar por ρ o →
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('rutas', nargs='+')
     ap.add_argument('--confirmo-individual', action='store_true')

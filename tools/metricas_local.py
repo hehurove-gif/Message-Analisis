@@ -33,6 +33,10 @@ from validar_exportacion_local import is_inside  # noqa: E402
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')   # consola Windows cp1252
+    if hasattr(sys.stdout, 'reconfigure'):          # Windows/cp1252 al redirigir: no fallar por ρ o →
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('ruta')
     ap.add_argument('--confirmo-individual', action='store_true')
@@ -161,7 +165,7 @@ def resumen(out, gap=None):
     c = out['correspondencia']
     lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "
                   f"{c['pares_misma_sesion']}; X_a_Y = lo que Y da a X) =="]
-    for key, name, f in (('R1_extension', 'R1 extensión (ρ)', 'rho'), ('R2_preguntas', 'R2 preguntas (dif.)', 'diferencia'),
+    for key, name, f in (('R1_extension', 'R1 extensión (rho)', 'rho'), ('R2_preguntas', 'R2 preguntas (dif.)', 'diferencia'),
                          ('R3_desarrollados', 'R3 desarrollados (dif. no mín.)', 'diferencia_no_minimo')):
         r = c[key]
         dirs = [k for k in r if '_a_' in k]
