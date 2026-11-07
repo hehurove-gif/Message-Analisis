@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""Compara TODAS las exportaciones de una carpeta en una sola tabla (solo números, sin nombres de archivo).
+
+Uso:  python tools/comparar_local.py CARPETA --confirmo-individual [--hint 4=dmy] [--alias 0]
+
+Los archivos .txt se ordenan por nombre y se identifican SOLO por índice (0, 1, …), igual que $archivos[N] en
+PowerShell: el nombre del archivo suele traer el nombre de la persona y nunca se imprime.
+--confirmo-individual  declaras que TODOS son chats individuales (si no, no se analiza ninguno)
+--hint N=dmy|mdy       orden de fecha del archivo N (repetible)
+--alias N              acepta los alias sospechosos que el parser reporte en el archivo N (repetible)
+Columnas: proporción de A en cada unidad (B = 100% - A). "no mín." = turnos con contenido; "desarr." = turnos
+desarrollados. Latencia: p90 en minutos de cada uno (6 h). Retoma: veces que vuelve tras > 6 h (A/B).
+Descriptivo: no interpreta interés, cercanía ni reciprocidad."""
+import argparse
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from metricas_local import analizar  # noqa: E402
+
+COLS = ['#', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'palabras A', 'p90 lat A/B', 'retoma A/B',
+        'inicia día A', 'pausas >30d']
+
+
+def _pct(x):
+    return '—' if x is None else f'{x * 100:.0f}%'
+
+
+def _num(x):
+    return '—' if x is None else f'{x:g}'
+
+
+def fila(i, out):
+    if not out['analisis_habilitado']:
+        return [str(i), 'NO: ' + ','.join(out['requisitos_pendientes'] or [out['importacion']])] + [''] * (len(COLS) - 2)
+    p, tc = out['participacion']['proporciones'], out['contenido_turnos']['proporciones_entre_participantes']
+    lat = out['latencias'].get(6) or out['latencias'][sorted(out['latencias'])[len(out['latencias']) // 2]]
+    lp, h = lat['por_participante_que_interviene'], out['habitos']['por_participante']
+    return [str(i), {'sin_observaciones_de_calidad': 'ok', 'con_observaciones': 'con obs.'}.get(out['estado_calidad'], out['estado_calidad']), _pct(p['mensajes']['A']), _pct(p['turnos']['A']),
+            _pct(tc['turnos_no_minimos']['A']), _pct(tc['turnos_desarrollados']['A']),
+            _pct(tc['palabras_sustantivas']['A']),
+            f"{_num(lp['A']['p90_general'])}/{_num(lp['B']['p90_general'])}",
+            f"{lp['A']['n_entre']}/{lp['B']['n_entre']}", _pct(h['A']['proporcion_inicia_el_dia']),
+            str(lat['pausas_largas']['n'])]
+
+
+def tabla(rows):
+    w = [max(len(r[c]) for r in [COLS] + rows) for c in range(len(COLS))]
+    fmt = lambda r: '  '.join(x.ljust(w[c]) for c, x in enumerate(r))   # noqa: E731
+    return '\n'.join([fmt(COLS), '  '.join('-' * x for x in w)] + [fmt(r) for r in rows])
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('carpeta')
+    ap.add_argument('--confirmo-individual', action='store_true')
+    ap.add_argument('--hint', action='append', default=[], metavar='N=dmy')
+    ap.add_argument('--alias', action='append', default=[], type=int, metavar='N')
+    a = ap.parse_args(argv)
+    hints = {int(k): v for k, v in (x.split('=', 1) for x in a.hint)}
+    files = sorted(f for f in os.listdir(a.carpeta) if f.lower().endswith('.txt'))
+    if not files:
+        sys.exit('No hay archivos .txt en esa carpeta.')
+    rows = [fila(i, analizar(os.path.join(a.carpeta, f), confirmo=a.confirmo_individual,
+                             date_order_hint=hints.get(i), aceptar_alias=i in a.alias))
+            for i, f in enumerate(files)]
+    print(tabla(rows))
+    print('\nA = primer autor de cada archivo. Columnas en % de A (B = resto). Solo descriptivo.')
+
+
+if __name__ == '__main__':
+    main()
