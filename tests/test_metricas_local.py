@@ -58,3 +58,23 @@ def test_resumen_legible_sin_texto(tmp_path, capsys):
 def test_resumen_sin_confirmacion(tmp_path, capsys):
     raw = correr(tmp_path, capsys, '--resumen')
     assert 'análisis: NO' in raw
+
+
+def test_resumen_incluye_contenido_de_turnos(tmp_path, capsys):
+    raw = correr(tmp_path, capsys, '--confirmo-individual', '--resumen')
+    assert 'Contenido de turnos' in raw and 'inicia el día' in raw and 'risa' in raw
+
+
+def test_comparar_local_sin_nombres(tmp_path, capsys):
+    import comparar_local as C
+    d = tmp_path / 'exp'
+    d.mkdir()
+    (d / 'Chat de WhatsApp con Zoilo.txt').write_text(CHAT, encoding='utf-8')
+    (d / 'Chat de WhatsApp con Brígida.txt').write_text(CHAT, encoding='utf-8')
+    C.main([str(d), '--confirmo-individual'])
+    raw = capsys.readouterr().out
+    assert raw.count('\n0 ') + raw.count('\n1 ') == 2 and 'p90 lat A/B' in raw
+    for s in ('Zoilo', 'Brígida', 'secreto', 'Chat de'):
+        assert s not in raw
+    C.main([str(d)])
+    assert 'NO:' in capsys.readouterr().out

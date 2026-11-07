@@ -26,6 +26,7 @@ from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
 from metrics.participation import participation  # noqa: E402
 from metrics.style import style  # noqa: E402
+from metrics.turn_content import turn_content  # noqa: E402
 from parsers import parse_file  # noqa: E402
 from validar_exportacion_local import is_inside  # noqa: E402
 
@@ -42,31 +43,43 @@ def main(argv=None):
     ap.add_argument('--resumen', action='store_true')
     a = ap.parse_args(argv)
 
-    real = os.path.realpath(a.ruta)
+    merge = dict(x.split('=', 1) for x in a.unir) if a.unir else None
+    out = analizar(a.ruta, confirmo=a.confirmo_individual, date_order_hint=a.date_order_hint, merge=merge,
+                   aceptar_alias=a.aceptar_alias_sospechosos,
+                   perdidas=[int(x) for x in a.aceptar_perdidas.split(',')] if a.aceptar_perdidas else None, yo=a.yo)
+    print(resumen(out) if a.resumen else json.dumps(out, ensure_ascii=False, indent=2))
+
+
+def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_alias=False, perdidas=None, yo=None):
+    """Todas las métricas de UNA exportación (solo números). Reutilizado por comparar_local."""
+    real = os.path.realpath(ruta)
     if is_inside(real, os.path.realpath(ROOT)):
         sys.exit('Por privacidad no se leen archivos dentro del repositorio. Guarda la exportación fuera de él.')
-    merge = dict(x.split('=', 1) for x in a.unir) if a.unir else None
-    res = parse_file(real, date_order_hint=a.date_order_hint, merge_authors=merge,
-                     accept_suspected_aliases=a.aceptar_alias_sospechosos)
-    if res.accepted and a.confirmo_individual:
+    res = parse_file(real, date_order_hint=date_order_hint, merge_authors=merge, accept_suspected_aliases=aceptar_alias)
+    if res.accepted and confirmo:
         res = res.confirm_individual()
-    if res.accepted and a.aceptar_perdidas:
-        res = res.accept_losses([int(x) for x in a.aceptar_perdidas.split(',')])
+    if res.accepted and perdidas:
+        res = res.accept_losses(perdidas)
     out = {'importacion': res.report['decision_importacion'], 'estado_calidad': res.report['estado_calidad'],
            'analisis_habilitado': res.analysis_enabled, 'requisitos_pendientes': res.pending_requirements}
     if res.analysis_enabled:
-        out['participantes'] = participant_guide(res.messages, yo=a.yo)
+        out['participantes'] = participant_guide(res.messages, yo=yo)
         out['participacion'] = participation(res.messages)
+        out['contenido_turnos'] = turn_content(res.messages)
         out['latencias'] = latency_sensitivity(res.messages)
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
-    print(resumen(out) if a.resumen else json.dumps(out, ensure_ascii=False, indent=2))
+    return out
 
 
 def _fmt(x, pct=False):
     if x is None:
         return '—'
     return f'{x * 100:.0f}%' if pct else (f'{x:g}' if isinstance(x, (int, float)) else str(x))
+
+
+def _hhmm(h):
+    return '—' if h is None else f'{int(h):02d}:{round((h % 1) * 60):02d}'
 
 
 def resumen(out, gap=None):
@@ -92,6 +105,19 @@ def resumen(out, gap=None):
                      f"({_fmt(pr['turnos'][k], True)}), {v['palabras']} palabras ({_fmt(pr['palabras'][k], True)}), "
                      f"{v['dias_con_mensajes']} días")
 
+    tc = out['contenido_turnos']
+    pe = tc['proporciones_entre_participantes']
+    lines += ['', f"== Contenido de turnos (los turnos alternan: ~50/50 por definición; desarrollado >= "
+                  f"{tc['umbral_desarrollado_palabras']} palabras sustantivas) =="]
+    for k, v in tc['por_participante'].items():
+        lines.append(f"  {lab[k]}: mínimos {_fmt(v['proporcion_minimo'], True)}, breves {_fmt(v['proporcion_breve'], True)}, "
+                     f"desarrollados {_fmt(v['proporcion_desarrollado'], True)} de sus turnos | "
+                     f"{_fmt(v['palabras_sustantivas_por_turno_mediana'])} palabras sustantivas/turno "
+                     f"(p90 {_fmt(v['palabras_sustantivas_por_turno_p90'])}), {_fmt(v['mensajes_por_turno_mediana'])} mensajes/turno")
+    lines.append('  reparto entre ambos: ' + '; '.join(
+        f"{u.replace('_', ' ')} " + ' / '.join(f'{lab[k]} {_fmt(pe[u][k], True)}' for k in lab)
+        for u in ('turnos', 'turnos_no_minimos', 'turnos_desarrollados', 'palabras_sustantivas')))
+
     lat = out['latencias']
     gaps = sorted(lat, key=float)
     key = str(gap) if gap is not None and str(gap) in lat else gaps[len(gaps) // 2]
@@ -105,20 +131,27 @@ def resumen(out, gap=None):
                      f"(n={v['n']}, {v['suficiencia_de_datos']})")
         lines.append(f"      al volver tras > {L['hueco_horas']} h: mediana {_fmt(v['mediana_entre'])} min "
                      f"(n={v['n_entre']}, {v['suficiencia_entre']})")
+    pl = L['pausas_largas']
+    if pl['n']:
+        lines.append(f"  pausas largas (> {pl['umbral_dias']} días, chat parado): {pl['n']}, máxima {pl['maxima_dias']} días; "
+                     'retoma: ' + ', '.join(f'{lab[k]} {v}' for k, v in pl['por_participante_que_retoma'].items()))
     lines.append('  sensibilidad (mediana entre sesiones por hueco): ' + '; '.join(
         f"{h} h: " + ', '.join(f"{k} {_fmt(lat[h]['por_participante_que_interviene'][k]['mediana_entre'])}"
                                for k in lab) for h in gaps))
 
-    lines += ['', '== Hábitos (hora local del teléfono que exportó) ==']
+    lines += ['', '== Hábitos (días calendario; hora local del teléfono que exportó) ==']
     for k, v in out['habitos']['por_participante'].items():
         fr = ', '.join(f'{n} {_fmt(x, True)}' for n, x in v['proporcion_por_franja'].items())
-        lines.append(f"  {lab[k]}: hora más frecuente {v['hora_mas_frecuente']} h | {fr}")
+        lines.append(f"  {lab[k]}: inicia el día {_fmt(v['proporcion_inicia_el_dia'], True)}, lo cierra "
+                     f"{_fmt(v['proporcion_cierra_el_dia'], True)}, hora mediana al iniciarlo "
+                     f"{_hhmm(v['hora_mediana_al_iniciar_el_dia'])} | {fr}")
 
     lines += ['', '== Estilo (mensajes de texto) ==']
     for k, v in out['estilo']['por_participante'].items():
         lines.append(f"  {lab[k]}: {_fmt(v['palabras_mediana'])} palabras/mensaje (p90 {_fmt(v['palabras_p90'])}), "
                      f"preguntas {_fmt(v['proporcion_preguntas'], True)}, emoji {_fmt(v['proporcion_con_emoji'], True)}, "
-                     f"mayúsculas {_fmt(v['proporcion_mayusculas'], True)}, multimedia {_fmt(v['proporcion_media'], True)}")
+                     f"risa {_fmt(v['proporcion_con_risa'], True)}, mayúsculas {_fmt(v['proporcion_mayusculas'], True)}, "
+                     f"solo acuse/risa/emoji {_fmt(v['proporcion_solo_minimo'], True)}, multimedia {_fmt(v['proporcion_media'], True)}")
     lines += ['', 'Observaciones descriptivas: no interpretan interés, cercanía ni reciprocidad.']
     return '\n'.join(lines)
 
