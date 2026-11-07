@@ -86,6 +86,16 @@ def _hhmm(h):
     return '—' if h is None else f'{int(h):02d}:{round((h % 1) * 60):02d}'
 
 
+def _abs(key, d):
+    """Tasas absolutas de respuesta no mínima: una diferencia ~0 puede ser techo (siempre responde con contenido)."""
+    if key == 'R2_preguntas':
+        return f" {{con preg. {_fmt(d['con_pregunta'], True)} / sin {_fmt(d['sin_pregunta'], True)}}}"
+    if key == 'R3_desarrollados':
+        nm = lambda x: None if not x or x['minimo'] is None else 1 - x['minimo']   # noqa: E731
+        return f" {{tras desarr. {_fmt(nm(d['tras_desarrollado']), True)} / tras breve {_fmt(nm(d['tras_breve']), True)}}}"
+    return ''
+
+
 def resumen(out, gap=None):
     """Texto legible, solo números. Usa el hueco de config (o el central de la sensibilidad)."""
     lines = [f"Importación: {out['importacion']} | calidad: {out['estado_calidad']} | "
@@ -170,7 +180,7 @@ def resumen(out, gap=None):
         nst = {'R2_preguntas': ('n_con_pregunta', 'preguntas'), 'R3_desarrollados': ('n_tras_desarrollado', 'desarr.')}.get(key)
         lines.append(f"  {name}: " + '; '.join(
             f"{d} {_fmt(r[d][f])} [{r[d]['nivel'] or '-'}] (pares={r[d]['n']}"
-            + (f", {nst[1]}={r[d][nst[0]]}" if nst else '') + ')' for d in dirs) + f" -> {r['etiqueta']}")
+            + (f", {nst[1]}={r[d][nst[0]]}" if nst else '') + ')' + _abs(key, r[d]) for d in dirs) + f" -> {r['etiqueta']}")
     r4 = c['R4_iniciativa']
     lines.append('  R4 iniciativa: reanudaciones ' + '; '.join(f"{g} h " + '/'.join(f'{k} {v}' for k, v in d.items())
                  for g, d in r4['reanudaciones'].items()) + f" ({r4['robustez_reanudaciones']}); inicia día "
