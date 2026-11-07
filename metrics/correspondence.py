@@ -14,7 +14,8 @@ respuesta de B: describe cuánto corresponde B a A (lo que A RECIBE).
                    diferencia en proporción no mínima. Se recalcula con los umbrales 10/15/25.
   R4 iniciativa    reanudaciones de sesión (2/6/12 h) e inicio del día lógico: reparto y margen, sin pares.
 Etiqueta R1–R3: simetrica | asimetrica_hacia_A | asimetrica_hacia_B ("hacia A" = A recibe más correspondencia de
-la que da) | insuficiente | sensible_a_umbrales (la dirección cambia con el hueco o el umbral: no es patrón).
+la que da) | diferencia_de_linea_base (R2/R3: ante el estímulo ambos responden igual; solo difiere lo habitual de
+quien responde, p. ej. uno ya da contenido casi siempre) | insuficiente | sensible_a_umbrales (la dirección cambia con el hueco o el umbral: no es patrón).
 Sin índice compuesto: las dimensiones pueden contradecirse y se leen por separado."""
 import statistics
 from collections import Counter
@@ -103,6 +104,16 @@ def _level(v, thr):
     return None if v is None else ('presente' if v >= thr else 'inversa' if v <= -thr else 'baja_o_nula')
 
 
+def _baseline_only(label, out, keys, abs_key, thr):
+    """Si la asimetría de la diferencia existe pero las tasas ABSOLUTAS ante el estímulo son parecidas, lo que difiere
+    es la línea base de quien responde (uno ya responde con contenido casi siempre: efecto techo), no la respuesta
+    al estímulo. Se etiqueta aparte para no leerla como "A recibe más de lo que da"."""
+    if not label.startswith('asimetrica'):
+        return label
+    a, b = (abs_key(out[k]) for k in keys)
+    return 'diferencia_de_linea_base' if a is not None and b is not None and abs(a - b) < thr else label
+
+
 def _dirs(pairs, names):
     a, b = names
     return {f'{a}_a_{b}': [p for p in pairs if p[0]['p'] == a], f'{b}_a_{a}': [p for p in pairs if p[0]['p'] == b]}
@@ -133,7 +144,9 @@ def _r2(pairs, names, c):
                  for v in out.values())
     for k in _dirs(pairs, names):
         out[k]['nivel'] = _level(out[k]['diferencia'], c['min_level_diff'])
-    out['etiqueta'] = _label({k: out[k]['diferencia'] for k in _dirs(pairs, names)}, enough, c['max_symmetric_diff'])
+    out['etiqueta'] = _baseline_only(_label({k: out[k]['diferencia'] for k in _dirs(pairs, names)}, enough,
+                                            c['max_symmetric_diff']), out, list(_dirs(pairs, names)),
+                                     lambda d: d['con_pregunta'], c['max_symmetric_diff'])
     return out
 
 
@@ -152,8 +165,10 @@ def _r3(pairs, names, c, dev):
                  for v in out.values())
     for k in _dirs(pairs, names):
         out[k]['nivel'] = _level(out[k]['diferencia_no_minimo'], c['min_level_diff'])
-    out['etiqueta'] = _label({k: out[k]['diferencia_no_minimo'] for k in _dirs(pairs, names)}, enough,
-                             c['max_symmetric_diff'])
+    out['etiqueta'] = _baseline_only(_label({k: out[k]['diferencia_no_minimo'] for k in _dirs(pairs, names)}, enough,
+                                            c['max_symmetric_diff']), out, list(_dirs(pairs, names)),
+                                     lambda d: None if d['tras_desarrollado']['minimo'] is None
+                                     else 1 - d['tras_desarrollado']['minimo'], c['max_symmetric_diff'])
     return out
 
 

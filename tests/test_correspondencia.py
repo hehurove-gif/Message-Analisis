@@ -90,3 +90,15 @@ def test_nivel_por_direccion():
     assert r['R1_extension']['A_a_B']['nivel'] == 'presente'
     a = correspondence(asimetrica())['R2_preguntas']
     assert a['A_a_B']['nivel'] == 'inversa' and a['B_a_A']['nivel'] == 'baja_o_nula'
+
+
+
+def test_diferencia_de_linea_base():
+    """Caso real del archivo 2: con pregunta 89% vs 88%; sin pregunta 70% vs 89% (A ya responde casi siempre)."""
+    from metrics.correspondence import _baseline_only
+    out = {'A_a_B': {'con_pregunta': 0.89}, 'B_a_A': {'con_pregunta': 0.88}}
+    f = lambda d: d['con_pregunta']   # noqa: E731
+    assert _baseline_only('asimetrica_hacia_A', out, ['A_a_B', 'B_a_A'], f, 0.10) == 'diferencia_de_linea_base'
+    out['B_a_A']['con_pregunta'] = 0.60
+    assert _baseline_only('asimetrica_hacia_A', out, ['A_a_B', 'B_a_A'], f, 0.10) == 'asimetrica_hacia_A'
+    assert _baseline_only('simetrica', out, ['A_a_B', 'B_a_A'], f, 0.10) == 'simetrica'

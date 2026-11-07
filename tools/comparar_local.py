@@ -13,7 +13,7 @@ PowerShell: el nombre del archivo suele traer el nombre de la persona y nunca se
 --alias N              acepta los alias sospechosos que el parser reporte en el archivo N (repetible)
 Columnas: proporción de A en cada unidad (B = 100% - A). "no mín." = turnos con contenido; "desarr." = turnos
 desarrollados. Latencia: p90 en minutos de cada uno (6 h). Retoma: veces que vuelve tras > 6 h (A/B).
-Correspondencia R1–R3: sim = simétrica; →A = A recibe más correspondencia formal de la que da; insuf.; sensible.
+Correspondencia R1–R3: sim = simétrica; →A = A recibe más correspondencia formal de la que da; insuf.; sensible; base = ante el estímulo ambos responden igual, solo difiere su línea base.
 Descriptivo: no interpreta interés, cercanía ni reciprocidad."""
 import argparse
 import os
@@ -52,7 +52,7 @@ def fila(i, out, kb=''):
 
 def _corr(label):
     return {'simetrica': 'sim', 'asimetrica_hacia_A': '→A', 'asimetrica_hacia_B': '→B', 'insuficiente': 'insuf.',
-            'sensible_a_umbrales': 'sensible'}.get(label, label)
+            'sensible_a_umbrales': 'sensible', 'diferencia_de_linea_base': 'base'}.get(label, label)
 
 
 def tabla(rows):
