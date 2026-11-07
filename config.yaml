@@ -65,6 +65,17 @@ latency:
   #  - sin_respuesta_observada: no hay ningún mensaje posterior (último
   #    turno del chat). Límite de los datos, no evidencia de indiferencia.
 
+habits:
+  # HÁBITOS TEMPORALES (provisional): mensajes por hora local, día y franja. Franjas [inicio, fin) en horas,
+  # EXPERIMENTALES. Hora local del teléfono que exportó (sin corrección de zona horaria).
+  day_parts: {madrugada: [0, 6], manana: [6, 12], tarde: [12, 19], noche: [19, 24]}
+
+style:
+  # ESTILO (provisional). Pregunta = "?"/"¿" o empieza con una de estas palabras (definiciones §4).
+  interrogatives: [qué, cómo, cuándo, dónde, adónde, por qué, cuál, cuáles, quién, quiénes, cuánto, cuánta, cuántos, cuántas, what, how, when, where, why, who, which]
+  # Mensaje "en mayúsculas": al menos N letras y todas mayúsculas.
+  min_letters_uppercase: 4
+
 temporal:
   period_granularities: [week, month]
   # Un cambio sostenido exige que la mediana móvil se desvíe más de
