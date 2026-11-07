@@ -105,7 +105,14 @@ Para cada candidato se registran, por separado: (a) la **siguiente intervención
 Son conceptos distintos:
 
 - **Balance de participación:** distribución de turnos, mensajes y palabras entre los participantes (palabras = fragmentos separados por espacios en mensajes de texto). Cada unidad se reporta **por separado**, con su distribución. **No se reduce todavía a una etiqueta única** como "participación equilibrada", y no existe un indicador compuesto de equilibrio hasta investigar cómo construirlo. Solo se puede describir, de forma neutra, que las distribuciones están relativamente cercanas o alejadas **en cada unidad medida**. La distribución de turnos depende del hueco de sesión; la de mensajes y palabras no.
-- **Reciprocidad:** correspondencia en la interacción, incluidos respuestas, seguimiento de temas, preguntas, iniciativas y apoyo. **Todavía no tiene definición operativa ni métricas propias**; hasta entonces ningún reporte la afirma como patrón. Que ambos tengan el mismo número de turnos no demuestra por sí mismo una relación recíproca.
+- **Reciprocidad:** concepto amplio (respuestas, seguimiento de temas, preguntas, iniciativas y apoyo). **No se mide completo**; seguimiento de temas y apoyo requieren análisis semántico (Fase 6). Que ambos tengan el mismo número de turnos no demuestra una relación recíproca.
+- **Correspondencia formal (v0.1, `metrics/correspondence.py`):** la parte medible de la reciprocidad. En los reportes se llama **correspondencia**, no reciprocidad, porque solo mide la **forma** de los mensajes. Unidad: **par de turnos** (turno de X seguido del siguiente turno de Y) **dentro de la misma sesión** y sin fuera de orden. Dirección `A_a_B` = estímulo de A, respuesta de B (lo que A recibe). Cuatro dimensiones separadas, **sin índice compuesto**:
+  - **R1 Extensión:** ρ de Spearman entre palabras sustantivas del estímulo y de la respuesta; mediana de la respuesta tras turnos mínimos, breves y desarrollados.
+  - **R2 Preguntas:** proporción de respuestas no mínimas tras un turno con pregunta menos la misma proporción tras turnos sin pregunta (línea base de quien responde, §9.3). No verifica que la pregunta se conteste.
+  - **R3 Turnos desarrollados:** distribución mínimo/breve/desarrollado de la respuesta tras un turno desarrollado vs tras uno breve; se etiqueta con la diferencia en proporción no mínima. Sensibilidad con umbrales 10/15/25.
+  - **R4 Iniciativa:** reanudaciones de sesión (2/6/12 h, con la robustez existente) e inicio del día lógico; reparto, no pares.
+  - **Etiquetas R1–R3:** `simetrica` (diferencia entre direcciones < 0.10; ρ: < 0.15), `asimetrica_hacia_A`/`_B` ("hacia A" = A recibe más correspondencia de la que da), `insuficiente` (< 30 pares por dirección o < 10 estímulos por grupo), `sensible_a_umbrales` (la dirección cambia con el hueco 2/6/12 h o el umbral 10/15/25; no se reporta como patrón). Umbrales experimentales en `config.yaml → reciprocity`.
+  - **No es** interés, afecto, cercanía ni calidad de la relación; un chat exportado es una muestra parcial.
 
 ## 7. Frecuencia de comunicación y cercanía (reserva para la clasificación de vínculos)
 
@@ -159,11 +166,13 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 - Cómo construir un indicador compuesto de balance de participación, si procede.
 - Qué características distinguen una expresión afectuosa general de una señal específicamente romántica, y qué tan fiable puede ser esa distinción (de eso depende cualquier uso de la especificidad).
 - Dónde está el límite entre `calidez_no_especifica` e `indicador_candidato`; por ejemplo, el elogio genérico ("eres la mejor") de un agradecimiento.
-- Definición operativa y métricas de reciprocidad.
+- Reciprocidad semántica (seguimiento de temas, apoyo, respuesta efectiva a preguntas); calibración de los umbrales de correspondencia.
 - Cómo estimar automáticamente la relación semántica de una intervención.
 - Calibración de los umbrales experimentales con datos reales.
 
 ## Registro de cambios
+
+**v0.7 (2026-11-07).** Correspondencia formal v0.1 (§6): R1–R4 por dirección, pares solo dentro de la misma sesión, sin índice compuesto, umbrales experimentales (30 pares, 10 estímulos, 0.10 / ρ 0.15). Se reporta como "correspondencia", no "reciprocidad".
 
 **v0.6 (2026-11-03).** Solo la enumeración de tipos de mensaje: `sistema` → `system` y `eliminado` → `deleted`, para no mantener dos enumeraciones incompatibles con el contrato v0.2; se aclara que el contenido es el original y que la normalización es un campo derivado. No cambia ninguna otra definición, parámetro ni resultado esperado de los tres chats.
 

@@ -1,6 +1,6 @@
-# Propuesta: definición operativa de reciprocidad (v0.1, PENDIENTE DE APROBACIÓN)
+# Propuesta: definición operativa de reciprocidad (v0.1, APROBADA E IMPLEMENTADA 2026-11-07)
 
-> Estado: **propuesta**. No hay código. `config.yaml → reciprocity.defined` sigue en `false` hasta que se apruebe.
+> Estado: **implementada** en `metrics/correspondence.py` (`reciprocity.defined: true`). Decisiones: 4 dimensiones; pares solo en la misma sesión; 30 pares / 10 estímulos / 0.10 (ρ 0.15); Spearman en R1; nombre en reportes: **correspondencia**.
 > Complementa `definiciones_operativas.md` §6 (Balance de participación y reciprocidad).
 
 ## 1. Problema

@@ -21,6 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from metrics.correspondence import correspondence  # noqa: E402
 from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
@@ -69,6 +70,7 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['latencias'] = latency_sensitivity(res.messages)
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
+        out['correspondencia'] = correspondence(res.messages)
     return out
 
 
@@ -156,6 +158,19 @@ def resumen(out, gap=None):
                      f"preguntas {_fmt(v['proporcion_preguntas'], True)}, emoji {_fmt(v['proporcion_con_emoji'], True)}, "
                      f"risa {_fmt(v['proporcion_con_risa'], True)}, mayúsculas {_fmt(v['proporcion_mayusculas'], True)}, "
                      f"solo acuse/risa/emoji {_fmt(v['proporcion_solo_minimo'], True)}, multimedia {_fmt(v['proporcion_media'], True)}")
+    c = out['correspondencia']
+    lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "
+                  f"{c['pares_misma_sesion']}; X_a_Y = lo que Y da a X) =="]
+    for key, name, f in (('R1_extension', 'R1 extensión (ρ)', 'rho'), ('R2_preguntas', 'R2 preguntas (dif.)', 'diferencia'),
+                         ('R3_desarrollados', 'R3 desarrollados (dif. no mín.)', 'diferencia_no_minimo')):
+        r = c[key]
+        dirs = [k for k in r if '_a_' in k]
+        lines.append(f"  {name}: " + '; '.join(f"{d} {_fmt(r[d][f])} (n={r[d]['n']})" for d in dirs) + f" -> {r['etiqueta']}")
+    r4 = c['R4_iniciativa']
+    lines.append('  R4 iniciativa: reanudaciones ' + '; '.join(f"{g} h " + '/'.join(f'{k} {v}' for k, v in d.items())
+                 for g, d in r4['reanudaciones'].items()) + f" ({r4['robustez_reanudaciones']}); inicia día "
+                 + '/'.join(f'{k} {v}' for k, v in r4['inicia_dia'].items()))
+    lines.append('  ' + c['nota'])
     lines += ['', 'Observaciones descriptivas: no interpretan interés, cercanía ni reciprocidad.']
     return '\n'.join(lines)
 
