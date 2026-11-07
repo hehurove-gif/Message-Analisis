@@ -1,16 +1,16 @@
 # Formatos de exportación de WhatsApp
 
-Versión 0.2 · 2026-11-03 · Fase 1.2 (el parser existe; todos los formatos siguen siendo simulados o documentados por terceros, ninguno observado). Este documento dice qué sabemos, qué suponemos y qué no se puede saber de un TXT exportado. El contrato de lo que el parser debe producir está en `contrato_parser.md`; los fixtures, en `tests/fixtures/whatsapp/`.
+Versión 0.3 · 2026-11-07 · Fase 1.3 (dos formatos ya **observados** en exportaciones reales; el resto sigue simulado o documentado por terceros). Este documento dice qué sabemos, qué suponemos y qué no se puede saber de un TXT exportado. El contrato de lo que el parser debe producir está en `contrato_parser.md`; los fixtures, en `tests/fixtures/whatsapp/`.
 
 ## 1. Niveles de evidencia
 
-Cada afirmación sobre un formato lleva uno de estos niveles. **Ningún formato de este proyecto está en el nivel "observado".**
+Cada afirmación sobre un formato lleva uno de estos niveles. Solo `android_12h_es_nnbsp` y `android_12h_en_mdy` están en el nivel "observado" (sección 9.1).
 
 | Nivel | Significa | Estado actual |
 | --- | --- | --- |
 | **Oficial** | Lo publica WhatsApp | Solo que la exportación es un archivo de texto, con o sin multimedia, y que no se puede reimportar. WhatsApp **no publica el formato de las líneas**. |
 | **Documentado por terceros** | Lo describen la documentación o el código de proyectos abiertos que leen estas exportaciones | Cuatro familias de encabezado (sección 3). No las he verificado con exportaciones reales. |
-| **Observado** | Visto en una exportación real examinada en este proyecto | **Ninguno.** No se ha analizado ninguna exportación real. |
+| **Observado** | Visto en una exportación real examinada en este proyecto | `android_12h_es_nnbsp` (4 exportaciones) y `android_12h_en_mdy` (1). Examinadas en local por el usuario; solo se compartieron conteos y códigos. |
 | **Simulado** | Escrito por mí para probar el parser, por extrapolación de lo documentado o sin respaldo | Todos los fixtures. Los datos son ficticios. |
 
 Consecuencia: los fixtures prueban que el parser **hace lo que el contrato dice** con variaciones plausibles; **no demuestran** que cubra lo que WhatsApp produce hoy en cualquier teléfono, versión o idioma. Un formato pasa de simulado a observado solo cuando alguien lo compara con una exportación real (sección 9).
@@ -31,9 +31,9 @@ Patrón = forma del encabezado de un mensaje; después del encabezado va `Autor:
 | --- | --- | --- | --- | --- |
 | `android_24h_coma` | Android | `14/10/2026, 09:12 - ` | Documentado por terceros (chatpack, "EU2": `15/01/2024, 10:30 - `) | A01, A08, C01-C03, D01-D09, E01-E05 |
 | `android_24h_sin_coma` | Android | `14/10/26 09:12 - ` (o `14/10/2026 09:12 - `) | **Sin respaldo** en las fuentes consultadas. Es el formato de los chats de `data/synthetic/` (con año de 4 dígitos), escrito por mí; A02 usa año de 2 dígitos | A02, `data/synthetic/00-02` |
-| `android_12h_es_nnbsp` | Android | `14/10/2026, 9:12 a. m. - ` (U+202F antes de `a. m.`) | **Sin respaldo.** Extrapolación | A03 |
+| `android_12h_es_nnbsp` | Android | `14/10/2026, 9:12 a. m. - ` (U+202F antes de `a. m.`) | **Observado** en 4 exportaciones reales (Android, español; 2026-11). La fecha de 2 o 4 dígitos de año no se registró | A03 |
 | `android_12h_compacto` | Android | `14/10/2026, 9:12 a.m. - ` | **Sin respaldo.** Extrapolación | A04 |
-| `android_12h_en_mdy` | Android | `10/14/26, 9:12 AM - ` | **Sin respaldo directo para Android.** chatpack documenta mes/día con AM/PM, pero en iOS | A05 |
+| `android_12h_en_mdy` | Android | `10/14/26, 9:12 AM - ` | **Observado** en 1 exportación real (Android; la primera exportación de un chat cuya re-exportación salió en `es_nnbsp`; causa no confirmada) | A05 |
 | `android_24h_puntos_segundos` | Android | `14.10.2026, 09:12:05 - ` | Parcial: chatpack documenta `15.01.2024, 10:30 - ` (sin segundos); los segundos son extrapolación | A06 |
 | `android_24h_guiones` | Android | `14-10-2026 09:12 - ` | **Sin respaldo** | A07 |
 | `ios_24h_corchetes` | iOS | `[14/10/2026, 09:12:05] ` | Extrapolación de la familia con corchetes documentada por chatpack | B01, D03 |
@@ -133,6 +133,15 @@ Avisos de chat individual que no cuentan como evidencia de grupo (también simul
 ## 9. Cómo pasar un formato de "simulado" a "observado"
 
 Si tienes una exportación real, no hace falta compartir conversaciones. Basta con tres o cuatro encabezados con nombres y texto reemplazados (p. ej. `14/10/2026, 09:12 - Persona1: texto`), más: sistema operativo y versión de WhatsApp, idioma y región del teléfono, y cómo se ven un aviso del sistema, una multimedia omitida y un mensaje eliminado. Con eso se actualiza el catálogo, se ajustan los fixtures y se corrige la columna "Respaldo".
+
+### 9.1 Observaciones con exportaciones reales (2026-11-07)
+
+| Formato | Exportaciones | Notas |
+| --- | --- | --- |
+| `android_12h_es_nnbsp` | 4 | Espacio estrecho U+202F antes de `a. m.`/`p. m.` |
+| `android_12h_en_mdy` | 1 | Primera exportación de un chat; su re-exportación posterior salió en `es_nnbsp` |
+
+Sin confirmar: región del teléfono, versión de WhatsApp y por qué la misma persona obtuvo dos formatos distintos. Pendientes en esas exportaciones: avisos del sistema sin catalogar y timestamps fuera de orden; se ubican sin ver contenido con `tools/revisar_avisos_y_orden_local.py`. Un formato observado en un solo teléfono no autoriza a llamar al parser "compatible con WhatsApp".
 
 ## 10. Preguntas abiertas
 
