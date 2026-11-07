@@ -33,8 +33,6 @@ from validar_exportacion_local import is_inside  # noqa: E402
 
 
 def main(argv=None):
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(encoding='utf-8', errors='replace')   # consola Windows cp1252
     if hasattr(sys.stdout, 'reconfigure'):          # Windows/cp1252 al redirigir: no fallar por ρ o →
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
