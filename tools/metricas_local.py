@@ -108,11 +108,12 @@ def _evolucion(ev, lab):
     p = ev['parametros']
     out = [f"== Evolución por {'mes' if ev['granularidad'] == 'month' else 'semana'} (% de {lab[a]}; — = menos de "
            f"{p['min_ev']} eventos) ==",
-           f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'días':>5} "
+           f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'cierra A':>8} {'días':>5} "
            f"{'lat A':>6} {'lat B':>6}"]
     for r in ev['periodos']:
         out.append(f"  {r['periodo']:<9} {r['mensajes']:>6} {_fmt(r['mensajes_A'], True):>6} {_fmt(r['palabras_A'], True):>7} "
-                   f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['dias_activos'], True):>5} "
+                   f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['cierra_A'], True):>8} "
+                   f"{_fmt(r['dias_activos'], True):>5} "
                    f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}" + ('  parcial' if r['parcial'] else ''))
     det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
            if v.get('detectado')]
@@ -207,7 +208,9 @@ def resumen(out, gap=None):
                   f"{lab[k]} {v} ({_fmt(se['proporcion_cierra'][k], True)})" for k, v in se['cierra'].items()),
               f"  días: {co['dias_activos']} de {co['dias_del_rango']} ({_fmt(co['proporcion_dias_activos'], True)}); racha más "
               f"larga {co['racha_mas_larga_dias']} días; racha al final {co['racha_al_final_dias']}; pausa más larga "
-              f"{co['pausa_mas_larga_dias']} días"]
+              f"{co['pausa_mas_larga_dias']} días",
+              f"  días en que escribe solo uno: " + ' / '.join(f"{lab[k]} {v}" for k, v in co['dias_solo_uno'].items())
+              + f" (ambos: {co['dias_ambos']})"]
     for k, v in rt['fragmentacion'].items():
         lines.append(f"  {lab[k]}: {_fmt(v['mensajes_por_turno_mediana'])} mensajes/turno (p90 {_fmt(v['mensajes_por_turno_p90'])}), "
                      f"turnos de un solo mensaje {_fmt(v['proporcion_turnos_de_un_mensaje'], True)}, "

@@ -5,6 +5,8 @@ Series por periodo (todas se refieren a A; la de B es el complemento o su propia
   palabras_A          proporción de palabras sustantivas de A
   desarrollados_A     proporción de A entre los turnos desarrollados (umbral de turn_content)
   inicia_dia_A        proporción de días lógicos del periodo que abre A
+  cierra_A            proporción de sesiones (sin la última del chat) cuyo último turno sin respuesta es de A
+                      (necesita >= min_events sesiones en el periodo)
   dias_activos        días lógicos con mensajes / días del periodo (frecuencia de contacto, §7)
   latencia_A/B        mediana de minutos que tarda cada uno dentro de la sesión (latencia <= hueco)
 El periodo de un turno o de una latencia es el de su primer mensaje / de la intervención. Un periodo con menos de
@@ -27,9 +29,10 @@ import yaml
 from metrics.latency import turn_latencies
 from metrics.text_units import DEFAULT_ACKS, substantive_words
 from metrics.turn_content import classify_turn
+from segmentation.sessions import build_sessions
 from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES, build_turns
 
-SHARE_SERIES = ('mensajes_A', 'palabras_A', 'desarrollados_A', 'inicia_dia_A', 'dias_activos')
+SHARE_SERIES = ('mensajes_A', 'palabras_A', 'desarrollados_A', 'inicia_dia_A', 'cierra_A', 'dias_activos')
 LAT_SERIES = ('latencia_A', 'latencia_B')
 
 
@@ -131,6 +134,10 @@ def trends(messages, granularity=None, cfg_path=None):
         ms = people[pos[t.seq_primero]:pos[t.seq_ultimo] + 1]
         if classify_turn(ms, c['acks'], c['dev'])[0] == 'desarrollado':
             dev[period_key(lday(t.primer_ts), gran)][t.participante] += 1
+    closes = defaultdict(lambda: defaultdict(int))
+    for se in build_sessions(build_turns(people, session_gap_hours=c['gap'])):
+        if not se.es_ultima:
+            closes[period_key(lday(se.ultimo_ts), gran)][se.ultimo_mensaje] += 1
     lat = defaultdict(lambda: defaultdict(list))
     seq_ts = {m.seq: m.timestamp_local for m in people}
     turns = {t.index: t for t in build_turns(people, session_gap_hours=c['gap'])}
@@ -149,6 +156,7 @@ def trends(messages, granularity=None, cfg_path=None):
                      'palabras_A': _share(words[k][a], sum(words[k].values()), c['min_ev'], n),
                      'desarrollados_A': _share(dev[k][a], sum(dev[k].values()), c['min_ev'], n),
                      'inicia_dia_A': _share(opener[k][a], len(days[k]), c['min_ev'], n),
+                     'cierra_A': _share(closes[k][a], sum(closes[k].values()), c['min_ev'], sum(closes[k].values())),
                      'dias_activos': round(len(days[k]) / _period_days(k, gran), 3),
                      **{f'latencia_{p}': (statistics.median(lat[k][p]) if len(lat[k][p]) >= c['min_ev'] else None)
                         for p in (a, b)}})

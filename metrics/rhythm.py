@@ -4,7 +4,8 @@ SESIONES (hueco de config): duración transcurrida (mediana, p90; no es activida
 sesión, y quién deja el último turno sin respuesta antes de que la sesión se corte ("cierra"; excluye la última del
 chat, que es fin de los datos). Cerrar no significa terminar la conversación a propósito.
 CONTINUIDAD (días lógicos, `habits.day_start_hour`): días activos / días del rango, racha más larga de días
-seguidos con mensajes, racha al final de los datos y pausa más larga (días sin mensajes entre dos días activos).
+seguidos con mensajes, racha al final de los datos, pausa más larga y días en que
+escribe SOLO uno (sin ningún mensaje del otro ese día lógico; no implica que lo ignore: puede no haber leído) (días sin mensajes entre dos días activos).
 FRAGMENTACIÓN por participante: mensajes por turno y mensajes por ráfaga (`burst_max_gap_seconds`): quién parte lo
 que dice en varios mensajes cortos. Hábito de escritura (§9.3), no una actitud. Solo números."""
 import statistics
@@ -43,7 +44,12 @@ def rhythm(messages, session_gap_hours=None, cfg_path=None):
     closes = {n: sum(1 for s in sess if not s.es_ultima and s.ultimo_mensaje == n) for n in names}
     n_close = sum(closes.values())
 
-    days = sorted({(datetime.fromisoformat(m.timestamp_local) - timedelta(hours=day_start)).date() for m in people})
+    who_by_day = {}
+    for m in people:
+        who_by_day.setdefault((datetime.fromisoformat(m.timestamp_local) - timedelta(hours=day_start)).date(),
+                              set()).add(m.participante)
+    days = sorted(who_by_day)
+    solo = {n: sum(1 for w in who_by_day.values() if w == {n}) for n in names}
     span = (days[-1] - days[0]).days + 1 if days else 0
     best = run = 1 if days else 0
     pause = 0
@@ -71,6 +77,8 @@ def rhythm(messages, session_gap_hours=None, cfg_path=None):
             'continuidad': {'dias_activos': len(days), 'dias_del_rango': span,
                             'proporcion_dias_activos': round(len(days) / span, 3) if span else None,
                             'racha_mas_larga_dias': best, 'racha_al_final_dias': run if days else 0,
-                            'pausa_mas_larga_dias': pause},
+                            'pausa_mas_larga_dias': pause,
+                            'dias_ambos': sum(1 for w in who_by_day.values() if len(w) == 2),
+                            'dias_solo_uno': solo},
             'fragmentacion': frag,
             'nota': 'duración transcurrida, no actividad; cerrar la sesión no implica intención; hábitos de escritura'}

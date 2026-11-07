@@ -32,6 +32,7 @@ def test_detecta_cambio_de_quien_abre_el_dia():
     assert ch['detectado'] and ch['direccion'] == 'baja'
     assert r['cambios_sostenidos']['mensajes_A']['detectado'] is False      # los mensajes siguen 50/50
     assert r['periodos'][0]['dias_activos'] == 1.0
+    assert r['periodos'][0]['cierra_A'] == 0.0 and r['periodos'][-1]['cierra_A'] == 1.0   # cierra quien no abre
 
 
 def test_semanal_y_sin_texto():
