@@ -16,6 +16,7 @@ desarrollados. Latencia: p90 en minutos de cada uno (6 h). Retoma: veces que vue
 Correspondencia R1–R3: sim = simétrica; →A = A recibe más correspondencia formal de la que da; insuf.; sensible; base = ante el estímulo ambos responden igual, solo difiere su línea base.
 ·nivel (pres/baja/inv) por dirección A_a_B/B_a_A, o uno solo si coinciden; ver config reciprocity.min_level_*.
 cierra A = sesiones cuyo último turno sin respuesta es de A; días act. = días con mensajes / días del rango;
+b.días / b.noches A = % de los días con saludo/despedida en que A lo dice primero;
 solo A/B = días en que solo escribe A / solo B; racha = máximo de días seguidos con mensajes.
 Descriptivo: no interpreta interés, cercanía ni reciprocidad."""
 import argparse
@@ -26,7 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from metricas_local import analizar  # noqa: E402
 
 COLS = ['#', 'KB', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'desarr. A 10/15/25', 'palabras A', 'p90 lat A/B', 'retoma A/B',
-        'inicia día A', 'cierra A', 'días act.', 'solo A/B', 'racha', 'pausas >30d', 'R1 ext.', 'R2 preg.', 'R3 desarr.']
+        'inicia día A', 'cierra A', 'días act.', 'solo A/B', 'b.días A', 'b.noches A', 'racha', 'pausas >30d', 'R1 ext.', 'R2 preg.', 'R3 desarr.']
 
 
 def _pct(x):
@@ -51,7 +52,9 @@ def fila(i, out, kb=''):
             f"{lp['A']['n_entre']}/{lp['B']['n_entre']}", _pct(h['A']['proporcion_inicia_el_dia']),
             _pct(out['ritmo']['sesiones']['proporcion_cierra']['A']),
             _pct(out['ritmo']['continuidad']['proporcion_dias_activos']),
-            '/'.join(str(v) for v in out['ritmo']['continuidad']['dias_solo_uno'].values()), str(out['ritmo']['continuidad']['racha_mas_larga_dias']),
+            '/'.join(str(v) for v in out['ritmo']['continuidad']['dias_solo_uno'].values()),
+            _pct(out['saludos']['por_clase']['manana']['proporcion_dias_A']),
+            _pct(out['saludos']['por_clase']['noche']['proporcion_dias_A']), str(out['ritmo']['continuidad']['racha_mas_larga_dias']),
             str(lat['pausas_largas']['n'])] + [_corr(out['correspondencia'][k])
                                                for k in ('R1_extension', 'R2_preguntas', 'R3_desarrollados')]
 

@@ -7,6 +7,7 @@ Series por periodo (todas se refieren a A; la de B es el complemento o su propia
   inicia_dia_A        proporción de días lógicos del periodo que abre A
   cierra_A            proporción de sesiones (sin la última del chat) cuyo último turno sin respuesta es de A
                       (necesita >= min_events sesiones en el periodo)
+  multimedia_A/B      proporción de los mensajes de cada uno que son multimedia omitida
   dias_activos        días lógicos con mensajes / días del periodo (frecuencia de contacto, §7)
   latencia_A/B        mediana de minutos que tarda cada uno dentro de la sesión (latencia <= hueco)
 El periodo de un turno o de una latencia es el de su primer mensaje / de la intervención. Un periodo con menos de
@@ -32,7 +33,8 @@ from metrics.turn_content import classify_turn
 from segmentation.sessions import build_sessions
 from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES, build_turns
 
-SHARE_SERIES = ('mensajes_A', 'palabras_A', 'desarrollados_A', 'inicia_dia_A', 'cierra_A', 'dias_activos')
+SHARE_SERIES = ('mensajes_A', 'palabras_A', 'desarrollados_A', 'inicia_dia_A', 'cierra_A', 'dias_activos',
+                'multimedia_A', 'multimedia_B')
 LAT_SERIES = ('latencia_A', 'latencia_B')
 
 
@@ -117,11 +119,13 @@ def trends(messages, granularity=None, cfg_path=None):
     lday = lambda ts: (datetime.fromisoformat(ts) - timedelta(hours=c['day_start'])).date()   # noqa: E731
     msgs, words, days, opener = defaultdict(lambda: defaultdict(int)), defaultdict(lambda: defaultdict(int)), \
         defaultdict(set), defaultdict(lambda: defaultdict(int))
+    media = defaultdict(lambda: defaultdict(int))
     first_of_day = {}
     for m in people:
         d = lday(m.timestamp_local)
         k = period_key(d, gran)
         msgs[k][m.participante] += 1
+        media[k][m.participante] += m.tipo == 'media'
         if m.tipo == 'texto':
             words[k][m.participante] += len(substantive_words(m.texto, c['acks']))
         days[k].add(d)
@@ -157,6 +161,8 @@ def trends(messages, granularity=None, cfg_path=None):
                      'desarrollados_A': _share(dev[k][a], sum(dev[k].values()), c['min_ev'], n),
                      'inicia_dia_A': _share(opener[k][a], len(days[k]), c['min_ev'], n),
                      'cierra_A': _share(closes[k][a], sum(closes[k].values()), c['min_ev'], sum(closes[k].values())),
+                     **{f'multimedia_{x}': _share(media[k][p], msgs[k][p], c['min_ev'], msgs[k][p])
+                        for x, p in (('A', a), ('B', b))},
                      'dias_activos': round(len(days[k]) / _period_days(k, gran), 3),
                      **{f'latencia_{p}': (statistics.median(lat[k][p]) if len(lat[k][p]) >= c['min_ev'] else None)
                         for p in (a, b)}})

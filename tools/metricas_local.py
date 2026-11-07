@@ -22,6 +22,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from metrics.correspondence import correspondence  # noqa: E402
+from metrics.greetings import greetings  # noqa: E402
 from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
@@ -78,6 +79,7 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
         out['ritmo'] = rhythm(res.messages)
+        out['saludos'] = greetings(res.messages)
         out['correspondencia'] = correspondence(res.messages)
         out['evolucion'] = trends(res.messages, granularity=granularity)
     return out
@@ -108,11 +110,12 @@ def _evolucion(ev, lab):
     p = ev['parametros']
     out = [f"== Evolución por {'mes' if ev['granularidad'] == 'month' else 'semana'} (% de {lab[a]}; — = menos de "
            f"{p['min_ev']} eventos) ==",
-           f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'cierra A':>8} {'días':>5} "
+           f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'cierra A':>8} {'media A':>7} {'media B':>7} {'días':>5} "
            f"{'lat A':>6} {'lat B':>6}"]
     for r in ev['periodos']:
         out.append(f"  {r['periodo']:<9} {r['mensajes']:>6} {_fmt(r['mensajes_A'], True):>6} {_fmt(r['palabras_A'], True):>7} "
                    f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['cierra_A'], True):>8} "
+                   f"{_fmt(r['multimedia_A'], True):>7} {_fmt(r['multimedia_B'], True):>7} "
                    f"{_fmt(r['dias_activos'], True):>5} "
                    f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}" + ('  parcial' if r['parcial'] else ''))
     det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
@@ -215,6 +218,15 @@ def resumen(out, gap=None):
         lines.append(f"  {lab[k]}: {_fmt(v['mensajes_por_turno_mediana'])} mensajes/turno (p90 {_fmt(v['mensajes_por_turno_p90'])}), "
                      f"turnos de un solo mensaje {_fmt(v['proporcion_turnos_de_un_mensaje'], True)}, "
                      f"{_fmt(v['mensajes_por_rafaga_media'])} mensajes/ráfaga")
+
+    sg = out['saludos']['por_clase']
+    lines += ['', '== Saludos y despedidas (línea base; no son indicadores de interés) ==']
+    for k, name in (('manana', 'buenos días'), ('noche', 'buenas noches')):
+        v = sg[k]
+        lines.append(f"  {name}: mensajes " + ' / '.join(f"{lab[x]} {n}" for x, n in v['mensajes'].items())
+                     + '; días en que lo dice primero ' + ' / '.join(f"{lab[x]} {n}" for x, n in v['dias_lo_dice_primero'].items())
+                     + '; el otro corresponde ese día ' + ' / '.join(
+                         f"a {lab[x]} {_fmt(n, True)}" for x, n in v['el_otro_corresponde'].items()))
 
     c = out['correspondencia']
     lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "

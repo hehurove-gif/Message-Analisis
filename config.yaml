@@ -89,6 +89,12 @@ style:
   # Mensaje "en mayúsculas": al menos N letras y todas mayúsculas.
   min_letters_uppercase: 4
 
+greetings:
+  # SALUDOS / DESPEDIDAS convencionales (metrics/greetings.py). Coincidencia por subcadena, minúsculas y sin acentos.
+  # Línea base: no son indicadores de interés. Listas EXPERIMENTALES; "descansa" puede aparecer fuera de la noche.
+  manana: ["buenos días", "buen día", "good morning"]
+  noche: ["buenas noches", "good night", "que descanses", "descansa"]
+
 temporal:
   # EVOLUCIÓN (metrics/trends.py). Periodo por defecto: mes; semana ISO como alternativa.
   period_granularities: [week, month]

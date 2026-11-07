@@ -172,6 +172,8 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 
 ## Registro de cambios
 
+**v0.10 (2026-11-07).** Saludos y despedidas (`metrics/greetings.py`, config `greetings`): mensajes con "buenos días"/"buenas noches" (y variantes), días en que cada uno lo dice primero y si el otro corresponde ese día lógico; línea base, no indicador de interés. Evolución: % de multimedia de cada uno por periodo.
+
 **v0.9 (2026-11-07).** Ritmo (`metrics/rhythm.py`): duración, turnos y mensajes por sesión; quién deja el último turno sin respuesta antes del corte ("cierra", sin la última sesión del chat; no implica intención); días activos, racha más larga y pausa más larga en días lógicos; mensajes por turno y por ráfaga por participante.
 
 **v0.8 (2026-11-07).** Evolución temporal (Fase 4, `metrics/trends.py`): por mes (semana ISO opcional) se reportan % de mensajes, palabras sustantivas, turnos desarrollados e inicio del día de A, días activos (§7) y latencia mediana dentro de la sesión de cada uno. Cambio sostenido = mediana móvil (4 periodos) alejada de la base de los 4 primeros más de 0.15 absoluto (proporciones) o 50% relativo (latencias) durante 3 periodos seguidos. Periodos con < 5 mensajes quedan sin dato.
