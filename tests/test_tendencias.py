@@ -38,3 +38,10 @@ def test_semanal_y_sin_texto():
     r = trends(_chat(months=3), granularity='week')
     assert r['periodos'][0]['periodo'].startswith('2025-W')
     assert 'hola' not in str(r) and 'Ana' not in str(r)
+
+
+def test_latencia_base_cero_no_es_cambio():
+    """Caso real: medianas 0 -> 1 min con resolución por minuto no deben marcar 'sube'."""
+    assert sustained_change([0, 0, 0, 0, 1, 1, 1, 2, 1], 4, 3, 0.5, True, 5)['detectado'] is False
+    assert sustained_change([0, 0, 0, 0, 9, 9, 9, 9, 9], 4, 3, 0.5, True, 5)['detectado'] is True
+    assert sustained_change([10, 10, 10, 10, 13, 13, 13, 13], 4, 3, 0.5, True, 5)['detectado'] is False

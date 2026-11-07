@@ -13,7 +13,8 @@ El periodo de un turno o de una latencia es el de su primer mensaje / de la inte
 CAMBIO SOSTENIDO (config `temporal`): línea base = mediana de los primeros `rolling_window_periods` periodos con
 datos; mediana móvil de la misma ventana. Hay cambio cuando la mediana móvil se aleja de la base más que el umbral
 durante `sustained_change_min_periods` periodos seguidos. Umbral: proporciones -> diferencia ABSOLUTA
-`share_deviation_abs`; latencias -> diferencia RELATIVA `deviation_ratio`. Valores experimentales.
+`share_deviation_abs`; latencias -> diferencia RELATIVA `deviation_ratio` Y al menos `latency_min_change_minutes` (con resolución
+de minuto y medianas de 0–2 min, pasar de 0 a 1 no es un cambio; con base 0 solo cuenta la diferencia absoluta). Valores experimentales.
 `desde` = primer periodo en que la MEDIANA MÓVIL cruza el umbral: va con retraso (≈ media ventana) respecto
 al cambio real; mira la tabla de periodos para ubicarlo. Describe cuándo cambia una cifra; no explica por qué ni interpreta interés."""
 import statistics
@@ -37,7 +38,7 @@ def _cfg(path=None):
     t, tc = raw.get('temporal', {}), raw.get('turn_content', {})
     return {'gran': t.get('default_granularity', 'month'), 'win': t.get('rolling_window_periods', 4),
             'n_seq': t.get('sustained_change_min_periods', 3), 'ratio': t.get('deviation_ratio', 0.5),
-            'abs': t.get('share_deviation_abs', 0.15),
+            'abs': t.get('share_deviation_abs', 0.15), 'lat_min': t.get('latency_min_change_minutes', 5),
             'min_ev': raw.get('data_sufficiency', {}).get('min_events_per_period_for_trend', 5),
             'day_start': raw.get('habits', {}).get('day_start_hour', 5),
             'acks': tc.get('acknowledgements', DEFAULT_ACKS), 'dev': tc.get('developed_min_words', 15),
@@ -73,7 +74,7 @@ def _share(num, den, min_ev, n):
     return round(num / den, 3) if den and n >= min_ev else None
 
 
-def sustained_change(values, win, n_seq, thr, relative):
+def sustained_change(values, win, n_seq, thr, relative, min_abs=0):
     """{'detectado', 'desde', 'direccion', 'base'} sobre una lista de valores (None = sin datos)."""
     pts = [(i, v) for i, v in enumerate(values) if v is not None]
     if len(pts) < win + n_seq:
@@ -84,6 +85,10 @@ def sustained_change(values, win, n_seq, thr, relative):
         roll = statistics.median(v for _, v in pts[j - win + 1:j + 1])
         dev = (roll - base) / base if relative and base else roll - base
         s = (dev > thr) - (dev < -thr)
+        if relative and abs(roll - base) < min_abs:   # base 0 o cambios de 1-2 min: ruido de la resolución por minuto
+            s = 0
+        if relative and not base and abs(roll - base) >= min_abs:
+            s = 1 if roll > base else -1
         if s and s == sign:
             run += 1
         elif s:
@@ -148,10 +153,11 @@ def trends(messages, granularity=None, cfg_path=None):
     changes = {}
     for s in SHARE_SERIES + LAT_SERIES:
         ch = sustained_change([r[s] for r in rows], c['win'], c['n_seq'],
-                              c['ratio'] if s in LAT_SERIES else c['abs'], s in LAT_SERIES)
+                              c['ratio'] if s in LAT_SERIES else c['abs'], s in LAT_SERIES,
+                              c['lat_min'] if s in LAT_SERIES else 0)
         if ch.get('detectado'):
             ch['desde'] = rows[ch.pop('desde_indice')]['periodo']
         changes[s] = ch
     return {'granularidad': gran, 'periodos': rows, 'cambios_sostenidos': changes,
-            'parametros': {k: c[k] for k in ('win', 'n_seq', 'ratio', 'abs', 'min_ev', 'gap')},
+            'parametros': {k: c[k] for k in ('win', 'n_seq', 'ratio', 'abs', 'lat_min', 'min_ev', 'gap')},
             'nota': 'describe cuándo cambia una cifra; no explica por qué ni interpreta interés'}

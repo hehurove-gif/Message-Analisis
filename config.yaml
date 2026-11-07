@@ -96,6 +96,8 @@ temporal:
   # Para series que son PROPORCIONES (p. ej. % de mensajes de A) el umbral es una diferencia ABSOLUTA;
   # `deviation_ratio` (relativo) se usa solo para latencias. Experimental.
   share_deviation_abs: 0.15
+  # Latencias: además del 50% relativo, el cambio debe ser de al menos N minutos (la exportación no trae segundos).
+  latency_min_change_minutes: 5
   # Un cambio sostenido exige que la mediana móvil se desvíe más de
   # `deviation_ratio` respecto a la línea base durante N periodos seguidos.
   rolling_window_periods: 4

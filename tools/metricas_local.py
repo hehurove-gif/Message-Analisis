@@ -114,7 +114,7 @@ def _evolucion(ev, lab):
                    f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}")
     det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
            if v.get('detectado')]
-    out.append(f"  cambios sostenidos ({p['n_seq']} periodos; proporciones ±{p['abs']}, latencias ±{p['ratio'] * 100:.0f}%): "
+    out.append(f"  cambios sostenidos ({p['n_seq']} periodos; proporciones ±{p['abs']}, latencias ±{p['ratio'] * 100:.0f}% y ≥{p['lat_min']} min): "
                + ('; '.join(det) if det else 'ninguno'))
     out.append('  lat = mediana de minutos dentro de la sesión; días = días con mensajes / días del periodo')
     return out
