@@ -26,6 +26,7 @@ from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
 from metrics.participation import participation  # noqa: E402
+from metrics.rhythm import rhythm  # noqa: E402
 from metrics.style import style  # noqa: E402
 from metrics.trends import trends  # noqa: E402
 from metrics.turn_content import turn_content  # noqa: E402
@@ -76,6 +77,7 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['latencias'] = latency_sensitivity(res.messages)
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
+        out['ritmo'] = rhythm(res.messages)
         out['correspondencia'] = correspondence(res.messages)
         out['evolucion'] = trends(res.messages, granularity=granularity)
     return out
@@ -195,6 +197,22 @@ def resumen(out, gap=None):
                      f"preguntas {_fmt(v['proporcion_preguntas'], True)}, emoji {_fmt(v['proporcion_con_emoji'], True)}, "
                      f"risa {_fmt(v['proporcion_con_risa'], True)}, mayúsculas {_fmt(v['proporcion_mayusculas'], True)}, "
                      f"solo acuse/risa/emoji {_fmt(v['proporcion_solo_minimo'], True)}, multimedia {_fmt(v['proporcion_media'], True)}")
+    rt = out['ritmo']
+    se, co = rt['sesiones'], rt['continuidad']
+    lines += ['', f"== Ritmo (hueco de sesión {rt['hueco_horas']} h) ==",
+              f"  sesiones: {se['n']} ({se['suficiencia_de_datos']}); duración mediana {_fmt(se['duracion_minutos_mediana'])} min "
+              f"(p90 {_fmt(se['duracion_minutos_p90'])}), {_fmt(se['turnos_por_sesion_mediana'])} turnos y "
+              f"{_fmt(se['mensajes_por_sesion_mediana'])} mensajes por sesión",
+              '  deja el último turno sin respuesta (cierra): ' + ' / '.join(
+                  f"{lab[k]} {v} ({_fmt(se['proporcion_cierra'][k], True)})" for k, v in se['cierra'].items()),
+              f"  días: {co['dias_activos']} de {co['dias_del_rango']} ({_fmt(co['proporcion_dias_activos'], True)}); racha más "
+              f"larga {co['racha_mas_larga_dias']} días; racha al final {co['racha_al_final_dias']}; pausa más larga "
+              f"{co['pausa_mas_larga_dias']} días"]
+    for k, v in rt['fragmentacion'].items():
+        lines.append(f"  {lab[k]}: {_fmt(v['mensajes_por_turno_mediana'])} mensajes/turno (p90 {_fmt(v['mensajes_por_turno_p90'])}), "
+                     f"turnos de un solo mensaje {_fmt(v['proporcion_turnos_de_un_mensaje'], True)}, "
+                     f"{_fmt(v['mensajes_por_rafaga_media'])} mensajes/ráfaga")
+
     c = out['correspondencia']
     lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "
                   f"{c['pares_misma_sesion']}; X_a_Y = lo que Y da a X) =="]
