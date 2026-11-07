@@ -94,3 +94,27 @@ def test_suficiencia_y_candado():
     assert set(out) == {2, 6, 12}
     assert all(v['suficiencia_de_datos'] in ('suficiente', 'insuficiente')
                for v in out[6]['por_participante_que_interviene'].values())
+
+
+# --- resolución, distribución y suficiencia por subgrupo -------------------------------------------------------
+
+def test_resolucion_y_nota_del_mismo_minuto():
+    s = latency_summary(msgs('5/13/26, 9:00 AM - Ana: a\n5/13/26, 9:00 AM - Beto: b\n'))
+    assert s['resolucion'] == 'minuto' and 'mismo minuto' in s['nota']
+    assert s['agregado']['mediana_general'] == 0 and s['agregado']['distribucion']['mismo_minuto'] == 1.0
+
+
+def test_distribucion_acumulada():
+    from metrics.latency import distribution
+    d = distribution([0, 0, 3, 10, 120], [0, 1, 5, 15, 60])
+    assert d == {'mismo_minuto': 0.4, 'hasta_1_min': 0.4, 'hasta_5_min': 0.6, 'hasta_15_min': 0.8,
+                 'hasta_60_min': 0.8}
+    assert distribution([], [0, 5]) == {'mismo_minuto': None, 'hasta_5_min': None}
+
+
+def test_suficiencia_por_subgrupo():
+    # una sola latencia entre sesiones: su "mediana" se reporta pero marcada insuficiente
+    s = latency_summary(msgs('5/13/26, 11:30 PM - Ana: a\n5/14/26, 8:00 AM - Beto: b\n'), 6)
+    b = s['por_participante_que_interviene']['B']
+    assert (b['n_entre'], b['mediana_entre'], b['suficiencia_entre']) == (1, 510, 'insuficiente')
+    assert b['suficiencia_dentro'] == 'insuficiente' and b['p75_dentro'] is None

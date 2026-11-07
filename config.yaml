@@ -44,6 +44,10 @@ latency:
   # mensaje anterior (eso es la "respuesta semántica", que se evalúa aparte).
   primary_statistic: median      # la mediana es la métrica principal
   percentiles: [75, 90]
+  # RESOLUCIÓN: la exportación trae minutos, no segundos; una latencia 0 = "en el mismo minuto".
+  # DISTRIBUCIÓN: proporción ACUMULADA de latencias <= cada corte (minutos). Cortes descriptivos,
+  # EXPERIMENTALES; no son umbrales de "rápido" o "lento".
+  buckets_minutes: [0, 1, 5, 15, 60]
   # Se reportan SIEMPRE las tres medianas y la proporción por sesión:
   #   general, dentro de la misma sesión, entre sesiones.
   # "Dentro de la misma sesión" = latencia <= segmentation.session_gap_hours.
