@@ -90,7 +90,12 @@ style:
   min_letters_uppercase: 4
 
 temporal:
+  # EVOLUCIÓN (metrics/trends.py). Periodo por defecto: mes; semana ISO como alternativa.
   period_granularities: [week, month]
+  default_granularity: month
+  # Para series que son PROPORCIONES (p. ej. % de mensajes de A) el umbral es una diferencia ABSOLUTA;
+  # `deviation_ratio` (relativo) se usa solo para latencias. Experimental.
+  share_deviation_abs: 0.15
   # Un cambio sostenido exige que la mediana móvil se desvíe más de
   # `deviation_ratio` respecto a la línea base durante N periodos seguidos.
   rolling_window_periods: 4

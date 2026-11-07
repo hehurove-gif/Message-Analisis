@@ -172,6 +172,8 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 
 ## Registro de cambios
 
+**v0.8 (2026-11-07).** Evolución temporal (Fase 4, `metrics/trends.py`): por mes (semana ISO opcional) se reportan % de mensajes, palabras sustantivas, turnos desarrollados e inicio del día de A, días activos (§7) y latencia mediana dentro de la sesión de cada uno. Cambio sostenido = mediana móvil (4 periodos) alejada de la base de los 4 primeros más de 0.15 absoluto (proporciones) o 50% relativo (latencias) durante 3 periodos seguidos. Periodos con < 5 mensajes quedan sin dato.
+
 **v0.7 (2026-11-07).** Correspondencia formal v0.1 (§6): R1–R4 por dirección, pares solo dentro de la misma sesión, sin índice compuesto, umbrales experimentales (30 pares, 10 estímulos, 0.10 / ρ 0.15). Se reporta como "correspondencia", no "reciprocidad".
 
 **v0.6 (2026-11-03).** Solo la enumeración de tipos de mensaje: `sistema` → `system` y `eliminado` → `deleted`, para no mantener dos enumeraciones incompatibles con el contrato v0.2; se aclara que el contenido es el original y que la normalización es un campo derivado. No cambia ninguna otra definición, parámetro ni resultado esperado de los tres chats.

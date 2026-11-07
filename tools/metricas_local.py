@@ -27,6 +27,7 @@ from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
 from metrics.participation import participation  # noqa: E402
 from metrics.style import style  # noqa: E402
+from metrics.trends import trends  # noqa: E402
 from metrics.turn_content import turn_content  # noqa: E402
 from parsers import parse_file  # noqa: E402
 from validar_exportacion_local import is_inside  # noqa: E402
@@ -44,16 +45,19 @@ def main(argv=None):
     ap.add_argument('--aceptar-perdidas', default='', metavar='L1,L2')
     ap.add_argument('--yo', choices=['A', 'B'])
     ap.add_argument('--resumen', action='store_true')
+    ap.add_argument('--semanal', action='store_true', help='evolución por semana ISO en lugar de mes')
     a = ap.parse_args(argv)
 
     merge = dict(x.split('=', 1) for x in a.unir) if a.unir else None
     out = analizar(a.ruta, confirmo=a.confirmo_individual, date_order_hint=a.date_order_hint, merge=merge,
                    aceptar_alias=a.aceptar_alias_sospechosos,
-                   perdidas=[int(x) for x in a.aceptar_perdidas.split(',')] if a.aceptar_perdidas else None, yo=a.yo)
+                   perdidas=[int(x) for x in a.aceptar_perdidas.split(',')] if a.aceptar_perdidas else None, yo=a.yo,
+                   granularity='week' if a.semanal else None)
     print(resumen(out) if a.resumen else json.dumps(out, ensure_ascii=False, indent=2))
 
 
-def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_alias=False, perdidas=None, yo=None):
+def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_alias=False, perdidas=None, yo=None,
+             granularity=None):
     """Todas las métricas de UNA exportación (solo números). Reutilizado por comparar_local."""
     real = os.path.realpath(ruta)
     if is_inside(real, os.path.realpath(ROOT)):
@@ -73,6 +77,7 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
         out['correspondencia'] = correspondence(res.messages)
+        out['evolucion'] = trends(res.messages, granularity=granularity)
     return out
 
 
@@ -94,6 +99,25 @@ def _abs(key, d):
         nm = lambda x: None if not x or x['minimo'] is None else 1 - x['minimo']   # noqa: E731
         return f" {{tras desarr. {_fmt(nm(d['tras_desarrollado']), True)} / tras breve {_fmt(nm(d['tras_breve']), True)}}}"
     return ''
+
+
+def _evolucion(ev, lab):
+    a, b = list(lab)
+    p = ev['parametros']
+    out = [f"== Evolución por {'mes' if ev['granularidad'] == 'month' else 'semana'} (% de {lab[a]}; — = menos de "
+           f"{p['min_ev']} eventos) ==",
+           f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'días':>5} "
+           f"{'lat A':>6} {'lat B':>6}"]
+    for r in ev['periodos']:
+        out.append(f"  {r['periodo']:<9} {r['mensajes']:>6} {_fmt(r['mensajes_A'], True):>6} {_fmt(r['palabras_A'], True):>7} "
+                   f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['dias_activos'], True):>5} "
+                   f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}")
+    det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
+           if v.get('detectado')]
+    out.append(f"  cambios sostenidos ({p['n_seq']} periodos; proporciones ±{p['abs']}, latencias ±{p['ratio'] * 100:.0f}%): "
+               + ('; '.join(det) if det else 'ninguno'))
+    out.append('  lat = mediana de minutos dentro de la sesión; días = días con mensajes / días del periodo')
+    return out
 
 
 def resumen(out, gap=None):
@@ -186,6 +210,7 @@ def resumen(out, gap=None):
                  for g, d in r4['reanudaciones'].items()) + f" ({r4['robustez_reanudaciones']}); inicia día "
                  + '/'.join(f'{k} {v}' for k, v in r4['inicia_dia'].items()))
     lines.append('  ' + c['nota'])
+    lines += ['', *_evolucion(out['evolucion'], lab)]
     lines += ['', 'Observaciones descriptivas: no interpretan interés, cercanía ni reciprocidad.']
     return '\n'.join(lines)
 
