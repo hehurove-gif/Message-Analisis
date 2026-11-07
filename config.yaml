@@ -168,10 +168,19 @@ participation:
   words_definition: whitespace_tokens_in_text_messages
 
 reciprocity:
-  # RECIPROCIDAD: correspondencia en la interacción (respuestas, seguimiento
-  # de temas, preguntas, iniciativas y apoyo). TODAVÍA SIN definición
-  # operativa ni métricas propias: ningún reporte la afirma como patrón.
-  defined: false
+  # CORRESPONDENCIA FORMAL v0.1 (definiciones §6; metrics/correspondence.py). En reportes se llama
+  # "correspondencia", no "reciprocidad": mide la FORMA de los mensajes (extensión, preguntas, turnos mínimos),
+  # no su contenido. No mide interés, afecto, seguimiento de temas ni apoyo (Fase 6).
+  # Pares de turnos solo dentro de la misma sesión. Sin índice compuesto. Umbrales EXPERIMENTALES.
+  defined: true
+  report_name: correspondencia
+  min_pairs: 30                  # pares por dirección; debajo -> "insuficiente"
+  min_stimuli: 10                # estímulos por grupo en R2 (con/sin pregunta) y R3 (tras desarrollado/breve)
+  max_symmetric_diff: 0.10       # diferencia entre direcciones (proporciones) para llamarla "simetrica"
+  max_symmetric_diff_rho: 0.15   # ídem para la ρ de Spearman (R1)
+  # NIVEL por dirección (aparte de la simetría): "simetrica" con ambas direcciones cerca de 0 = nadie corresponde.
+  min_level_rho: 0.20            # R1: ρ menor -> "baja_o_nula"; <= -valor -> "inversa"
+  min_level_diff: 0.10           # R2/R3: diferencia vs línea base menor -> "baja_o_nula"
 
 evidence_assessment:
   # Tres ejes independientes en cada hallazgo. Ninguna etiqueta es una

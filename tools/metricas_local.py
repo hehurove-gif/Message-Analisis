@@ -21,6 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from metrics.correspondence import correspondence  # noqa: E402
 from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
@@ -32,6 +33,8 @@ from validar_exportacion_local import is_inside  # noqa: E402
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, 'reconfigure'):          # Windows/cp1252 al redirigir: no fallar por ρ o →
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('ruta')
     ap.add_argument('--confirmo-individual', action='store_true')
@@ -69,6 +72,7 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['latencias'] = latency_sensitivity(res.messages)
         out['habitos'] = habits(res.messages)
         out['estilo'] = style(res.messages)
+        out['correspondencia'] = correspondence(res.messages)
     return out
 
 
@@ -80,6 +84,16 @@ def _fmt(x, pct=False):
 
 def _hhmm(h):
     return '—' if h is None else f'{int(h):02d}:{round((h % 1) * 60):02d}'
+
+
+def _abs(key, d):
+    """Tasas absolutas de respuesta no mínima: una diferencia ~0 puede ser techo (siempre responde con contenido)."""
+    if key == 'R2_preguntas':
+        return f" {{con preg. {_fmt(d['con_pregunta'], True)} / sin {_fmt(d['sin_pregunta'], True)}}}"
+    if key == 'R3_desarrollados':
+        nm = lambda x: None if not x or x['minimo'] is None else 1 - x['minimo']   # noqa: E731
+        return f" {{tras desarr. {_fmt(nm(d['tras_desarrollado']), True)} / tras breve {_fmt(nm(d['tras_breve']), True)}}}"
+    return ''
 
 
 def resumen(out, gap=None):
@@ -156,6 +170,22 @@ def resumen(out, gap=None):
                      f"preguntas {_fmt(v['proporcion_preguntas'], True)}, emoji {_fmt(v['proporcion_con_emoji'], True)}, "
                      f"risa {_fmt(v['proporcion_con_risa'], True)}, mayúsculas {_fmt(v['proporcion_mayusculas'], True)}, "
                      f"solo acuse/risa/emoji {_fmt(v['proporcion_solo_minimo'], True)}, multimedia {_fmt(v['proporcion_media'], True)}")
+    c = out['correspondencia']
+    lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "
+                  f"{c['pares_misma_sesion']}; X_a_Y = lo que Y da a X) =="]
+    for key, name, f in (('R1_extension', 'R1 extensión (rho)', 'rho'), ('R2_preguntas', 'R2 preguntas (dif.)', 'diferencia'),
+                         ('R3_desarrollados', 'R3 desarrollados (dif. no mín.)', 'diferencia_no_minimo')):
+        r = c[key]
+        dirs = [k for k in r if '_a_' in k]
+        nst = {'R2_preguntas': ('n_con_pregunta', 'preguntas'), 'R3_desarrollados': ('n_tras_desarrollado', 'desarr.')}.get(key)
+        lines.append(f"  {name}: " + '; '.join(
+            f"{d} {_fmt(r[d][f])} [{r[d]['nivel'] or '-'}] (pares={r[d]['n']}"
+            + (f", {nst[1]}={r[d][nst[0]]}" if nst else '') + ')' + _abs(key, r[d]) for d in dirs) + f" -> {r['etiqueta']}")
+    r4 = c['R4_iniciativa']
+    lines.append('  R4 iniciativa: reanudaciones ' + '; '.join(f"{g} h " + '/'.join(f'{k} {v}' for k, v in d.items())
+                 for g, d in r4['reanudaciones'].items()) + f" ({r4['robustez_reanudaciones']}); inicia día "
+                 + '/'.join(f'{k} {v}' for k, v in r4['inicia_dia'].items()))
+    lines.append('  ' + c['nota'])
     lines += ['', 'Observaciones descriptivas: no interpretan interés, cercanía ni reciprocidad.']
     return '\n'.join(lines)
 

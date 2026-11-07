@@ -13,6 +13,8 @@ PowerShell: el nombre del archivo suele traer el nombre de la persona y nunca se
 --alias N              acepta los alias sospechosos que el parser reporte en el archivo N (repetible)
 Columnas: proporción de A en cada unidad (B = 100% - A). "no mín." = turnos con contenido; "desarr." = turnos
 desarrollados. Latencia: p90 en minutos de cada uno (6 h). Retoma: veces que vuelve tras > 6 h (A/B).
+Correspondencia R1–R3: sim = simétrica; →A = A recibe más correspondencia formal de la que da; insuf.; sensible; base = ante el estímulo ambos responden igual, solo difiere su línea base.
+·nivel (pres/baja/inv) por dirección A_a_B/B_a_A, o uno solo si coinciden; ver config reciprocity.min_level_*.
 Descriptivo: no interpreta interés, cercanía ni reciprocidad."""
 import argparse
 import os
@@ -22,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from metricas_local import analizar  # noqa: E402
 
 COLS = ['#', 'KB', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'desarr. A 10/15/25', 'palabras A', 'p90 lat A/B', 'retoma A/B',
-        'inicia día A', 'pausas >30d']
+        'inicia día A', 'pausas >30d', 'R1 ext.', 'R2 preg.', 'R3 desarr.']
 
 
 def _pct(x):
@@ -45,7 +47,23 @@ def fila(i, out, kb=''):
             _pct(tc['palabras_sustantivas']['A']),
             f"{_num(lp['A']['p90_general'])}/{_num(lp['B']['p90_general'])}",
             f"{lp['A']['n_entre']}/{lp['B']['n_entre']}", _pct(h['A']['proporcion_inicia_el_dia']),
-            str(lat['pausas_largas']['n'])]
+            str(lat['pausas_largas']['n'])] + [_corr(out['correspondencia'][k])
+                                               for k in ('R1_extension', 'R2_preguntas', 'R3_desarrollados')]
+
+
+def _corr(r):
+    """Etiqueta + nivel cuando ambas direcciones lo comparten (p. ej. sim·baja); si difieren, A/B."""
+    lab = _short(r['etiqueta'])
+    lv = [r[k].get('nivel') for k in r if '_a_' in k]
+    if r['etiqueta'] == 'insuficiente' or None in lv:
+        return lab
+    abbr = {'presente': 'pres', 'baja_o_nula': 'baja', 'inversa': 'inv'}
+    return f"{lab}·{abbr[lv[0]]}" if lv[0] == lv[1] else f"{lab}·{abbr[lv[0]]}/{abbr[lv[1]]}"
+
+
+def _short(label):
+    return {'simetrica': 'sim', 'asimetrica_hacia_A': '→A', 'asimetrica_hacia_B': '→B', 'insuficiente': 'insuf.',
+            'sensible_a_umbrales': 'sensible', 'diferencia_de_linea_base': 'base'}.get(label, label)
 
 
 def tabla(rows):
@@ -55,6 +73,8 @@ def tabla(rows):
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, 'reconfigure'):          # Windows/cp1252 al redirigir: no fallar por ρ o →
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('rutas', nargs='+')
     ap.add_argument('--confirmo-individual', action='store_true')
