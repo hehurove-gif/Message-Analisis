@@ -29,7 +29,8 @@ from segmentation.sessions import sensitivity as session_sensitivity
 from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES, build_turns
 
 NOTE = 'correspondencia formal observable (forma de los mensajes); no mide interés, afecto ni contenido'
-DEFAULTS = {'min_pairs': 30, 'min_stimuli': 10, 'max_symmetric_diff': 0.10, 'max_symmetric_diff_rho': 0.15}
+DEFAULTS = {'min_pairs': 30, 'min_stimuli': 10, 'max_symmetric_diff': 0.10, 'max_symmetric_diff_rho': 0.15,
+            'min_level_rho': 0.20, 'min_level_diff': 0.10}
 
 
 def _cfg(path=None):
@@ -97,6 +98,11 @@ def _label(vals, enough, thr):
     return 'simetrica' if abs(d) < thr else ('asimetrica_hacia_A' if d > 0 else 'asimetrica_hacia_B')
 
 
+def _level(v, thr):
+    """Nivel de UNA dirección, independiente de la simetría: 'simetrica' con ambas en ~0 = nadie corresponde."""
+    return None if v is None else ('presente' if v >= thr else 'inversa' if v <= -thr else 'baja_o_nula')
+
+
 def _dirs(pairs, names):
     a, b = names
     return {f'{a}_a_{b}': [p for p in pairs if p[0]['p'] == a], f'{b}_a_{a}': [p for p in pairs if p[0]['p'] == b]}
@@ -110,6 +116,8 @@ def _r1(pairs, names, c):
         out[k] = {'rho': spearman([s['w'] for s, _ in ps], [r['w'] for _, r in ps]), 'n': len(ps),
                   **{f'mediana_tras_{cl}': med(cl) for cl in ('minimo', 'breve', 'desarrollado')}}
     enough = all(v['n'] >= c['min_pairs'] for v in out.values())
+    for k in _dirs(pairs, names):
+        out[k]['nivel'] = _level(out[k]['rho'], c['min_level_rho'])
     out['etiqueta'] = _label({k: out[k]['rho'] for k in _dirs(pairs, names)}, enough, c['max_symmetric_diff_rho'])
     return out
 
@@ -123,6 +131,8 @@ def _r2(pairs, names, c):
                   'diferencia': round(pc - ps_, 3) if pc is not None and ps_ is not None else None, 'n': len(ps)}
     enough = all(v['n'] >= c['min_pairs'] and min(v['n_con_pregunta'], v['n_sin_pregunta']) >= c['min_stimuli']
                  for v in out.values())
+    for k in _dirs(pairs, names):
+        out[k]['nivel'] = _level(out[k]['diferencia'], c['min_level_diff'])
     out['etiqueta'] = _label({k: out[k]['diferencia'] for k in _dirs(pairs, names)}, enough, c['max_symmetric_diff'])
     return out
 
@@ -140,6 +150,8 @@ def _r3(pairs, names, c, dev):
                   'n': len(ps)}
     enough = all(v['n'] >= c['min_pairs'] and min(v['n_tras_desarrollado'], v['n_tras_breve']) >= c['min_stimuli']
                  for v in out.values())
+    for k in _dirs(pairs, names):
+        out[k]['nivel'] = _level(out[k]['diferencia_no_minimo'], c['min_level_diff'])
     out['etiqueta'] = _label({k: out[k]['diferencia_no_minimo'] for k in _dirs(pairs, names)}, enough,
                              c['max_symmetric_diff'])
     return out

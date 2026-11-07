@@ -83,3 +83,10 @@ def test_r4_y_sin_texto():
     assert set(r['R4_iniciativa']['reanudaciones']) == {2, 6, 12}
     assert r['R4_iniciativa']['inicia_dia'] == {'A': 9, 'B': 0}
     assert 'palabra0' not in str(r) and 'Ana' not in str(r) and 'interés' in r['nota']
+
+
+def test_nivel_por_direccion():
+    r = correspondence(simetrica())
+    assert r['R1_extension']['A_a_B']['nivel'] == 'presente'
+    a = correspondence(asimetrica())['R2_preguntas']
+    assert a['A_a_B']['nivel'] == 'inversa' and a['B_a_A']['nivel'] == 'baja_o_nula'

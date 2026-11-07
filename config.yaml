@@ -178,6 +178,9 @@ reciprocity:
   min_stimuli: 10                # estímulos por grupo en R2 (con/sin pregunta) y R3 (tras desarrollado/breve)
   max_symmetric_diff: 0.10       # diferencia entre direcciones (proporciones) para llamarla "simetrica"
   max_symmetric_diff_rho: 0.15   # ídem para la ρ de Spearman (R1)
+  # NIVEL por dirección (aparte de la simetría): "simetrica" con ambas direcciones cerca de 0 = nadie corresponde.
+  min_level_rho: 0.20            # R1: ρ menor -> "baja_o_nula"; <= -valor -> "inversa"
+  min_level_diff: 0.10           # R2/R3: diferencia vs línea base menor -> "baja_o_nula"
 
 evidence_assessment:
   # Tres ejes independientes en cada hallazgo. Ninguna etiqueta es una

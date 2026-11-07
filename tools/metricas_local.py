@@ -167,7 +167,10 @@ def resumen(out, gap=None):
                          ('R3_desarrollados', 'R3 desarrollados (dif. no mín.)', 'diferencia_no_minimo')):
         r = c[key]
         dirs = [k for k in r if '_a_' in k]
-        lines.append(f"  {name}: " + '; '.join(f"{d} {_fmt(r[d][f])} (n={r[d]['n']})" for d in dirs) + f" -> {r['etiqueta']}")
+        nst = {'R2_preguntas': ('n_con_pregunta', 'preguntas'), 'R3_desarrollados': ('n_tras_desarrollado', 'desarr.')}.get(key)
+        lines.append(f"  {name}: " + '; '.join(
+            f"{d} {_fmt(r[d][f])} [{r[d]['nivel'] or '-'}] (pares={r[d]['n']}"
+            + (f", {nst[1]}={r[d][nst[0]]}" if nst else '') + ')' for d in dirs) + f" -> {r['etiqueta']}")
     r4 = c['R4_iniciativa']
     lines.append('  R4 iniciativa: reanudaciones ' + '; '.join(f"{g} h " + '/'.join(f'{k} {v}' for k, v in d.items())
                  for g, d in r4['reanudaciones'].items()) + f" ({r4['robustez_reanudaciones']}); inicia día "
