@@ -111,12 +111,13 @@ def _evolucion(ev, lab):
     for r in ev['periodos']:
         out.append(f"  {r['periodo']:<9} {r['mensajes']:>6} {_fmt(r['mensajes_A'], True):>6} {_fmt(r['palabras_A'], True):>7} "
                    f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['dias_activos'], True):>5} "
-                   f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}")
+                   f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}" + ('  parcial' if r['parcial'] else ''))
     det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
            if v.get('detectado')]
     out.append(f"  cambios sostenidos ({p['n_seq']} periodos; proporciones ±{p['abs']}, latencias ±{p['ratio'] * 100:.0f}% y ≥{p['lat_min']} min): "
                + ('; '.join(det) if det else 'ninguno'))
-    out.append('  lat = mediana de minutos dentro de la sesión; días = días con mensajes / días del periodo')
+    out.append('  lat = mediana de minutos dentro de la sesión; días = días con mensajes / días del periodo; '
+               'parcial = primer/último periodo incompleto, no cuenta para cambios')
     return out
 
 

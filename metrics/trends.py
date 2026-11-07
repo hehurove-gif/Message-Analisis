@@ -15,6 +15,7 @@ datos; mediana móvil de la misma ventana. Hay cambio cuando la mediana móvil s
 durante `sustained_change_min_periods` periodos seguidos. Umbral: proporciones -> diferencia ABSOLUTA
 `share_deviation_abs`; latencias -> diferencia RELATIVA `deviation_ratio` Y al menos `latency_min_change_minutes` (con resolución
 de minuto y medianas de 0–2 min, pasar de 0 a 1 no es un cambio; con base 0 solo cuenta la diferencia absoluta). Valores experimentales.
+Primer y último periodo con < `edge_period_min_active_days` de días activos = `parcial`: se muestran, no cuentan.
 `desde` = primer periodo en que la MEDIANA MÓVIL cruza el umbral: va con retraso (≈ media ventana) respecto
 al cambio real; mira la tabla de periodos para ubicarlo. Describe cuándo cambia una cifra; no explica por qué ni interpreta interés."""
 import statistics
@@ -39,6 +40,7 @@ def _cfg(path=None):
     return {'gran': t.get('default_granularity', 'month'), 'win': t.get('rolling_window_periods', 4),
             'n_seq': t.get('sustained_change_min_periods', 3), 'ratio': t.get('deviation_ratio', 0.5),
             'abs': t.get('share_deviation_abs', 0.15), 'lat_min': t.get('latency_min_change_minutes', 5),
+            'edge_min': t.get('edge_period_min_active_days', 0.5),
             'min_ev': raw.get('data_sufficiency', {}).get('min_events_per_period_for_trend', 5),
             'day_start': raw.get('habits', {}).get('day_start_hour', 5),
             'acks': tc.get('acknowledgements', DEFAULT_ACKS), 'dev': tc.get('developed_min_words', 15),
@@ -150,9 +152,17 @@ def trends(messages, granularity=None, cfg_path=None):
                      'dias_activos': round(len(days[k]) / _period_days(k, gran), 3),
                      **{f'latencia_{p}': (statistics.median(lat[k][p]) if len(lat[k][p]) >= c['min_ev'] else None)
                         for p in (a, b)}})
+    # Primer/último periodo incompletos (el chat empieza o termina a mitad): se muestran, pero no entran en la base
+    # ni en la detección de cambios, porque sus proporciones salen de pocos días.
+    for r in rows:
+        r['parcial'] = False
+    for r in (rows[0], rows[-1]):
+        if r['dias_activos'] < c['edge_min']:
+            r['parcial'] = True
+    usable = lambda r, s: None if r['parcial'] else r[s]   # noqa: E731
     changes = {}
     for s in SHARE_SERIES + LAT_SERIES:
-        ch = sustained_change([r[s] for r in rows], c['win'], c['n_seq'],
+        ch = sustained_change([usable(r, s) for r in rows], c['win'], c['n_seq'],
                               c['ratio'] if s in LAT_SERIES else c['abs'], s in LAT_SERIES,
                               c['lat_min'] if s in LAT_SERIES else 0)
         if ch.get('detectado'):

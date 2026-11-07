@@ -45,3 +45,11 @@ def test_latencia_base_cero_no_es_cambio():
     assert sustained_change([0, 0, 0, 0, 1, 1, 1, 2, 1], 4, 3, 0.5, True, 5)['detectado'] is False
     assert sustained_change([0, 0, 0, 0, 9, 9, 9, 9, 9], 4, 3, 0.5, True, 5)['detectado'] is True
     assert sustained_change([10, 10, 10, 10, 13, 13, 13, 13], 4, 3, 0.5, True, 5)['detectado'] is False
+
+
+
+def test_periodos_parciales_en_orillas():
+    txt = '\n'.join(['1/1/2025, 10:00 - Ana: hola', '1/1/2025, 10:01 - Beto: hola'] +
+                     [f'{d}/2/2025, 10:00 - Ana: hola' for d in range(1, 29)] + ['1/3/2025, 10:00 - Beto: hola']) + '\n'
+    rows = trends(parse_text(txt, date_order_hint='dmy').messages)['periodos']
+    assert [r['parcial'] for r in rows] == [True, False, True]
