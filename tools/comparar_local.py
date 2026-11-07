@@ -3,7 +3,7 @@
 
 Uso:  python tools/comparar_local.py CARPETA --confirmo-individual [--hint 4=dmy] [--alias 0]
 
-Los archivos .txt se ordenan por nombre y se identifican SOLO por índice (0, 1, …), igual que $archivos[N] en
+Los archivos .txt se ordenan por nombre SIN distinguir mayúsculas y se identifican SOLO por índice (0, 1, …), igual que $archivos[N] en
 PowerShell: el nombre del archivo suele traer el nombre de la persona y nunca se imprime.
 --confirmo-individual  declaras que TODOS son chats individuales (si no, no se analiza ninguno)
 --hint N=dmy|mdy       orden de fecha del archivo N (repetible)
@@ -18,7 +18,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from metricas_local import analizar  # noqa: E402
 
-COLS = ['#', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'palabras A', 'p90 lat A/B', 'retoma A/B',
+COLS = ['#', 'KB', 'estado', 'msj A', 'turnos A', 'no mín. A', 'desarr. A', 'palabras A', 'p90 lat A/B', 'retoma A/B',
         'inicia día A', 'pausas >30d']
 
 
@@ -30,13 +30,13 @@ def _num(x):
     return '—' if x is None else f'{x:g}'
 
 
-def fila(i, out):
+def fila(i, out, kb=''):
     if not out['analisis_habilitado']:
-        return [str(i), 'NO: ' + ','.join(out['requisitos_pendientes'] or [out['importacion']])] + [''] * (len(COLS) - 2)
+        return [str(i), kb, 'NO: ' + ','.join(out['requisitos_pendientes'] or [out['importacion']])] + [''] * (len(COLS) - 3)
     p, tc = out['participacion']['proporciones'], out['contenido_turnos']['proporciones_entre_participantes']
     lat = out['latencias'].get(6) or out['latencias'][sorted(out['latencias'])[len(out['latencias']) // 2]]
     lp, h = lat['por_participante_que_interviene'], out['habitos']['por_participante']
-    return [str(i), {'sin_observaciones_de_calidad': 'ok', 'con_observaciones': 'con obs.'}.get(out['estado_calidad'], out['estado_calidad']), _pct(p['mensajes']['A']), _pct(p['turnos']['A']),
+    return [str(i), kb, {'sin_observaciones_de_calidad': 'ok', 'con_observaciones': 'con obs.'}.get(out['estado_calidad'], out['estado_calidad']), _pct(p['mensajes']['A']), _pct(p['turnos']['A']),
             _pct(tc['turnos_no_minimos']['A']), _pct(tc['turnos_desarrollados']['A']),
             _pct(tc['palabras_sustantivas']['A']),
             f"{_num(lp['A']['p90_general'])}/{_num(lp['B']['p90_general'])}",
@@ -58,11 +58,14 @@ def main(argv=None):
     ap.add_argument('--alias', action='append', default=[], type=int, metavar='N')
     a = ap.parse_args(argv)
     hints = {int(k): v for k, v in (x.split('=', 1) for x in a.hint)}
-    files = sorted(f for f in os.listdir(a.carpeta) if f.lower().endswith('.txt'))
+    # Orden SIN distinguir mayúsculas (como Sort-Object de PowerShell). Puede diferir en casos raros de acentos o
+    # símbolos: por eso se imprime el tamaño en KB, para cruzar cada fila con $archivos[N].Length sin ver nombres.
+    files = sorted((f for f in os.listdir(a.carpeta) if f.lower().endswith('.txt')), key=lambda f: (f.casefold(), f))
     if not files:
         sys.exit('No hay archivos .txt en esa carpeta.')
     rows = [fila(i, analizar(os.path.join(a.carpeta, f), confirmo=a.confirmo_individual,
-                             date_order_hint=hints.get(i), aceptar_alias=i in a.alias))
+                             date_order_hint=hints.get(i), aceptar_alias=i in a.alias),
+                 str(round(os.path.getsize(os.path.join(a.carpeta, f)) / 1024)))
             for i, f in enumerate(files)]
     print(tabla(rows))
     print('\nA = primer autor de cada archivo. Columnas en % de A (B = resto). Solo descriptivo.')

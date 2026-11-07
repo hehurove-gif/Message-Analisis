@@ -78,3 +78,14 @@ def test_comparar_local_sin_nombres(tmp_path, capsys):
         assert s not in raw
     C.main([str(d)])
     assert 'NO:' in capsys.readouterr().out
+
+
+def test_comparar_ordena_sin_mayusculas_y_da_kb(tmp_path, capsys):
+    import comparar_local as C
+    d = tmp_path / 'exp'
+    d.mkdir()
+    (d / 'b chat.txt').write_text(CHAT, encoding='utf-8')            # 'B' < 'a' en Python; 'a' < 'b' en PowerShell
+    (d / 'A chat.txt').write_text(CHAT * 50, encoding='utf-8')
+    C.main([str(d), '--confirmo-individual'])
+    rows = [l.split() for l in capsys.readouterr().out.splitlines()[2:4]]
+    assert rows[0][0] == '0' and int(rows[0][1]) > int(rows[1][1])   # el 0 es 'A chat' (el grande)
