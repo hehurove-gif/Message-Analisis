@@ -172,6 +172,8 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 
 ## Registro de cambios
 
+**v0.11 (2026-11-08).** Saludos y despedidas: la coincidencia pasa de subcadena a palabra(s) completa(s) ("descansa" ya no coincide con "descansar" ni "buen dia" con "buen diario"). Cierre de Fases 3 y 4 con chats sintéticos largos (`docs/reporte_pruebas_fase_3_4.md`); no cambia ningún umbral ni definición de métricas.
+
 **v0.10 (2026-11-07).** Saludos y despedidas (`metrics/greetings.py`, config `greetings`): mensajes con "buenos días"/"buenas noches" (y variantes), días en que cada uno lo dice primero y si el otro corresponde ese día lógico; línea base, no indicador de interés. Evolución: % de multimedia de cada uno por periodo.
 
 **v0.9 (2026-11-07).** Ritmo (`metrics/rhythm.py`): duración, turnos y mensajes por sesión; quién deja el último turno sin respuesta antes del corte ("cierra", sin la última sesión del chat; no implica intención); días activos, racha más larga y pausa más larga en días lógicos; mensajes por turno y por ráfaga por participante.

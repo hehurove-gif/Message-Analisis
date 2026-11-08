@@ -16,3 +16,13 @@ def test_saludos():
     assert g['noche']['dias_lo_dice_primero'] == {'A': 1, 'B': 1}
     assert g['noche']['el_otro_corresponde'] == {'A': 1.0, 'B': 0.0}
     assert 'Ana' not in str(g)
+
+
+def test_limites_de_palabra():
+    """'descansa' ya no coincide con 'descansar'/'descansado' ni 'buen dia' con 'buen diario'."""
+    from metrics.greetings import _cfg, kind_of
+    ph, _ = _cfg()
+    assert kind_of('quiero descansar un rato', ph) == [] and kind_of('ya estoy descansado', ph) == []
+    assert kind_of('buen diario', ph) == []
+    assert kind_of('Descansa!', ph) == ['noche'] and kind_of('que descanses mucho', ph) == ['noche']
+    assert kind_of('¡Buenos días, equipo!', ph) == ['manana']

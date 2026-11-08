@@ -1,10 +1,11 @@
 """Saludos y despedidas convencionales (Fase 3, provisional): quién da los buenos días / las buenas noches.
 
 Un mensaje `texto` cuenta como saludo de mañana o despedida de noche si contiene una de las frases de
-`greetings` en config (comparación en minúsculas y sin acentos). Son LÍNEA BASE de comunicación (config
+`greetings` en config como palabra(s) completa(s) (comparación en minúsculas, sin acentos y con límites de palabra). Son LÍNEA BASE de comunicación (config
 `romantic_interest.greeting_alone_is_candidate: false`): rituales, no indicadores de interés.
 Por participante: mensajes con saludo/despedida, días en que lo dice primero y proporción de esos días en que
 el otro corresponde con la misma clase de frase en el mismo día lógico. Solo números."""
+import re
 import unicodedata
 from datetime import datetime, timedelta
 
@@ -30,7 +31,8 @@ def _cfg(path=None):
 
 def kind_of(text, phrases):
     t = _norm(text)
-    return [k for k, ps in phrases.items() if any(p in t for p in ps)]
+    # límites de palabra: "descansa" no debe coincidir con "descansar" ni "buen dia" con "buen diario"
+    return [k for k, ps in phrases.items() if any(re.search(r'(?<!\w)' + re.escape(p) + r'(?!\w)', t) for p in ps)]
 
 
 def greetings(messages, cfg_path=None):
