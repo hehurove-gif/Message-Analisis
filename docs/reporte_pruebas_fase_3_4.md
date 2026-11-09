@@ -1,13 +1,13 @@
 # Reporte de pruebas: cierre de Fases 3 y 4
 
-Versión 0.1 · 2026-11-08 · 630 pruebas pasan. Este reporte dice qué se verificó con datos sintéticos, qué queda pendiente con datos reales y qué límites tiene cada verificación. No contiene contenido de conversaciones reales.
+Versión 0.2 · 2026-11-08 · 635 pruebas pasan (también en el equipo del usuario). Este reporte dice qué se verificó con datos sintéticos, qué queda pendiente con datos reales y qué límites tiene cada verificación. No contiene contenido de conversaciones reales.
 
 ## 1. Estado de las fases
 
 | Fase | Contenido | Estado |
 | --- | --- | --- |
 | 3 | Participación, latencia, hábitos, estilo, contenido de turnos, ritmo, saludos, correspondencia formal (R1–R4) | **Cerrada en código, con verificación sintética y con revisión manual en datos reales (§3.1).** **Congelada:** no se agregan métricas nuevas; los cambios nuevos entran en Fase 5 o posteriores. |
-| 4 | Evolución por mes/semana y detección de cambio sostenido | **Cerrada con verificación sintética.** Falta la revisión con datos reales (§3). |
+| 4 | Evolución por mes/semana y detección de cambio sostenido | **Cerrada con verificación sintética y con la segunda corrida en datos reales (§3.3).** Sigue siendo provisional: umbrales experimentales. |
 
 ## 2. Qué se verificó (sintético)
 
@@ -44,7 +44,7 @@ Estos pasos no pueden hacerse desde el repo ni desde Claude. Sin ellos, ninguna 
    - A mano, en el TXT: cuenta los turnos de A y B, quién abre y quién cierra la sesión, y las latencias (minutos entre el último mensaje de un turno y el primero del siguiente del otro).
    - Compáralo con la salida de `tools/metricas_local.py` y `tools/segmentar_local.py`. Anota solo coincide / no coincide y la diferencia numérica.
 2. **Falsos positivos de evolución en datos reales:** corre `metricas_local.py --resumen` (o `--semanal`) y revisa si los cambios sostenidos coinciden con periodos que recuerdas (vacaciones, exámenes, cambios de horario). Un cambio detectado sin causa recordada es una observación, no un error.
-3. **Archivo 4:** decidir dmy/mdy con `probar_orden_fecha_local.py`; hasta entonces no se mide.
+3. **Archivo 4:** orden de fecha — ver §3.3 (pendiente solo la decisión explícita del usuario).
 4. **Timestamps fuera de orden y avisos sin catalogar:** `revisar_avisos_y_orden_local.py` sobre los archivos 0–3 (solo formas enmascaradas y números de línea).
 
 ### 3.1 Resultado de la revisión manual (2026-11-08)
@@ -53,13 +53,26 @@ Una exportación real (índice 1), 5 sesiones de 4–14 turnos repartidas por el
 
 - **Mensajes, turnos, quién abre y quién cierra:** coinciden en las 5 sesiones (5/5).
 - **Latencias entre turnos:** coinciden todas las comprobadas (≈40 intervalos). El corte de sesión (> 6 h) se comprobó en el lado final de las 5 sesiones; el silencio previo no se contó a mano.
-- **Hallazgo 1 (datos):** una sesión contiene un mensaje con hora anterior al que lo precede en el archivo (retroceso de 8 min en el TXT). El sistema lo conserva en el orden del archivo y lo marca como fuera de orden; no reordena. Pendiente: `segmentar_local` informa `turnos_con_fuera_de_orden` solo para retrocesos dentro de un turno, y no cuenta los retrocesos entre turnos de distinto autor; unificar el criterio.
+- **Hallazgo 1 (datos):** una sesión contiene un mensaje con hora anterior al que lo precede en el archivo (retroceso de 8 min en el TXT). El sistema lo conserva en el orden del archivo y lo marca como fuera de orden; no reordena. Corregido en v0.12: `segmentar_local` informa también `pares_de_turnos_fuera_de_orden` (retrocesos entre turnos de distinto autor); en esa exportación son 5.
 - **Hallazgo 2 (definición):** un turno puede contener pausas largas internas (p. ej. 2 h 41 min entre dos mensajes del mismo autor, dentro del hueco de 6 h). Es coherente con la definición (turno = mensajes consecutivos del mismo autor dentro de la sesión) y su latencia se mide desde el último mensaje del turno; queda documentado como límite.
 - Alcance: un solo archivo, 5 sesiones. Valida la implementación, no las definiciones.
 
 ### 3.2 Ajustes de la Fase 4 por las primeras corridas reales (definiciones v0.12)
 
-Con exportaciones reales el detector (a) marcaba como "baja de días activos" el final del chat, (b) no podía detectar nada en la latencia porque la mediana vale 0 en todos los meses y (c) detectaba un cambio con la granularidad semanal y no con la mensual. Se agregaron pausas largas fuera de la detección, la serie de respuesta rápida (≤ 5 min) y la etiqueta de sensibilidad a la granularidad, con pruebas sintéticas. Pendiente: volver a correr sobre los chats reales y comprobar que las etiquetas tengan sentido.
+Con exportaciones reales el detector (a) marcaba como "baja de días activos" el final del chat, (b) no podía detectar nada en la latencia porque la mediana vale 0 en todos los meses y (c) detectaba un cambio con la granularidad semanal y no con la mensual. Se agregaron pausas largas fuera de la detección, la serie de respuesta rápida (≤ 5 min) y la etiqueta de sensibilidad a la granularidad, con pruebas sintéticas. Verificado en §3.3.
+
+### 3.3 Segunda corrida en datos reales (2026-11-08)
+
+Cifras relacionales reales no se registran en este repo público; solo si cada comprobación se cumple.
+
+- **Pausa larga:** en la exportación con 3 meses vacíos tras el final de la actividad, esos periodos salen como `pausa` y ya no aparece "baja de días activos" como cambio sostenido. Cumple.
+- **Sensibilidad a la granularidad:** dos cambios detectados solo con la granularidad semanal quedan etiquetados `sensible_a_granularidad` y no se reportan como patrón. Cumple.
+- **Respuesta rápida (≤ 5 min):** la serie tiene valores informativos en todos los meses con datos, a diferencia de la mediana (0 en todos); no detecta cambios sostenidos en esa exportación.
+- **Fuera de orden entre turnos:** `pares_de_turnos_fuera_de_orden` ≠ 0 donde se conocía un caso (5 en la exportación revisada). Cumple.
+- **Límite conocido:** al final de un chat con mensajes sueltos (p. ej. 3 mensajes al mes), la frecuencia puede bajar sin ser pausa y producir un "baja" si dura ≥ 3 periodos con datos; aquí no ocurrió porque el último periodo es `parcial`. No se corrige por ahora.
+- **Archivo 4:** con orden dmy la importación queda `ok`. La línea 724 (no es un mensaje de persona) está fechada el día de la exportación solo si se lee dmy; eso apoya dmy. Con un solo bloque de 9 días de actividad sus series de evolución quedan sin datos suficientes. La decisión de dmy es del usuario y se aplica con `--hint 4=dmy` (el parser no la toma por su cuenta).
+
+**Conclusión:** Fases 3 y 4 cerradas como MVP (código, sintético, referencia independiente, revisión manual y dos corridas reales). Quedan abiertos, sin bloquear la Fase 5: avisos de sistema sin catalogar, timestamps fuera de orden en otros archivos y región/versión de WhatsApp.
 
 ## 4. Qué NO afirman estas fases
 
