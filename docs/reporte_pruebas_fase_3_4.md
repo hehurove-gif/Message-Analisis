@@ -44,7 +44,7 @@ Estos pasos no pueden hacerse desde el repo ni desde Claude. Sin ellos, ninguna 
    - A mano, en el TXT: cuenta los turnos de A y B, quién abre y quién cierra la sesión, y las latencias (minutos entre el último mensaje de un turno y el primero del siguiente del otro).
    - Compáralo con la salida de `tools/metricas_local.py` y `tools/segmentar_local.py`. Anota solo coincide / no coincide y la diferencia numérica.
 2. **Falsos positivos de evolución en datos reales:** corre `metricas_local.py --resumen` (o `--semanal`) y revisa si los cambios sostenidos coinciden con periodos que recuerdas (vacaciones, exámenes, cambios de horario). Un cambio detectado sin causa recordada es una observación, no un error.
-3. **Archivo 4:** orden de fecha — ver §3.3 (pendiente solo la decisión explícita del usuario).
+3. **Archivo 4:** orden de fecha — ver §3.3 (decidido: dmy).
 4. **Timestamps fuera de orden y avisos sin catalogar:** `revisar_avisos_y_orden_local.py` sobre los archivos 0–3 (solo formas enmascaradas y números de línea).
 
 ### 3.1 Resultado de la revisión manual (2026-11-08)
@@ -70,7 +70,7 @@ Cifras relacionales reales no se registran en este repo público; solo si cada c
 - **Respuesta rápida (≤ 5 min):** la serie tiene valores informativos en todos los meses con datos, a diferencia de la mediana (0 en todos); no detecta cambios sostenidos en esa exportación.
 - **Fuera de orden entre turnos:** `pares_de_turnos_fuera_de_orden` ≠ 0 donde se conocía un caso (5 en la exportación revisada). Cumple.
 - **Límite conocido:** al final de un chat con mensajes sueltos (p. ej. 3 mensajes al mes), la frecuencia puede bajar sin ser pausa y producir un "baja" si dura ≥ 3 periodos con datos; aquí no ocurrió porque el último periodo es `parcial`. No se corrige por ahora.
-- **Archivo 4:** con orden dmy la importación queda `ok`. La línea 724 (no es un mensaje de persona) está fechada el día de la exportación solo si se lee dmy; eso apoya dmy. Con un solo bloque de 9 días de actividad sus series de evolución quedan sin datos suficientes. La decisión de dmy es del usuario y se aplica con `--hint 4=dmy` (el parser no la toma por su cuenta).
+- **Archivo 4:** con orden dmy la importación queda `ok`. La línea 724 (no es un mensaje de persona) está fechada el día de la exportación solo si se lee dmy; eso apoya dmy. Con un solo bloque de 9 días de actividad sus series de evolución quedan sin datos suficientes. **Decisión del usuario (2026-11-08): dmy.** Razón aportada: con mdy los 723 mensajes caerían en seis días 9 de seis meses distintos, lo que no tiene sentido para un chat. Se aplica con `--hint 4=dmy` (el parser no la toma por su cuenta).
 
 **Conclusión:** Fases 3 y 4 cerradas como MVP (código, sintético, referencia independiente, revisión manual y dos corridas reales). Quedan abiertos, sin bloquear la Fase 5: avisos de sistema sin catalogar, timestamps fuera de orden en otros archivos y región/versión de WhatsApp.
 
