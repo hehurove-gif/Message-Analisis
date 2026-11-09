@@ -37,3 +37,12 @@ def test_con_confirmacion_entrega_solo_conteos(tmp_path, capsys):
 def test_se_niega_a_leer_dentro_del_repo():
     with pytest.raises(SystemExit):
         S.main([os.path.join(ROOT, 'tests', 'fixtures', 'whatsapp', 'A01_android24_coma_es.txt')])
+
+
+def test_retroceso_entre_turnos_se_cuenta():
+    """El siguiente turno (otro autor) empieza ANTES de que termine el anterior: no es un retroceso dentro de un turno."""
+    from parsers import parse_text
+    import segmentar_local as S
+    t = ('18/01/2026, 10:44 - Ana: hola\n18/01/2026, 10:36 - Beto: ya\n18/01/2026, 10:54 - Ana: ok\n')
+    r = S.resumen_turnos(parse_text(t, date_order_hint='dmy').messages)
+    assert r['pares_de_turnos_fuera_de_orden'] == 1 and r['turnos_con_fuera_de_orden'] == 0

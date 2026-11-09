@@ -19,6 +19,9 @@ durante `sustained_change_min_periods` periodos seguidos. Umbral: proporciones -
 `share_deviation_abs`; latencias -> diferencia RELATIVA `deviation_ratio` Y al menos `latency_min_change_minutes` (con resolución
 de minuto y medianas de 0–2 min, pasar de 0 a 1 no es un cambio; con base 0 solo cuenta la diferencia absoluta). Valores experimentales.
 Primer y último periodo con < `edge_period_min_active_days` de días activos = `parcial`: se muestran, no cuentan.
+PAUSA: periodo sin mensajes dentro de un hueco > `latency.long_pause_days` entre dos días con mensajes: se reporta en `pausas` y no cuenta
+(que el chat se detenga no es un "cambio sostenido de frecuencia"). `rapida_X` = proporción de las latencias de X dentro de la sesión <=
+`quick_response_minutes` (la mediana vale 0 casi siempre con resolución de minuto y no detecta nada).
 `desde` = primer periodo en que la MEDIANA MÓVIL cruza el umbral: va con retraso (≈ media ventana) respecto
 al cambio real; mira la tabla de periodos para ubicarlo. Describe cuándo cambia una cifra; no explica por qué ni interpreta interés."""
 import statistics
@@ -34,7 +37,7 @@ from segmentation.sessions import build_sessions
 from segmentation.turns import DEFAULT_CONFIG_PATH, PERSON_TYPES, build_turns
 
 SHARE_SERIES = ('mensajes_A', 'palabras_A', 'desarrollados_A', 'inicia_dia_A', 'cierra_A', 'dias_activos',
-                'multimedia_A', 'multimedia_B')
+                'multimedia_A', 'multimedia_B', 'rapida_A', 'rapida_B')
 LAT_SERIES = ('latencia_A', 'latencia_B')
 
 
@@ -49,7 +52,18 @@ def _cfg(path=None):
             'min_ev': raw.get('data_sufficiency', {}).get('min_events_per_period_for_trend', 5),
             'day_start': raw.get('habits', {}).get('day_start_hour', 5),
             'acks': tc.get('acknowledgements', DEFAULT_ACKS), 'dev': tc.get('developed_min_words', 15),
-            'gap': raw.get('segmentation', {}).get('session_gap_hours', 6)}
+            'gap': raw.get('segmentation', {}).get('session_gap_hours', 6),
+            'quick': t.get('quick_response_minutes', 5), 'pause_days': raw.get('latency', {}).get('long_pause_days', 30)}
+
+
+def _span(key, gran):
+    """Primer y último día (date) de un periodo."""
+    if gran == 'week':
+        y, w = key.split('-W')
+        d = date.fromisocalendar(int(y), int(w), 1)
+        return d, d + timedelta(days=6)
+    y, m = map(int, key.split('-'))
+    return date(y, m, 1), date(y + (m == 12), m % 12 + 1, 1) - timedelta(days=1)
 
 
 def period_key(day, gran):
@@ -108,9 +122,7 @@ def sustained_change(values, win, n_seq, thr, relative, min_abs=0):
     return {'detectado': False, 'base': round(base, 3)}
 
 
-def trends(messages, granularity=None, cfg_path=None):
-    c = _cfg(cfg_path)
-    gran = granularity or c['gran']
+def _run(messages, gran, c, cfg_path=None):
     people = [m for m in messages if m.tipo in PERSON_TYPES and m.timestamp_local]
     names = sorted({m.participante for m in people})
     if len(names) != 2:
@@ -165,7 +177,9 @@ def trends(messages, granularity=None, cfg_path=None):
                         for x, p in (('A', a), ('B', b))},
                      'dias_activos': round(len(days[k]) / _period_days(k, gran), 3),
                      **{f'latencia_{p}': (statistics.median(lat[k][p]) if len(lat[k][p]) >= c['min_ev'] else None)
-                        for p in (a, b)}})
+                        for p in (a, b)},
+                     **{f'rapida_{p}': (round(sum(x <= c['quick'] for x in lat[k][p]) / len(lat[k][p]), 3)
+                                        if len(lat[k][p]) >= c['min_ev'] else None) for p in (a, b)}})
     # Primer/último periodo incompletos (el chat empieza o termina a mitad): se muestran, pero no entran en la base
     # ni en la detección de cambios, porque sus proporciones salen de pocos días.
     for r in rows:
@@ -173,7 +187,24 @@ def trends(messages, granularity=None, cfg_path=None):
     for r in (rows[0], rows[-1]):
         if r['dias_activos'] < c['edge_min']:
             r['parcial'] = True
-    usable = lambda r, s: None if r['parcial'] else r[s]   # noqa: E731
+    # PAUSA: periodo SIN mensajes dentro de un hueco mayor a `latency.long_pause_days` entre dos días con mensajes.
+    # El chat estuvo parado: no es un "cambio" de frecuencia, se reporta aparte y no entra en la detección.
+    active = sorted(set().union(*days.values())) if days else []
+    for r in rows:
+        r['pausa'] = False
+        if r['mensajes'] == 0:
+            lo, hi = _span(r['periodo'], gran)
+            prev = max((d for d in active if d < lo), default=None)
+            nxt = min((d for d in active if d > hi), default=None)
+            r['pausa'] = bool(prev and nxt and (nxt - prev).days > c['pause_days'])
+    pausas, run = [], []
+    for r in rows + [{'pausa': False, 'periodo': None}]:
+        if r['pausa']:
+            run.append(r['periodo'])
+        elif run:
+            pausas.append({'desde': run[0], 'hasta': run[-1], 'periodos': len(run)})
+            run = []
+    usable = lambda r, s: None if (r['parcial'] or r['pausa']) else r[s]   # noqa: E731
     changes = {}
     for s in SHARE_SERIES + LAT_SERIES:
         ch = sustained_change([usable(r, s) for r in rows], c['win'], c['n_seq'],
@@ -182,6 +213,29 @@ def trends(messages, granularity=None, cfg_path=None):
         if ch.get('detectado'):
             ch['desde'] = rows[ch.pop('desde_indice')]['periodo']
         changes[s] = ch
-    return {'granularidad': gran, 'periodos': rows, 'cambios_sostenidos': changes,
+    return {'granularidad': gran, 'periodos': rows, 'pausas': pausas, 'cambios_sostenidos': changes,
             'parametros': {k: c[k] for k in ('win', 'n_seq', 'ratio', 'abs', 'lat_min', 'min_ev', 'gap')},
             'nota': 'describe cuándo cambia una cifra; no explica por qué ni interpreta interés'}
+
+
+def _gran_label(this, other):
+    d1 = this.get('direccion') if this.get('detectado') else None
+    d2 = other.get('direccion') if other.get('detectado') else None
+    if d1 is None and d2 is None:
+        return None
+    return 'robusto' if d1 == d2 else 'sensible_a_granularidad'
+
+
+def trends(messages, granularity=None, cfg_path=None, compare_granularity=True):
+    """Evolución por periodo + sensibilidad a la granularidad: cada cambio sostenido se repite con la otra
+    granularidad (mes <-> semana ISO). `robusto` = ambas lo detectan en la misma dirección; `sensible_a_granularidad` =
+    solo una lo detecta o difieren: NO se reporta como patrón."""
+    c = _cfg(cfg_path)
+    gran = granularity or c['gran']
+    out = _run(messages, gran, c, cfg_path)
+    if compare_granularity:
+        other = 'week' if gran == 'month' else 'month'
+        alt = _run(messages, other, c, cfg_path)['cambios_sostenidos']
+        lab = {s: _gran_label(out['cambios_sostenidos'][s], alt[s]) for s in out['cambios_sostenidos']}
+        out['sensibilidad_granularidad'] = {'otra_granularidad': other, 'etiquetas': {k: v for k, v in lab.items() if v}}
+    return out

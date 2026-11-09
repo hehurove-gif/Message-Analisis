@@ -32,7 +32,9 @@ def resumen_turnos(messages, gap_h=6):
     return {'hueco_horas': gap_h, 'n_turnos': len(turns), 'turnos_por_participante': dict(sorted(per.items())),
             'mensajes_por_turno_mediana': statistics.median(t.n_mensajes for t in turns),
             'mensajes_por_turno_maximo': max(t.n_mensajes for t in turns),
-            'turnos_con_fuera_de_orden': sum(t.tiene_fuera_de_orden for t in turns)}
+            'turnos_con_fuera_de_orden': sum(t.tiene_fuera_de_orden for t in turns),
+            # retroceso ENTRE turnos de distinto autor (el siguiente empieza antes de que termine el anterior)
+            'pares_de_turnos_fuera_de_orden': sum(y.primer_ts < x.ultimo_ts for x, y in zip(turns, turns[1:]))}
 
 
 def main(argv=None):

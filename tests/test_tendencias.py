@@ -54,3 +54,38 @@ def test_periodos_parciales_en_orillas():
                      [f'{d}/2/2025, 10:00 - Ana: hola' for d in range(1, 29)] + ['1/3/2025, 10:00 - Beto: hola']) + '\n'
     rows = trends(parse_text(txt, date_order_hint='dmy').messages)['periodos']
     assert [r['parcial'] for r in rows] == [True, False, True]
+
+
+def _txt(rows):
+    return '\n'.join(f'{d}/{m}/2025, {h} - {w}: hola que tal todo bien {i}' for i, (d, m, h, w) in enumerate(rows)) + '\n'
+
+
+def test_pausa_larga_no_es_cambio_de_frecuencia():
+    """Chat activo ene-mar, parado abr-ago y unos mensajes en sep: los meses parados son `pausa`, no 'baja'."""
+    rows = [(d, m, f'10:{i:02d}', 'Ana' if i % 2 == 0 else 'Beto') for m in (1, 2, 3) for d in range(1, 28) for i in range(4)]
+    rows += [(5, 9, f'10:{i:02d}', 'Ana' if i % 2 == 0 else 'Beto') for i in range(6)]
+    r = trends(parse_text(_txt(rows), date_order_hint='dmy').messages)
+    by = {p['periodo']: p for p in r['periodos']}
+    assert [by[k]['pausa'] for k in ('2025-03', '2025-04', '2025-08', '2025-09')] == [False, True, True, False]
+    assert r['pausas'] == [{'desde': '2025-04', 'hasta': '2025-08', 'periodos': 5}]
+    assert r['cambios_sostenidos']['dias_activos'].get('detectado') is not True
+
+
+def test_serie_respuesta_rapida_detecta_lo_que_la_mediana_no():
+    from tests.synth_chats import build_chat
+    r = trends(build_chat(1, cool_from_month=5))
+    ch = r['cambios_sostenidos']
+    assert any(ch[s].get('detectado') and ch[s]['direccion'] == 'baja' for s in ('rapida_A', 'rapida_B'))
+    assert all(p['latencia_A'] in (None, 1, 2, 3) or p['latencia_A'] >= 0 for p in r['periodos'])
+
+
+def test_sensibilidad_a_granularidad():
+    from metrics.trends import _gran_label
+    assert _gran_label({'detectado': True, 'direccion': 'sube'}, {'detectado': True, 'direccion': 'sube'}) == 'robusto'
+    assert _gran_label({'detectado': False}, {'detectado': True, 'direccion': 'sube'}) == 'sensible_a_granularidad'
+    assert _gran_label({'detectado': True, 'direccion': 'sube'}, {'detectado': True, 'direccion': 'baja'}) == 'sensible_a_granularidad'
+    assert _gran_label({'detectado': False}, {'detectado': None}) is None
+    from tests.synth_chats import build_chat
+    r = trends(build_chat(1, cool_from_month=5))
+    assert r['sensibilidad_granularidad']['otra_granularidad'] == 'week'
+    assert r['sensibilidad_granularidad']['etiquetas'].get('dias_activos') in ('robusto', 'sensible_a_granularidad')

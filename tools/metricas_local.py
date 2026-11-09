@@ -111,19 +111,27 @@ def _evolucion(ev, lab):
     out = [f"== Evolución por {'mes' if ev['granularidad'] == 'month' else 'semana'} (% de {lab[a]}; — = menos de "
            f"{p['min_ev']} eventos) ==",
            f"  {'periodo':<9} {'msj':>6} {'msj A':>6} {'palab.A':>7} {'desar.A':>7} {'abre A':>6} {'cierra A':>8} {'media A':>7} {'media B':>7} {'días':>5} "
-           f"{'lat A':>6} {'lat B':>6}"]
+           f"{'lat A':>6} {'lat B':>6} {'≤5m A':>6} {'≤5m B':>6}"]
     for r in ev['periodos']:
         out.append(f"  {r['periodo']:<9} {r['mensajes']:>6} {_fmt(r['mensajes_A'], True):>6} {_fmt(r['palabras_A'], True):>7} "
                    f"{_fmt(r['desarrollados_A'], True):>7} {_fmt(r['inicia_dia_A'], True):>6} {_fmt(r['cierra_A'], True):>8} "
                    f"{_fmt(r['multimedia_A'], True):>7} {_fmt(r['multimedia_B'], True):>7} "
                    f"{_fmt(r['dias_activos'], True):>5} "
-                   f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6}" + ('  parcial' if r['parcial'] else ''))
-    det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" for k, v in ev['cambios_sostenidos'].items()
-           if v.get('detectado')]
+                   f"{_fmt(r['latencia_' + a]):>6} {_fmt(r['latencia_' + b]):>6} {_fmt(r['rapida_' + a], True):>6} {_fmt(r['rapida_' + b], True):>6}"
+                   + ('  parcial' if r['parcial'] else '') + ('  pausa' if r['pausa'] else ''))
+    gl = ev.get('sensibilidad_granularidad', {}).get('etiquetas', {})
+    det = [f"{k} {v['direccion']} desde {v['desde']} (base {v['base']})" + (f" [{gl[k]}]" if gl.get(k) else '')
+           for k, v in ev['cambios_sostenidos'].items() if v.get('detectado')]
+    for k, lab_ in gl.items():          # detectado solo en la otra granularidad
+        if not ev['cambios_sostenidos'][k].get('detectado'):
+            det.append(f"{k}: solo en {ev['sensibilidad_granularidad']['otra_granularidad']} [{lab_}]")
     out.append(f"  cambios sostenidos ({p['n_seq']} periodos; proporciones ±{p['abs']}, latencias ±{p['ratio'] * 100:.0f}% y ≥{p['lat_min']} min): "
                + ('; '.join(det) if det else 'ninguno'))
-    out.append('  lat = mediana de minutos dentro de la sesión; días = días con mensajes / días del periodo; '
-               'parcial = primer/último periodo incompleto, no cuenta para cambios')
+    for z in ev.get('pausas', []):
+        out.append(f"  pausa larga (chat parado, no es un cambio): {z['desde']} a {z['hasta']} ({z['periodos']} periodos)")
+    out.append('  lat = mediana de minutos dentro de la sesión; ≤5m = % de respuestas en ≤5 min dentro de la sesión; '
+               'días = días con mensajes / días del periodo; parcial = primer/último periodo incompleto; '
+               'pausa = periodo sin mensajes dentro de una pausa larga; ni uno ni otro cuentan para cambios')
     return out
 
 
