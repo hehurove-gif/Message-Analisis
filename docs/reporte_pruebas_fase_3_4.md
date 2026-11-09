@@ -57,6 +57,10 @@ Una exportación real (índice 1), 5 sesiones de 4–14 turnos repartidas por el
 - **Hallazgo 2 (definición):** un turno puede contener pausas largas internas (p. ej. 2 h 41 min entre dos mensajes del mismo autor, dentro del hueco de 6 h). Es coherente con la definición (turno = mensajes consecutivos del mismo autor dentro de la sesión) y su latencia se mide desde el último mensaje del turno; queda documentado como límite.
 - Alcance: un solo archivo, 5 sesiones. Valida la implementación, no las definiciones.
 
+### 3.2 Ajustes de la Fase 4 por las primeras corridas reales (definiciones v0.12)
+
+Con exportaciones reales el detector (a) marcaba como "baja de días activos" el final del chat, (b) no podía detectar nada en la latencia porque la mediana vale 0 en todos los meses y (c) detectaba un cambio con la granularidad semanal y no con la mensual. Se agregaron pausas largas fuera de la detección, la serie de respuesta rápida (≤ 5 min) y la etiqueta de sensibilidad a la granularidad, con pruebas sintéticas. Pendiente: volver a correr sobre los chats reales y comprobar que las etiquetas tengan sentido.
+
 ## 4. Qué NO afirman estas fases
 
 - Las métricas son descriptivas y los umbrales son experimentales; "robusto" significa estable ante los parámetros probados, no válido científicamente.

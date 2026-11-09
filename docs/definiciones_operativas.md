@@ -172,6 +172,8 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 
 ## Registro de cambios
 
+**v0.12 (2026-11-08).** Evolución (`metrics/trends.py`), a partir de las primeras corridas con chats reales: (1) **pausa**: periodo sin mensajes dentro de un hueco > `latency.long_pause_days` (30) entre dos días con mensajes; se reporta en `pausas` y no entra en la detección (que el chat se detenga no es un cambio sostenido de frecuencia); (2) serie `rapida_X` = proporción de latencias de X dentro de la sesión ≤ `temporal.quick_response_minutes` (5), porque la mediana de latencia vale 0 casi siempre con resolución de minuto; (3) **sensibilidad a la granularidad**: cada cambio se repite con la otra granularidad (mes ↔ semana ISO): `robusto` si ambas lo detectan en la misma dirección, `sensible_a_granularidad` si solo una o difieren (no se reporta como patrón). `segmentar_local` añade `pares_de_turnos_fuera_de_orden` (retroceso entre turnos de distinto autor). Sin cambios en umbrales existentes.
+
 **v0.11 (2026-11-08).** Saludos y despedidas: la coincidencia pasa de subcadena a palabra(s) completa(s) ("descansa" ya no coincide con "descansar" ni "buen dia" con "buen diario"). Cierre de Fases 3 y 4 con chats sintéticos largos (`docs/reporte_pruebas_fase_3_4.md`); no cambia ningún umbral ni definición de métricas.
 
 **v0.10 (2026-11-07).** Saludos y despedidas (`metrics/greetings.py`, config `greetings`): mensajes con "buenos días"/"buenas noches" (y variantes), días en que cada uno lo dice primero y si el otro corresponde ese día lógico; línea base, no indicador de interés. Evolución: % de multimedia de cada uno por periodo.
