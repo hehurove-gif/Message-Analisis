@@ -97,3 +97,13 @@ def test_sin_doble_conteo_entre_reglas_de_una_categoria():
 def test_risa_conteos():
     hits, _ = detect('jajaja jejeje xd', LEX)
     assert sum(n for r, f, n in hits if r.categoria == 'risa_texto') == 3
+
+
+def test_ajustes_con_datos_reales():
+    # adjetivos sueltos ya no son apodos; con "mi" sí
+    assert not wide('qué bonito', 'apodo_carinoso') and not wide('hermoso', 'apodo_carinoso')
+    assert wide('gracias, mi bonita', 'apodo_carinoso') and strict('hola mi linda', 'apodo_carinoso')
+    # "suerte" es un buen deseo, no apoyo
+    assert not wide('mucha suerte en el examen', 'apoyo')
+    # "quedamos en que" es un acuerdo, no una invitación
+    assert not wide('quedamos en que lo hacías tú', 'propuesta_de_verse') and wide('quedamos el sábado', 'propuesta_de_verse')

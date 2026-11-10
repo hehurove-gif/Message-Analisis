@@ -56,11 +56,12 @@ reglas:
   # --- apodo_carinoso: SOLO como vocativo (cierra la cláusula o la abre con pronombre/verbo típico) ---
   - id: apodo.fuerte.v1
     categoria: apodo_carinoso
-    patrones: ["mi amor", "mi vida", "mi cielo", "mi corazon", "corazon", "corazoncito", "amorcito", "mi tesoro", "carino", "mi reina", "mi rey"]
+    patrones: ["mi amor", "mi vida", "mi cielo", "mi corazon", "corazon", "corazoncito", "amorcito", "mi tesoro", "carino", "mi reina", "mi rey",
+               "mi lindo", "mi linda", "mi hermoso", "mi hermosa", "mi bonito", "mi bonita", "mi guapo", "mi guapa", "mi precioso", "mi preciosa"]
     vocativo: true
   - id: apodo.general.v1                # de uso muy general entre amistades y familia
     categoria: apodo_carinoso
-    patrones: ["amor", "cielo", "bebe", "bebito", "bebita", "princesa", "reina", "tesoro", "hermosa", "hermoso", "preciosa", "precioso", "guapa", "guapo", "linda", "lindo", "bonita", "bonito"]
+    patrones: ["amor", "cielo", "bebe", "bebito", "bebita", "princesa", "reina", "tesoro"]
     vocativo: true
     ambiguo: true
 
@@ -89,7 +90,7 @@ reglas:
     regex:
       - 'nos vemos (?:manana|hoy|el|la|esta|este|mas tarde|en la|en el|a las|en un rato|el fin)'
       - 'te veo (?:manana|hoy|el|la|esta|este|mas tarde|a las|en un rato)'
-      - 'quedamos (?:el|la|manana|hoy|en|este|esta|a las|para)'
+      - 'quedamos (?:el|la|manana|hoy|este|esta|a las)'
       - 'salimos (?:el|la|manana|hoy|este|esta|a las|juntos|juntas)'
       - 'quieres (?:ir|salir|venir|que nos veamos|que salgamos|que quedemos|vernos|cenar|comer|tomar|desayunar|ir al|ir a)'
       - 'quieres (?:que )?(?:vayamos|vamos)'
@@ -109,7 +110,7 @@ reglas:
     patrones: ["echale ganas", "tu puedes", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
   - id: apoyo.ambigua.v1
     categoria: apoyo
-    patrones: ["animo", "un abrazo", "abrazo", "suerte", "mucha suerte", "tranquila", "tranquilo"]
+    patrones: ["animo", "un abrazo", "abrazo", "tranquila", "tranquilo"]
     ambiguo: true                       # fórmulas de cortesía, despedida o "tranquilo = no pasa nada"
 
   # --- conflicto: reclamo, enojo expreso, ruptura de contacto, insulto ---
