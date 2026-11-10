@@ -99,3 +99,15 @@ def test_no_dentro_del_repo(tmp_path):
         rv.main([rv.ROOT + '/README.md', '--salida', str(tmp_path / 'x')])
     with pytest.raises(SystemExit):
         rv.main(['--resumir', rv.ROOT + '/x.csv'])
+
+
+def test_acotar_categorias_y_recuperacion(tmp_path, capsys):
+    f = tmp_path / 'c.txt'
+    f.write_text(chat(), encoding='utf-8')
+    rv.main([str(f), '--confirmo-individual', '--date-order-hint', 'dmy', '--salida', str(tmp_path / 'r'),
+             '--categorias', 'disculpa', '--recuperacion', '20'])
+    rows = list(csv.DictReader(open(tmp_path / 'r' / rv.CSV_NAME, encoding='utf-8-sig', newline='')))
+    assert {r['categoria'] for r in rows if r['tipo'] == 'evento'} == {'disculpa'}
+    assert sum(r['tipo'] == 'sin_evento' for r in rows) == 20
+    meta = json.load(open(tmp_path / 'r' / rv.META_NAME, encoding='utf-8'))
+    assert list(meta['categorias']) == ['disculpa'] and meta['solo_categorias'] == ['disculpa']

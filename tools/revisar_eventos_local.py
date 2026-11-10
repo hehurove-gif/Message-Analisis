@@ -36,7 +36,7 @@ OK_EVENT = {'c': 'c', 'correcto': 'c', 'i': 'i', 'incorrecto': 'i', 'a': 'a', 'a
 OK_RECALL = {'ok': 'ok', 'no': 'ok', 'n': 'ok', 'escapo': 'escapo', 'si': 'escapo', 's': 'escapo'}
 
 
-def muestrear(messages, lex, cfg, seed=1, con_texto=False):
+def muestrear(messages, lex, cfg, seed=1, con_texto=False, solo=None):
     """Devuelve (filas, meta). Solo eventos afirmativos de categorías de texto (no emoji_*)."""
     by_cat = defaultdict(list)                        # categoría -> [(msg, evento)]
     sin_evento = []
@@ -46,7 +46,8 @@ def muestrear(messages, lex, cfg, seed=1, con_texto=False):
         evs, _ = events_for_message(m, lex)
         aff = [e for e in evs if e.forma == 'afirmativa' and not e.categoria.startswith('emoji')]
         for e in aff:
-            by_cat[e.categoria].append((m, e))
+            if solo is None or e.categoria in solo:
+                by_cat[e.categoria].append((m, e))
         if not aff:
             sin_evento.append(m)
     rows, meta = [], {'semilla': seed, 'categorias': {}, 'sin_evento': {'poblacion': len(sin_evento)},
@@ -76,6 +77,7 @@ def muestrear(messages, lex, cfg, seed=1, con_texto=False):
         meta['categorias'][cat] = {'poblacion': N, 'muestra': sum(alloc.values()),
                                    'estratos': {k: [len(strata[k]), alloc[k]] for k in sorted(strata)}}
     k = min(len(sin_evento), cfg['recall_max_messages'])
+    meta['solo_categorias'] = sorted(solo) if solo else None
     for m in systematic(sin_evento, k, seed):
         rows.append(row('sin_evento', m))
     meta['sin_evento']['muestra'] = k
@@ -138,6 +140,8 @@ def main(argv=None):
     ap.add_argument('--salida', help='carpeta donde crear la hoja (fuera del repo)')
     ap.add_argument('--con-texto', action='store_true')
     ap.add_argument('--semilla', type=int, default=1)
+    ap.add_argument('--categorias', help='solo estas categorías, separadas por coma (p. ej. disculpa,apoyo,conflicto)')
+    ap.add_argument('--recuperacion', type=int, metavar='N', help='mensajes sin evento a revisar (por defecto 300; 0 = ninguno)')
     ap.add_argument('--resumir', metavar='CSV')
     a = ap.parse_args(argv)
     if hasattr(sys.stdout, 'reconfigure'):
@@ -159,7 +163,11 @@ def main(argv=None):
     if not res.analysis_enabled:
         sys.exit('Análisis no habilitado: ' + ', '.join(res.pending_requirements or ['importación no aceptada']))
     lex = load_lexicon(local_path=os.path.join(os.path.dirname(real), 'lexicon_local.yaml'))
-    rows, meta = muestrear(res.messages, lex, load_cfg(), seed=a.semilla, con_texto=a.con_texto)
+    cfg = load_cfg()
+    if a.recuperacion is not None:
+        cfg['recall_max_messages'] = a.recuperacion
+    solo = set(a.categorias.split(',')) if a.categorias else None
+    rows, meta = muestrear(res.messages, lex, cfg, seed=a.semilla, con_texto=a.con_texto, solo=solo)
     os.makedirs(out_dir, exist_ok=True)
     dest = os.path.join(out_dir, CSV_NAME)
     if os.path.exists(dest):
