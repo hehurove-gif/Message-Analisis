@@ -111,3 +111,13 @@ def test_acotar_categorias_y_recuperacion(tmp_path, capsys):
     assert sum(r['tipo'] == 'sin_evento' for r in rows) == 20
     meta = json.load(open(tmp_path / 'r' / rv.META_NAME, encoding='utf-8'))
     assert list(meta['categorias']) == ['disculpa'] and meta['solo_categorias'] == ['disculpa']
+
+
+def test_recuperacion_cero(tmp_path):
+    from metrics.validation import systematic
+    assert systematic([1, 2, 3], 0, 1) == [] and systematic([], 0, 1) == []
+    f = tmp_path / 'c.txt'
+    f.write_text(chat(), encoding='utf-8')
+    rv.main([str(f), '--confirmo-individual', '--date-order-hint', 'dmy', '--salida', str(tmp_path / 'r0'), '--recuperacion', '0'])
+    rows = list(csv.DictReader(open(tmp_path / 'r0' / rv.CSV_NAME, encoding='utf-8-sig', newline='')))
+    assert not any(r['tipo'] == 'sin_evento' for r in rows)

@@ -65,6 +65,8 @@ def draw(items, k, seed, key):
 
 def systematic(items, k, seed):
     """k elementos repartidos a lo largo de la lista (paso fijo con arranque aleatorio)."""
+    if k <= 0:
+        return []
     if k >= len(items):
         return list(items)
     step = len(items) / k
