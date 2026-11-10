@@ -28,24 +28,24 @@ reglas:
   # --- emojis (se cuentan sobre el texto; una ocurrencia = una coincidencia) ---
   - id: emoji.afectivo.v1
     categoria: emoji_afectivo
-    emojis: ["❤", "😍", "🥰", "😘", "💕", "💖", "💗", "💓", "💞", "💘", "💝", "♥", "🧡", "💛", "💚", "💙", "💜", "🤍", "🩷", "😚", "😙", "💋"]
+    emojis: ["❤", "😍", "🥰", "😘", "💕", "💖", "💗", "💓", "💞", "💘", "💝", "♥", "🧡", "💛", "💚", "💙", "💜", "🤍", "🩷", "😚", "😙", "💋", "🫶"]
   - id: emoji.risa.v1
     categoria: emoji_risa
     emojis: ["😂", "🤣", "😆", "😹", "😄", "😁"]
     clase_provisional: linea_base
   - id: emoji.tristeza.v1
     categoria: emoji_tristeza
-    emojis: ["😢", "😞", "😔", "💔", "😿", "☹", "🙁"]
+    emojis: ["😢", "😞", "💔", "😿", "☹", "🙁"]
   - id: emoji.tristeza_ambigua.v1
     categoria: emoji_tristeza
-    emojis: ["😭", "🥺"]               # 😭 se usa también para risa; 🥺 para ternura o súplica
+    emojis: ["😭", "🥺", "😔"]         # 😭 se usa también para risa; 🥺 para ternura o súplica; 😔 como "ni modo"
     ambiguo: true
   - id: emoji.enojo.v1
     categoria: emoji_enojo
     emojis: ["😡", "😠", "🤬", "👿", "💢"]
   - id: emoji.posible_ironia.v1        # MARCA de posible ironía, no detección de sarcasmo
     categoria: emoji_posible_ironia
-    emojis: ["🙄", "🙃", "😏"]
+    emojis: ["🙄", "🙃", "😏", "🤨"]
     ambiguo: true
   - id: emoji.base.v1
     categoria: emoji_base

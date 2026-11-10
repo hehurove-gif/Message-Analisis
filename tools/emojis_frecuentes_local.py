@@ -7,7 +7,6 @@ cada emoji con su punto de código (por si la consola no lo muestra), cuántos m
 la categoría que lo cubre. No imprime texto de mensajes. `--salida` escribe en UTF-8 (recomendado en Windows)."""
 import argparse
 import os
-import re
 import sys
 from collections import Counter
 
@@ -15,12 +14,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 from nlp.lexicon import load_lexicon  # noqa: E402
-from nlp.text import normalize  # noqa: E402
+from nlp.text import EMOJI_RE as EMOJI, normalize  # noqa: E402
 from parsers import parse_file  # noqa: E402
 from validar_exportacion_local import is_inside  # noqa: E402
-
-EMOJI = re.compile('[\U0001F000-\U0001FAFF☀-➿⬀-⯿⌀-⏿←-⇿⤀-⥿〰〽]')
-
 
 def contar(messages):
     """{emoji: Counter(persona -> mensajes que lo contienen)} y {emoji: ocurrencias totales}."""
@@ -38,7 +34,7 @@ def contar(messages):
 
 def categoria_de(emoji, lex):
     e = normalize(emoji)
-    return sorted({f"{r.categoria}{'*' if r.ambiguo else ''}" for r in lex.rules if any(x and x in e for x in r.emojis)}) or ['SIN_CATEGORIA']
+    return sorted({f"{r.categoria}{'*' if r.ambiguo else ''}" for r in lex.rules if any(x and x in e for x in r.emojis)}) or ['emoji_otro']
 
 
 def main(argv=None):
@@ -65,7 +61,7 @@ def main(argv=None):
     rows = sorted(por_msj, key=lambda e: -sum(por_msj[e].values()))[:a.top]
     out = [f'Emojis distintos: {len(por_msj)}; mensajes con emoji: ' + ' / '.join(
         f"{n} {sum(1 for m in res.messages if m.tipo == 'texto' and m.participante == n and EMOJI.search(m.texto))}" for n in names),
-        '(* = regla ambigua; SIN_CATEGORIA = ninguna categoría lo cubre)',
+        '(* = regla ambigua; emoji_otro = ninguna regla específica lo cubre; se cuenta igual)',
         'emoji  codepoints        ' + '  '.join(f'msj {n}' for n in names) + '  ocurr.  categoría']
     for e in rows:
         cp = ' '.join(f'U+{ord(c):04X}' for c in e)

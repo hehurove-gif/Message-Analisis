@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 import yaml
 
-from nlp.text import normalize
+from nlp.text import EMOJI_RE, normalize
 from segmentation.turns import DEFAULT_CONFIG_PATH
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,7 +16,7 @@ DEFAULT_LEXICON_PATH = os.path.join(ROOT, 'lexicon', 'es_mx.yaml')
 LOCAL_LEXICON_NAME = 'lexicon_local.yaml'
 CATEGORIAS = ('afecto_explicito', 'apodo_carinoso', 'cumplido', 'propuesta_de_verse', 'apoyo', 'conflicto',
               'disculpa', 'gratitud', 'risa_texto', 'emoji_afectivo', 'emoji_risa', 'emoji_tristeza',
-              'emoji_enojo', 'emoji_posible_ironia', 'emoji_base')
+              'emoji_enojo', 'emoji_posible_ironia', 'emoji_base', 'emoji_otro')
 FORMAS = ('afirmativa', 'negada', 'pregunta')
 DEFAULT_CFG = {'negators': ['no', 'nunca', 'jamas', 'ni', 'tampoco', 'nadie'], 'negation_window_tokens': 3}
 _PUNCT = ',.!?¡¿;:\n'
@@ -65,6 +65,7 @@ class Lexicon:
     negators: frozenset
     negation_window: int
     n_local: int = 0
+    emoji_cubiertos: frozenset = frozenset()   # caracteres que alguna regla de emoji cubre
 
 
 def _compile(pat):
@@ -121,7 +122,14 @@ def load_lexicon(path=None, local_path=None, cfg_path=None):
         raise ValueError('ids de regla repetidos')
     # reglas no ambiguas primero: si dos reglas de una categoría coinciden en el mismo lugar, gana la estricta
     return Lexicon(rules=tuple(sorted(rules + local, key=lambda r: r.ambiguo)), negators=frozenset(normalize(x) for x in cfg['negators']),
-                   negation_window=cfg['negation_window_tokens'], n_local=len(local))
+                   negation_window=cfg['negation_window_tokens'], n_local=len(local),
+                   emoji_cubiertos=frozenset(c for r in rules + local for e in r.emojis for c in e))
+
+
+# Todo emoji que ninguna regla cubre se cuenta como `emoji_otro` (así la suma de las categorías de emoji cubre TODOS).
+OTRO_RULE = Rule(id='emoji.otro.v1', categoria='emoji_otro', subetiqueta=None, patrones=(), emojis=(), ambiguo=False,
+                 clase_provisional='pendiente_fase_6', no_seguido_de=None, salvo_si_sigue=frozenset(), vocativo=False,
+                 regex=(), pregunta_cuenta=False, no_si_sigue_pregunta=False, excepto_si_sigue=(), origen='generico')
 
 
 def _is_infinitive(tok):
@@ -180,6 +188,9 @@ def detect(text, lex):
             if c:
                 n_by_form['afirmativa'] += c
         hits += [(r, f, n) for f, n in n_by_form.items()]
+    otros = sum(1 for c in EMOJI_RE.findall(t) if c not in lex.emoji_cubiertos)
+    if otros:
+        hits.append((OTRO_RULE, 'afirmativa', otros))
     return hits, desc
 
 

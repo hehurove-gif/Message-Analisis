@@ -174,3 +174,17 @@ def test_integracion_metricas_local(tmp_path):
     assert out['lexico']['reglas']['n_locales'] == 1               # detecta lexicon_local.yaml junto al chat
     txt = m.resumen(out)
     assert 'Léxico: conteo bruto' in txt and 'afecto_explicito' in txt and 'tigre' not in txt
+
+
+def test_emoji_otro_cubre_todo_emoji():
+    hits, _ = detect('🗣🗣 hola 🔥 ❤️', LEX)
+    por = {r.categoria: n for r, f, n in hits}
+    assert por['emoji_otro'] == 3 and por['emoji_afectivo'] == 1
+    assert 'emoji_otro' not in {r.categoria for r, f, n in detect('😂 jaja', LEX)[0]}
+    # modificadores de piel y signo de género no cuentan como emojis por sí solos
+    assert 'emoji_otro' not in {r.categoria for r, f, n in detect('\U0001F3FB ♀', LEX)[0]}
+
+
+def test_pensativo_es_ambiguo():
+    evs, _ = events_for_message(_msg('😔'), LEX)
+    assert evs[0].categoria == 'emoji_tristeza' and evs[0].ambiguo
