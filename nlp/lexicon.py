@@ -21,6 +21,8 @@ FORMAS = ('afirmativa', 'negada', 'pregunta')
 DEFAULT_CFG = {'negators': ['no', 'nunca', 'jamas', 'ni', 'tampoco', 'nadie'], 'negation_window_tokens': 3}
 _PUNCT = ',.!?¡¿;:\n'
 _NO_VOCATIVO_SIGUE = {'propio', 'propia', 'por', 'de', 'del', 'a'}
+_SIGUE_VOCATIVO = {'como', 'que', 'te', 'ya', 'estas', 'donde', 'cuando', 'me', 'tu', 'quieres', 'vienes', 'puedes', 'hola',
+                   'buenos', 'buenas', 'gracias', 'si', 'no', 'oye', 'mira', 'dime', 'vamos', 'extrano', 'quiero', 'amo'}
 
 
 @dataclass(frozen=True)
@@ -35,6 +37,10 @@ class Rule:
     no_seguido_de: str | None     # 'infinitivo'
     salvo_si_sigue: frozenset
     vocativo: bool
+    regex: tuple                  # regex compiladas (palabra completa) para patrones con variantes
+    pregunta_cuenta: bool         # la forma interrogativa cuenta como afirmativa (p. ej. invitaciones)
+    no_si_sigue_pregunta: bool    # descarta si después viene una pregunta ("disculpa, ¿a qué hora…?")
+    excepto_si_sigue: tuple       # frases que, si siguen a la coincidencia, la descartan ("gracias a dios")
     origen: str                   # 'generico' | 'local'
 
 
@@ -72,7 +78,7 @@ def _rule_from(d, origen):
             raise ValueError(f'regla sin {k}')
     if d['categoria'] not in CATEGORIAS:
         raise ValueError(f"categoría desconocida: {d['categoria']}")
-    if not d.get('patrones') and not d.get('emojis'):
+    if not d.get('patrones') and not d.get('emojis') and not d.get('regex'):
         raise ValueError(f"regla {d['id']} sin patrones ni emojis")
     return Rule(id=d['id'], categoria=d['categoria'], subetiqueta=d.get('subetiqueta'),
                 patrones=tuple(_compile(p) for p in d.get('patrones', [])),
@@ -81,7 +87,11 @@ def _rule_from(d, origen):
                 clase_provisional=d.get('clase_provisional', 'pendiente_fase_6'),
                 no_seguido_de=d.get('no_seguido_de'),
                 salvo_si_sigue=frozenset(normalize(x) for x in d.get('salvo_si_sigue', [])),
-                vocativo=bool(d.get('vocativo', False)), origen=origen)
+                vocativo=bool(d.get('vocativo', False)),
+                regex=tuple(re.compile(r'(?<!\w)(?:' + x.replace(' ', r'\s+') + r')(?!\w)') for x in d.get('regex', [])),
+                pregunta_cuenta=bool(d.get('pregunta_cuenta', False)),
+                no_si_sigue_pregunta=bool(d.get('no_si_sigue_pregunta', False)),
+                excepto_si_sigue=tuple(normalize(x) for x in d.get('excepto_si_sigue', [])), origen=origen)
 
 
 def _local_rules(path):
@@ -109,7 +119,8 @@ def load_lexicon(path=None, local_path=None, cfg_path=None):
     ids = [r.id for r in rules + local]
     if len(ids) != len(set(ids)):
         raise ValueError('ids de regla repetidos')
-    return Lexicon(rules=tuple(rules + local), negators=frozenset(normalize(x) for x in cfg['negators']),
+    # reglas no ambiguas primero: si dos reglas de una categoría coinciden en el mismo lugar, gana la estricta
+    return Lexicon(rules=tuple(sorted(rules + local, key=lambda r: r.ambiguo)), negators=frozenset(normalize(x) for x in cfg['negators']),
                    negation_window=cfg['negation_window_tokens'], n_local=len(local))
 
 
@@ -126,7 +137,8 @@ def _context(t, start, end, lex):
     ends_q = bool(m and m.group() == '?') and '¿' not in t[end:end + m.start()]
     opened_q = '¿' in t[sent_start:start]
     forma = 'negada' if any(w in lex.negators for w in before) else ('pregunta' if ends_q or opened_q else 'afirmativa')
-    return forma, re.findall(r'\w+', t[end:end + 60])
+    q_after = bool(m and m.group() == '?') and '¿' in t[end:end + m.start()]
+    return forma, re.findall(r'\w+', t[end:end + 60]), q_after
 
 
 def _vocative(t, start, end):
@@ -135,24 +147,33 @@ def _vocative(t, start, end):
     pb = prev == '' or prev[-1] in _PUNCT
     nb = nxt == '' or nxt[0] in _PUNCT
     nxt_tok = (re.findall(r'\w+', nxt[:30]) or [''])[0]
-    return (pb or nb) and nxt_tok not in _NO_VOCATIVO_SIGUE
+    # vocativo: cierra la cláusula ("gracias, tigre"), o abre una y sigue un pronombre/verbo típico ("amor, ¿vienes?")
+    return (nb or (pb and nxt_tok in _SIGUE_VOCATIVO)) and nxt_tok not in _NO_VOCATIVO_SIGUE
 
 
 def detect(text, lex):
     """Coincidencias de UN mensaje. Devuelve (hits, descartes): hits = [(regla, forma, n)], descartes = Counter(id)."""
     t = normalize(text)
     hits, desc = [], Counter()
+    spans = {}                                   # categoría -> tramos ya usados (aceptados o descartados)
     for r in lex.rules:
         n_by_form = Counter()
-        for rx in r.patrones:
+        for rx in r.patrones + r.regex:
             for m in rx.finditer(t):
-                forma, sig = _context(t, m.start(), m.end(), lex)
-                if r.no_seguido_de == 'infinitivo' and sig and _is_infinitive(sig[0]) and sig[0] not in r.salvo_si_sigue:
+                used = spans.setdefault(r.categoria, [])
+                if any(m.start() < b and a < m.end() for a, b in used):
+                    continue                     # ya cubierto por otra regla de la misma categoría
+                used.append((m.start(), m.end()))
+                forma, sig, q_after = _context(t, m.start(), m.end(), lex)
+                rest = t[m.end():].lstrip(' ,')
+                if (r.no_seguido_de == 'infinitivo' and sig and _is_infinitive(sig[0]) and sig[0] not in r.salvo_si_sigue) \
+                        or (r.vocativo and not _vocative(t, m.start(), m.end())) \
+                        or (r.no_si_sigue_pregunta and q_after) \
+                        or any(rest.startswith(x) for x in r.excepto_si_sigue):
                     desc[r.id] += 1
                     continue
-                if r.vocativo and not _vocative(t, m.start(), m.end()):
-                    desc[r.id] += 1
-                    continue
+                if forma == 'pregunta' and r.pregunta_cuenta:
+                    forma = 'afirmativa'
                 n_by_form[forma] += 1
         for e in r.emojis:
             c = t.count(e)

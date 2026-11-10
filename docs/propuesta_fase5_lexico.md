@@ -1,6 +1,6 @@
 # Propuesta: capa léxica y afectiva basada en reglas (Fase 5) — v0.2
 
-> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1 primero).
+> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1 y 5.2 implementadas; 5.3 y 5.4 pendientes).
 > v0.2 recoge sus cinco respuestas. Principio rector: **primero una base sólida de conteo bruto**, medible y verificable a mano; el análisis por contexto del mensaje se construye después, encima de esa base.
 > Complementa `definiciones_operativas.md` §4 (eventos léxicos y clases de evento), §8 (evaluación de la evidencia) y §9 (reglas generales). No redefine esas secciones: las usa.
 > Todos los ejemplos son inventados. El repo es público: no se versionan apodos, frases ni mensajes reales (ver §7).

@@ -9,9 +9,9 @@ from parsers import parse_text
 LEX = load_lexicon()
 
 
-def cats(text):
+def cats(text, solo=('afecto_explicito',)):
     hits, _ = detect(text, LEX)
-    return sorted({(r.categoria, f) for r, f, _ in hits})
+    return sorted({(r.categoria, f) for r, f, _ in hits if solo is None or r.categoria in solo or r.categoria.startswith('emoji')})
 
 
 def test_normalizacion():

@@ -51,3 +51,132 @@ reglas:
     categoria: emoji_base
     emojis: ["😊", "🙂", "👍", "☀", "😅", "🙏", "👌", "😉", "😀", "😃"]
     clase_provisional: linea_base
+
+  # ================= Parte 5.2 =================
+  # --- apodo_carinoso: SOLO como vocativo (cierra la cláusula o la abre con pronombre/verbo típico) ---
+  - id: apodo.fuerte.v1
+    categoria: apodo_carinoso
+    patrones: ["mi amor", "mi vida", "mi cielo", "mi corazon", "corazon", "corazoncito", "amorcito", "mi tesoro", "carino", "mi reina", "mi rey"]
+    vocativo: true
+  - id: apodo.general.v1                # de uso muy general entre amistades y familia
+    categoria: apodo_carinoso
+    patrones: ["amor", "cielo", "bebe", "bebito", "bebita", "princesa", "reina", "tesoro", "hermosa", "hermoso", "preciosa", "precioso", "guapa", "guapo", "linda", "lindo", "bonita", "bonito"]
+    vocativo: true
+    ambiguo: true
+
+  # --- cumplido: elogio a la persona (aspecto / cualidad). No se decide si es amistoso o romántico ---
+  - id: cumplido.aspecto.v1
+    categoria: cumplido
+    subetiqueta: aspecto
+    regex:
+      - '(?:te ves|estas|te vez|saliste|sales) (?:muy |super |re |tan |bien |demasiado )?(?:hermos[ao]|guap[ao]|lind[ao]|bonit[ao]|precios[ao]|divin[ao]|espectacular|radiante|irresistible)'
+      - 'que (?:hermos[ao]|guap[ao]|lind[ao]|bonit[ao]|precios[ao]) (?:te ves|estas|saliste|sales|eres|sonrisa|ojos)'
+      - 'me (?:encanta|gusta|fascina) (?:como te ves|tu sonrisa|tus ojos|tu cabello|tu pelo|tu look)'
+  - id: cumplido.cualidad.v1
+    categoria: cumplido
+    subetiqueta: cualidad
+    regex:
+      - 'eres (?:muy |super |tan |re |demasiado )?(?:inteligente|lista|listo|genial|especial|increible|maravillos[ao]|talentos[ao]|admirable|hermos[ao]|guap[ao]|lind[ao]|precios[ao])'
+      - 'eres (?:el|la) mejor'
+      - 'eres (?:una persona|un ser humano) (?:increible|maravillos[ao]|especial|genial)'
+      - 'eres (?:un|una) (?:amor|sol|angel|tesoro)'
+      - 'que (?:inteligente|talentos[ao]|genial|increible) eres'
+
+  # --- propuesta_de_verse: invitación o plan de coincidir en persona (la pregunta CUENTA; "nos vemos" suelto es despedida) ---
+  - id: verse.plan.v1
+    categoria: propuesta_de_verse
+    pregunta_cuenta: true
+    regex:
+      - 'nos vemos (?:manana|hoy|el|la|esta|este|mas tarde|en la|en el|a las|en un rato|el fin)'
+      - 'te veo (?:manana|hoy|el|la|esta|este|mas tarde|a las|en un rato)'
+      - 'quedamos (?:el|la|manana|hoy|en|este|esta|a las|para)'
+      - 'salimos (?:el|la|manana|hoy|este|esta|a las|juntos|juntas)'
+      - 'quieres (?:ir|salir|venir|que nos veamos|que salgamos|que quedemos|vernos|cenar|comer|tomar|desayunar|ir al|ir a)'
+      - 'quieres (?:que )?(?:vayamos|vamos)'
+      - 'vamos a (?:comer|cenar|tomar|desayunar|salir|vernos|ver una|ver la|ir a|ir al)'
+      - 'te invito (?:a|al)'
+      - 'podemos (?:vernos|salir|quedar|juntarnos)'
+      - 'nos juntamos'
+
+  # --- apoyo: ofrecimiento de ayuda o consuelo ---
+  - id: apoyo.ofrecimiento.v1
+    categoria: apoyo
+    subetiqueta: ofrecimiento
+    patrones: ["aqui estoy", "aqui estamos", "cuenta conmigo", "cuentas conmigo", "estoy contigo", "estoy para ti", "estoy aqui para ti", "lo que necesites", "en lo que necesites", "te acompano", "no estas solo", "no estas sola", "si necesitas algo", "si necesitas hablar"]
+  - id: apoyo.consuelo.v1
+    categoria: apoyo
+    subetiqueta: consuelo
+    patrones: ["echale ganas", "tu puedes", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "tranquila", "tranquilo", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
+  - id: apoyo.ambigua.v1
+    categoria: apoyo
+    patrones: ["animo", "animo!", "un abrazo", "abrazo", "suerte", "mucha suerte"]
+    ambiguo: true                       # fórmulas de cortesía o despedida
+
+  # --- conflicto: reclamo, enojo expreso, ruptura de contacto, insulto ---
+  - id: conflicto.reclamo.v1
+    categoria: conflicto
+    subetiqueta: reclamo
+    regex:
+      - 'me (?:molesta|enoja|cansa|fastidia|choca|duele) que'
+      - 'estoy (?:harto|harta|enojad[ao]|molest[ao]|decepcionad[ao])'
+      - 'estoy cansad[ao] de (?:esto|que|ti|tus|tu)'
+      - 'me (?:decepcionas|decepcionaste|tienes harto|tienes harta|hartas|hartaste)'
+      - 'siempre (?:haces|dices|haces lo mismo|me dejas)'
+      - 'nunca (?:me escuchas|me haces caso|avisas|contestas|me contestas)'
+      - 'ya basta'
+      - 'no es justo'
+  - id: conflicto.ruptura.v1
+    categoria: conflicto
+    subetiqueta: ruptura_de_contacto
+    patrones: ["no me hables", "no me escribas", "no me busques", "no me llames", "dejame en paz", "dejame tranquilo", "dejame tranquila", "no quiero hablar contigo", "ya no quiero hablar", "no quiero verte", "me voy a bloquear", "te voy a bloquear", "te bloquee"]
+  - id: conflicto.insulto.v1
+    categoria: conflicto
+    subetiqueta: insulto
+    patrones: ["idiota", "estupido", "estupida", "imbecil", "inutil", "asco de persona"]
+  - id: conflicto.insulto_coloquial.v1  # entre amistades suele ser broma: falso positivo CONOCIDO
+    categoria: conflicto
+    subetiqueta: insulto
+    patrones: ["pendejo", "pendeja", "cabron", "cabrona", "tonto", "tonta", "menso", "mensa", "baboso", "babosa"]
+    ambiguo: true
+
+  # --- disculpa: reconocimiento de falta o petición de perdón ---
+  - id: disculpa.explicita.v1
+    categoria: disculpa
+    regex:
+      - 'perdon (?:por|que|si)'
+      - 'perdoname'
+      - 'te pido (?:una )?(?:disculpas?|perdon)'
+      - 'disculpa(?:me)? (?:por|que|si)'
+      - 'fue mi culpa'
+      - 'es mi culpa'
+      - 'me equivoque'
+      - 'mi error'
+      - 'no fue mi intencion'
+      - 'no debi'
+    no_si_sigue_pregunta: true
+  - id: disculpa.ambigua.v1             # "lo siento" puede ser condolencia; "perdón"/"disculpa" sueltos, un "con permiso"
+    categoria: disculpa
+    patrones: ["lo siento", "lo sient", "perdon", "disculpa", "disculpame", "sorry", "perdon!"]
+    ambiguo: true
+    no_si_sigue_pregunta: true
+
+  # --- gratitud (simple) ---
+  - id: gratitud.v1
+    categoria: gratitud
+    patrones: ["gracias", "grax", "graxias", "agradezco", "te lo agradezco", "thanks", "thank you"]
+    excepto_si_sigue: ["a dios", "al cielo"]
+    clase_provisional: linea_base
+
+  # --- risa_texto (simple) ---
+  - id: risa.texto.v1
+    categoria: risa_texto
+    regex:
+      - 'a?(?:j[aeiou]){2,}j?'
+      - '(?:js){2,}j?'
+      - '(?:jk){2,}'
+      - 'ha(?:ha)+h?'
+      - 'he(?:he)+h?'
+      - 'xd+'
+      - 'lol'
+      - 'lmao'
+    clase_provisional: linea_base
