@@ -283,3 +283,14 @@ lexicon:
   # (día lógico desde habits.day_start_hour), siempre junto a sus denominadores. Sin índices compuestos.
   # Variante ESTRICTA = reglas no ambiguas y forma afirmativa; AMPLIA = estricta + reglas ambiguas.
   # Las negadas y las preguntas se cuentan aparte y no entran en ninguna de las dos.
+  # VALIDACIÓN POR MUESTRA (tools/revisar_eventos_local.py). Tamaño de muestra por categoría con N eventos:
+  #   n = N*n0 / (n0 + N - 1)   (margen ±10 % al 95 % -> n0 = 96, con corrección por población finita), máximo N.
+  # Menos de `min_events` eventos -> la categoría queda no_validada. Umbrales EXPERIMENTALES.
+  validation:
+    n0: 96
+    min_events: 10
+    recall_max_messages: 300
+    accept_point: 0.80          # precisión puntual para aceptar una categoría
+    accept_lower: 0.70          # o límite inferior del intervalo de Wilson
+    drop_point: 0.60            # regla con >= min_reviewed_rule revisados y precisión menor: revisar/eliminar
+    min_reviewed_rule: 10

@@ -1,6 +1,6 @@
 # Propuesta: capa léxica y afectiva basada en reglas (Fase 5) — v0.2
 
-> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1 y 5.2 implementadas; 5.3 y 5.4 pendientes).
+> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1, 5.2 y 5.4 implementadas; 5.3 pendiente).
 > v0.2 recoge sus cinco respuestas. Principio rector: **primero una base sólida de conteo bruto**, medible y verificable a mano; el análisis por contexto del mensaje se construye después, encima de esa base.
 > Complementa `definiciones_operativas.md` §4 (eventos léxicos y clases de evento), §8 (evaluación de la evidencia) y §9 (reglas generales). No redefine esas secciones: las usa.
 > Todos los ejemplos son inventados. El repo es público: no se versionan apodos, frases ni mensajes reales (ver §7).
@@ -131,7 +131,7 @@ Cada hallazgo declara si la **dirección** (quién tiene más) se mantiene en am
 ## 8. Validación (criterio de salida de la Fase 5) — muestra por porcentaje
 
 1. **Pruebas sintéticas**: ≥ 6 ejemplos positivos y ≥ 6 negativos por categoría, incluidos los casos de §2.
-2. **Precisión en datos reales** (solo la hace el usuario). En lugar de 100 eventos fijos, el tamaño de muestra depende de cuántos eventos hay, con la fórmula de estimar una proporción con margen ±10 % al 95 % y **corrección por población finita**: `n = N·96 / (96 + N − 1)` (96 ≈ tamaño sin corrección). Ejemplos: N=10 → 9 (casi todos), N=30 → 23 (≈77 %), N=100 → 49, N=500 → 81, N=2000 → 92. Es decir: **chats pequeños se revisan casi completos; chats grandes tienen tope práctico ≈ 96 por categoría.** La muestra se reparte entre reglas y entre A y B de forma proporcional, con mínimo 1 por regla/participante cuando exista.
+2. **Precisión en datos reales** (solo la hace el usuario). En lugar de 100 eventos fijos, el tamaño de muestra depende de cuántos eventos hay, con la fórmula de estimar una proporción con margen ±10 % al 95 % y **corrección por población finita**: `n = N·96 / (96 + N − 1)` (96 ≈ tamaño sin corrección). Con redondeo hacia arriba: N=10 → 10 (todos), N=30 → 24 (80 %), N=100 → 50, N=500 → 81, N=2000 → 92. Es decir: **chats pequeños se revisan casi completos; chats grandes tienen tope práctico ≈ 96 por categoría.** La muestra se reparte entre reglas y entre A y B de forma proporcional, con mínimo 1 por regla/participante cuando exista.
 3. **Intervalo de Wilson** (95 %) para la precisión observada; se reporta el intervalo, no solo el punto. Con N < 10 eventos la categoría queda `no_validada` (no hay muestra que valga) y solo se reporta el conteo bruto con esa etiqueta.
 4. **Recuperación aproximada**: muestra de mensajes **sin** evento, tamaño `min(N, 300)` repartida a lo largo del chat; el usuario cuenta cuántos contenían una expresión de alguna categoría (cota inferior de lo que se escapa).
 5. **Umbrales (experimentales)**: categoría entra al reporte con límite inferior del intervalo ≥ 0,70 o punto ≥ 0,80; regla con ≥ 10 revisados y precisión < 0,60 se elimina o pasa a ambigua; entre medias, `baja_precision`.
