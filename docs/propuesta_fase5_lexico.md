@@ -1,6 +1,7 @@
-# Propuesta: capa léxica y afectiva basada en reglas (Fase 5) — v0.1, BORRADOR PARA APROBACIÓN
+# Propuesta: capa léxica y afectiva basada en reglas (Fase 5) — v0.2
 
-> Estado: **sin implementar**. Nada de esto entra en `definiciones_operativas.md` ni en el código hasta que el usuario lo apruebe (checklist en §10).
+> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1 primero).
+> v0.2 recoge sus cinco respuestas. Principio rector: **primero una base sólida de conteo bruto**, medible y verificable a mano; el análisis por contexto del mensaje se construye después, encima de esa base.
 > Complementa `definiciones_operativas.md` §4 (eventos léxicos y clases de evento), §8 (evaluación de la evidencia) y §9 (reglas generales). No redefine esas secciones: las usa.
 > Todos los ejemplos son inventados. El repo es público: no se versionan apodos, frases ni mensajes reales (ver §7).
 
@@ -12,6 +13,10 @@ Detectar, con reglas transparentes y editables, **expresiones** en el texto de c
 - **No** decide si algo es interés romántico. Eso exige recurrencia, línea base, contexto y respuesta del otro (Fase 6). La Fase 5 solo entrega materia prima verificable.
 - **No** usa modelos. Los modelos (Fase 9) se comparan después contra estas reglas y contra la validación manual.
 - Una regla que no supera la validación (§8) no entra al reporte.
+
+## 1.1 Principio de la v0.2: conteo bruto primero
+
+Cada cifra que entrega la Fase 5 es un **recuento que el usuario puede reproducir a mano** abriendo las líneas indicadas: mensajes con evento, ocurrencias, turnos con evento, días con evento, y esas cifras frente al total de mensajes/turnos/días de esa persona. No hay puntuaciones ni pesos. Los refinamientos por contexto (clases `indicador_candidato`, etc.) quedan registrados en §4.7 como línea de trabajo, **no se implementan** hasta que el conteo bruto esté validado.
 
 ## 2. Categorías léxicas (qué se busca)
 
@@ -26,6 +31,8 @@ Cada regla pertenece a **una** categoría. Las categorías son independientes y 
 | `apoyo` | Ofrecimiento de ayuda o consuelo | "ánimo", "aquí estoy para lo que necesites", "cuenta conmigo" | "ánimo" dentro de una burla evidente (no detectable: límite) |
 | `conflicto` | Reclamo, enojo expreso, ruptura de contacto, insulto | "me molesta que no avises", "ya basta", "no me hables", "eres un idiota" | "me molesta el ruido de la calle" (queja no dirigida; ver §4.4) |
 | `disculpa` | Reconocimiento de falta o petición de perdón | "perdón por lo de ayer", "fue mi culpa", "disculpa que te grité" | "¿perdón?" como "¿cómo?"; "disculpa, ¿a qué hora es?" |
+| `gratitud` (nueva, simple) | Agradecimiento explícito | "gracias", "te lo agradezco", "mil gracias" | "gracias a dios" (fórmula fija; excepción) |
+| `risa_texto` (nueva, simple) | Risa escrita | "jajaja", "jsjs", "xd" | "ja" suelto como sílaba |
 | `emoji_*` | Emojis por clase: `afectivo`, `risa`, `tristeza`, `enojo`, `marca_de_posible_ironia`, `base` | ❤️ 😘 🥰 · 😂 🤣 · 😢 · 😡 · 🙄 🙃 · 😊 👍 | — |
 
 Notas por categoría:
@@ -56,7 +63,7 @@ Un evento guarda, solo en memoria durante el análisis:
 Reglas de conteo (**propuesta de aclaración a definiciones §4**, que fija "un evento por mensaje"):
 
 1. Un mensaje puede producir **un evento por categoría** (un mensaje con "te quiero" y "perdón" aporta a `afecto_explicito` y a `disculpa`), pero **no más de uno por categoría**, aunque contenga varias coincidencias.
-2. Como los mensajes de una persona se fragmentan, la medida principal por persona no es el conteo de mensajes sino la **tasa**: eventos por 100 turnos de esa persona, y **días con al menos un evento** (unidad para la recurrencia). El conteo de mensajes se reporta como dato secundario.
+2. **Base de conteo bruto (v0.2)**: por persona se reportan siempre juntos y sin fusionarse: `mensajes_con_evento`, `ocurrencias` (coincidencias totales), `turnos_con_evento`, `dias_con_evento`, y sus denominadores (`mensajes_texto`, `turnos`, `dias_activos`). Las tasas por 100 mensajes y por 100 turnos son derivadas de esos conteos; los días con evento son la unidad para la recurrencia.
 3. Los eventos `negada` y los de `forma: pregunta` se reportan aparte y **no** entran al conteo principal.
 
 ## 4. Reglas de coincidencia
@@ -81,7 +88,13 @@ Se prefiere la coincidencia con segunda persona o vocativo. Las quejas no dirigi
 ### 4.5 Ambiguas
 Reglas con alta tasa conocida de falsos positivos (`lo siento`, 😭, 🥺, 😏, apodos de uso muy general como "amor" suelto) llevan `ambiguo: true`. Se **cuentan en la variante amplia y se excluyen en la estricta** (§6).
 
-### 4.6 Lo que no se intenta
+### 4.6 Coincidencias descartadas
+Las coincidencias que una excepción descarta (p. ej. "te quiero + infinitivo") **no son eventos**, pero se cuentan por regla (`descartes`) para poder revisar si la excepción es demasiado agresiva.
+
+### 4.7 Línea de trabajo posterior: detección contextual (NO implementada)
+Cómo se detectaría después, sobre la base de conteo: (1) co-ocurrencia dentro del mismo turno (afecto + apodo + emoji afectivo = señal más fuerte que cada uno por separado); (2) comparación con la línea base de cada persona (¿es raro *para esa persona*?); (3) respuesta del otro en el turno siguiente (reconoce, corresponde, cambia de tema); (4) recurrencia en periodos distintos. Cada paso se validará contra muestras revisadas a mano antes de asignar clases. Mientras tanto, todo evento queda `pendiente_fase_6`.
+
+### 4.8 Lo que no se intenta
 Sarcasmo, ironía contextual, mensajes en otro idioma, jergas locales no listadas, texto dentro de imágenes y stickers. Los emojis 🙄 🙃 solo marcan **posibilidad** de ironía.
 
 ## 5. Qué se mide (por persona y por periodo)
@@ -110,32 +123,33 @@ Cada hallazgo declara si la **dirección** (quién tiene más) se mantiene en am
 ## 7. Diccionarios: formato y privacidad
 
 - `lexicon/es_mx.yaml` (en el repo, **genérico**): reglas con `id`, `categoria`, `patrones`, `excepciones`, `ambiguo`, `nota`. Español con variantes mexicanas. Editable.
-- `lexicon_local.yaml` (**fuera del repo / ignorado por git**): apodos y frases propias de un chat concreto. Nunca se versiona ni se imprime su contenido.
+- `lexicon_local.yaml` (**en `exportaciones_reales`, junto a tus conversaciones; ya cubierto por `.gitignore` y por la negativa de las herramientas a leer dentro del repo**): apodos y frases propias. `tools/crear_lexico_local.py` genera la plantilla vacía; nunca se versiona ni se imprime su contenido.
 - Cada regla lleva versión (`.v1`): cambiar una regla genera una versión nueva para que los resultados sean reproducibles.
 - Parámetros en `config.yaml` (`lexicon:`), nada fijo en el código.
 - Un evento imprime línea, categoría y regla; el texto solo lo ve el usuario al abrir su propio archivo.
 
-## 8. Validación (criterio de salida de la Fase 5)
+## 8. Validación (criterio de salida de la Fase 5) — muestra por porcentaje
 
-1. **Pruebas sintéticas**: ≥ 6 ejemplos positivos y ≥ 6 negativos por categoría, incluidos los casos de §2 (infinitivo, vocativo, negación, pregunta, "¿perdón?", "lo siento" ambiguo, 😭 como risa).
-2. **Precisión en datos reales** (solo la hace el usuario): `tools/revisar_eventos_local.py` elegirá hasta **100 eventos por categoría**, repartidos entre reglas y entre A y B, e imprimirá línea, categoría y regla. El usuario abre cada línea y marca `correcto` / `incorrecto` / `ambiguo`; se reportan solo los conteos por regla.
-3. **Recuperación aproximada**: la herramienta también elige **200 mensajes sin evento**; el usuario cuenta cuántos contenían una expresión de alguna categoría. Solo da una cota inferior de lo que se escapa.
-4. **Umbrales propuestos (experimentales)**: una categoría entra al reporte con precisión ≥ **0,80**; una regla con ≥ 10 revisados y precisión < **0,60** se elimina o pasa a ambigua; categorías entre 0,60 y 0,80 se reportan marcadas `baja_precision`. Con menos de 30 revisados la categoría queda `no_validada`.
-5. Resultado en un reporte `reporte_pruebas_fase_5.md` con conteos, sin texto real y **sin cifras relacionales reales** (repo público).
+1. **Pruebas sintéticas**: ≥ 6 ejemplos positivos y ≥ 6 negativos por categoría, incluidos los casos de §2.
+2. **Precisión en datos reales** (solo la hace el usuario). En lugar de 100 eventos fijos, el tamaño de muestra depende de cuántos eventos hay, con la fórmula de estimar una proporción con margen ±10 % al 95 % y **corrección por población finita**: `n = N·96 / (96 + N − 1)` (96 ≈ tamaño sin corrección). Ejemplos: N=10 → 9 (casi todos), N=30 → 23 (≈77 %), N=100 → 49, N=500 → 81, N=2000 → 92. Es decir: **chats pequeños se revisan casi completos; chats grandes tienen tope práctico ≈ 96 por categoría.** La muestra se reparte entre reglas y entre A y B de forma proporcional, con mínimo 1 por regla/participante cuando exista.
+3. **Intervalo de Wilson** (95 %) para la precisión observada; se reporta el intervalo, no solo el punto. Con N < 10 eventos la categoría queda `no_validada` (no hay muestra que valga) y solo se reporta el conteo bruto con esa etiqueta.
+4. **Recuperación aproximada**: muestra de mensajes **sin** evento, tamaño `min(N, 300)` repartida a lo largo del chat; el usuario cuenta cuántos contenían una expresión de alguna categoría (cota inferior de lo que se escapa).
+5. **Umbrales (experimentales)**: categoría entra al reporte con límite inferior del intervalo ≥ 0,70 o punto ≥ 0,80; regla con ≥ 10 revisados y precisión < 0,60 se elimina o pasa a ambigua; entre medias, `baja_precision`.
+6. Resultado en `reporte_pruebas_fase_5.md` con conteos, sin texto real y **sin cifras relacionales reales** (repo público).
 
 ## 9. Plan de entrega (un commit por parte)
 
 | Parte | Contenido |
 |---|---|
-| 5.1 | Esquema de evento, normalización, límites de palabra, negación/pregunta, `lexicon/es_mx.yaml` con `afecto_explicito` y emojis, pruebas sintéticas |
-| 5.2 | Categorías restantes (apodos, cumplidos, propuestas de verse, apoyo, conflicto, disculpa) y sus pruebas |
-| 5.3 | Métricas por persona y periodo (tasa, turnos y días con evento), sensibilidad estricta/amplia, integración con `metricas_local` y `comparar_local` |
-| 5.4 | `revisar_eventos_local.py`, protocolo de validación y reporte |
+| 5.1 | Esquema de evento, normalización, límites de palabra, negación/pregunta, descartes, `lexicon/es_mx.yaml` con `afecto_explicito` y emojis, métricas de conteo bruto por persona (estricta/amplia), `tools/crear_lexico_local.py`, pruebas sintéticas |
+| 5.2 | Categorías restantes (apodos, cumplidos, propuestas de verse, apoyo, conflicto, disculpa, gratitud, risa_texto) y sus pruebas |
+| 5.3 | Serie por periodo, sensibilidad, integración con `metricas_local` y `comparar_local` |
+| 5.4 | `revisar_eventos_local.py` (muestra por porcentaje, §8), protocolo y reporte |
 
-## 10. Decisiones que necesito de ti
+## 10. Decisiones (respondidas por el usuario)
 
-1. ¿Aceptas la **aclaración de conteo** de §3: un evento por categoría y mensaje (no por mensaje), con tasa por 100 turnos y días con evento como medidas principales?
-2. ¿Aceptas que la Fase 5 **no asigne** las clases `indicador_candidato`, `declaracion_explicita` ni `calidez_no_especifica` y las deje para la Fase 6 (`pendiente_fase_6`)?
-3. ¿Aceptas el archivo **local** de apodos fuera del repo (§7)?
-4. ¿Aceptas los umbrales de validación de §8 (0,80 / 0,60 / 30 revisados) como valores experimentales?
-5. ¿Alguna categoría que quieras añadir, quitar o priorizar (por ejemplo, empezar por `apodo_carinoso` y `propuesta_de_verse` por la Fase 6)?
+1. **Conteo**: aceptado, con prioridad a una base de **conteo bruto** sólida (§1.1, §3).
+2. **Clases contextuales** (`indicador_candidato`…): aceptado dejarlas para después; se deja pensado cómo detectarlas (§4.7), sin implementar.
+3. **Archivo local de apodos**: aceptado, generado en `exportaciones_reales`.
+4. **Validación**: por **porcentaje** en lugar de 100 fijos; propuesta de método en §8 (pendiente de que el usuario confirme que le convence).
+5. **Categorías extra**: añadir las simples (`gratitud`, `risa_texto`); sugerencias 1–4 de la propuesta aceptadas tal cual.
