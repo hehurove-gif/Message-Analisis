@@ -25,6 +25,7 @@ from metrics.correspondence import correspondence  # noqa: E402
 from metrics.greetings import greetings  # noqa: E402
 from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
+from metrics.lexical import lexical_counts  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
 from metrics.participation import participation  # noqa: E402
 from metrics.rhythm import rhythm  # noqa: E402
@@ -46,6 +47,7 @@ def main(argv=None):
     ap.add_argument('--unir', action='append', default=[], metavar='C=B')
     ap.add_argument('--aceptar-perdidas', default='', metavar='L1,L2')
     ap.add_argument('--yo', choices=['A', 'B'])
+    ap.add_argument('--lexico-local', metavar='RUTA', help='léxico local (por defecto lexicon_local.yaml junto a la exportación, si existe)')
     ap.add_argument('--resumen', action='store_true')
     ap.add_argument('--semanal', action='store_true', help='evolución por semana ISO en lugar de mes')
     a = ap.parse_args(argv)
@@ -54,12 +56,12 @@ def main(argv=None):
     out = analizar(a.ruta, confirmo=a.confirmo_individual, date_order_hint=a.date_order_hint, merge=merge,
                    aceptar_alias=a.aceptar_alias_sospechosos,
                    perdidas=[int(x) for x in a.aceptar_perdidas.split(',')] if a.aceptar_perdidas else None, yo=a.yo,
-                   granularity='week' if a.semanal else None)
+                   granularity='week' if a.semanal else None, lexico_local=a.lexico_local)
     print(resumen(out) if a.resumen else json.dumps(out, ensure_ascii=False, indent=2))
 
 
 def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_alias=False, perdidas=None, yo=None,
-             granularity=None):
+             granularity=None, lexico_local=None):
     """Todas las métricas de UNA exportación (solo números). Reutilizado por comparar_local."""
     real = os.path.realpath(ruta)
     if is_inside(real, os.path.realpath(ROOT)):
@@ -81,6 +83,8 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['ritmo'] = rhythm(res.messages)
         out['saludos'] = greetings(res.messages)
         out['correspondencia'] = correspondence(res.messages)
+        local = lexico_local or os.path.join(os.path.dirname(real), 'lexicon_local.yaml')
+        out['lexico'] = lexical_counts(res.messages, local_path=local)
         out['evolucion'] = trends(res.messages, granularity=granularity)
     return out
 
@@ -235,6 +239,26 @@ def resumen(out, gap=None):
                      + '; días en que lo dice primero ' + ' / '.join(f"{lab[x]} {n}" for x, n in v['dias_lo_dice_primero'].items())
                      + '; el otro corresponde ese día ' + ' / '.join(
                          f"a {lab[x]} {_fmt(n, True)}" for x, n in v['el_otro_corresponde'].items()))
+
+    lx = out['lexico']
+    lines += ['', f"== Léxico: conteo bruto de coincidencias ({lx['reglas']['n']} reglas, {lx['reglas']['n_locales']} locales; "
+                  'estricta = reglas no ambiguas, forma afirmativa; amplia = + ambiguas) ==']
+    for k, v in lx['base'].items():
+        lines.append(f"  base {lab[k]}: {v['mensajes_texto']} mensajes de texto, {v['turnos']} turnos, {v['dias_activos']} días activos")
+    for cat, d in lx['por_categoria'].items():
+        lines.append(f"  {cat} [{d['clase_provisional']}] (robustez ante indicadores: {d['robustez_indicadores']}; "
+                     f"más días con evento: estricta {d['mas_dias_con_evento']['estricta']}, amplia {d['mas_dias_con_evento']['amplia']})")
+        for var in ('estricta', 'amplia'):
+            lines.append(f'      {var}: ' + ' | '.join(
+                f"{lab[k]} {b['mensajes_con_evento']} msj ({b['ocurrencias']} ocurr.), {b['turnos_con_evento']} turnos, "
+                f"{b['dias_con_evento']} días, {_fmt(b['por_100_mensajes'])}/100 msj" for k, b in d[var].items()))
+        aparte = [f"{var}: " + '/'.join(f"{lab[k]} {b['mensajes_con_evento']}" for k, b in d[var].items())
+                  for var in ('negadas', 'preguntas') if any(b['mensajes_con_evento'] for b in d[var].values())]
+        if aparte:
+            lines.append('      aparte (no cuentan): ' + '; '.join(aparte))
+    if lx['descartes_por_regla']:
+        lines.append('  coincidencias descartadas por excepción: ' + ', '.join(f'{r} {n}' for r, n in lx['descartes_por_regla'].items()))
+    lines.append('  ' + lx['nota'])
 
     c = out['correspondencia']
     lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "

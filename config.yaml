@@ -272,3 +272,14 @@ parsing:
   # en una exportación real (ver docs/formatos_exportacion_whatsapp.md y docs/limitaciones_y_formatos_pendientes.md).
   # No hay umbral de líneas no procesadas: cualquiera deja el archivo pendiente de revisión de calidad
   # y el análisis deshabilitado hasta resolverlas o aceptar expresamente cada pérdida.
+
+lexicon:
+  # CAPA LÉXICA (Fase 5; nlp/lexicon.py, metrics/lexical.py). Léxico genérico en lexicon/es_mx.yaml; el archivo
+  # LOCAL (lexicon_local.yaml) vive junto a las exportaciones, fuera del repo (tools/crear_lexico_local.py).
+  # NEGACIÓN: un negador en las N palabras anteriores a la coincidencia (misma oración) -> forma "negada".
+  negators: ["no", "nunca", "jamás", "ni", "tampoco", "nadie"]
+  negation_window_tokens: 3
+  # BASE DE CONTEO BRUTO: se reportan mensajes con evento, ocurrencias, turnos con evento y días con evento
+  # (día lógico desde habits.day_start_hour), siempre junto a sus denominadores. Sin índices compuestos.
+  # Variante ESTRICTA = reglas no ambiguas y forma afirmativa; AMPLIA = estricta + reglas ambiguas.
+  # Las negadas y las preguntas se cuentan aparte y no entran en ninguna de las dos.
