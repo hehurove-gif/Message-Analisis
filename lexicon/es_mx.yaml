@@ -106,11 +106,11 @@ reglas:
   - id: apoyo.consuelo.v1
     categoria: apoyo
     subetiqueta: consuelo
-    patrones: ["echale ganas", "tu puedes", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "tranquila", "tranquilo", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
+    patrones: ["echale ganas", "tu puedes", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
   - id: apoyo.ambigua.v1
     categoria: apoyo
-    patrones: ["animo", "animo!", "un abrazo", "abrazo", "suerte", "mucha suerte"]
-    ambiguo: true                       # fórmulas de cortesía o despedida
+    patrones: ["animo", "un abrazo", "abrazo", "suerte", "mucha suerte", "tranquila", "tranquilo"]
+    ambiguo: true                       # fórmulas de cortesía, despedida o "tranquilo = no pasa nada"
 
   # --- conflicto: reclamo, enojo expreso, ruptura de contacto, insulto ---
   - id: conflicto.reclamo.v1

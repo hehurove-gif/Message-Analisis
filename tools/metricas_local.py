@@ -244,7 +244,7 @@ def resumen(out, gap=None):
     lines += ['', f"== Léxico: conteo bruto de coincidencias ({lx['reglas']['n']} reglas, {lx['reglas']['n_locales']} locales; "
                   'estricta = reglas no ambiguas, forma afirmativa; amplia = + ambiguas) ==']
     for k, v in lx['base'].items():
-        lines.append(f"  base {lab[k]}: {v['mensajes_texto']} mensajes de texto, {v['turnos']} turnos, {v['dias_activos']} días activos")
+        lines.append(f"  base {lab[k]}: {v['mensajes_texto']} mensajes de texto, {v['turnos']} turnos, {v['dias_activos']} días activos (día lógico)")
     for cat, d in lx['por_categoria'].items():
         lines.append(f"  {cat} [{d['clase_provisional']}] (robustez ante indicadores: {d['robustez_indicadores']}; "
                      f"más días con evento: estricta {d['mas_dias_con_evento']['estricta']}, amplia {d['mas_dias_con_evento']['amplia']})")
@@ -256,6 +256,8 @@ def resumen(out, gap=None):
                   for var in ('negadas', 'preguntas') if any(b['mensajes_con_evento'] for b in d[var].values())]
         if aparte:
             lines.append('      aparte (no cuentan): ' + '; '.join(aparte))
+    lines.append('  mensajes por regla (qué regla produce cada conteo): ' + '; '.join(
+        f"{r} " + '/'.join(f'{lab[k]} {n}' for k, n in v.items()) for r, v in lx['mensajes_por_regla'].items()))
     if lx['descartes_por_regla']:
         lines.append('  coincidencias descartadas por excepción: ' + ', '.join(f'{r} {n}' for r, n in lx['descartes_por_regla'].items()))
     lines.append('  ' + lx['nota'])
