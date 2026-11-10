@@ -21,6 +21,9 @@ FORMAS = ('afirmativa', 'negada', 'pregunta')
 DEFAULT_CFG = {'negators': ['no', 'nunca', 'jamas', 'ni', 'tampoco', 'nadie'], 'negation_window_tokens': 3}
 _PUNCT = ',.!?¡¿;:\n'
 _NO_VOCATIVO_SIGUE = {'propio', 'propia', 'por', 'de', 'del', 'a'}
+_PRE_VOCATIVO = {'hola', 'gracias', 'buenas', 'noches', 'dias', 'tardes', 'adios', 'bye', 'si', 'no', 'ok', 'oye', 'descansa',
+                 'cuidate', 'ya', 'bueno', 'pues', 'igual', 'claro', 'perdon', 'ay', 'hey', 'mira', 'dime', 'vamos', 'jaja',
+                 'aww', 'ps', 'ven', 'sigue', 'gracias', 'te', 'quiero', 'extrano', 'amo'}
 _SIGUE_VOCATIVO = {'como', 'que', 'te', 'ya', 'estas', 'donde', 'cuando', 'me', 'tu', 'quieres', 'vienes', 'puedes', 'hola',
                    'buenos', 'buenas', 'gracias', 'si', 'no', 'oye', 'mira', 'dime', 'vamos', 'extrano', 'quiero', 'amo'}
 
@@ -157,7 +160,10 @@ def _vocative(t, start, end):
     nb = nxt == '' or nxt[0] in _PUNCT
     nxt_tok = (re.findall(r'\w+', nxt[:30]) or [''])[0]
     # vocativo: cierra la cláusula ("gracias, tigre"), o abre una y sigue un pronombre/verbo típico ("amor, ¿vienes?")
-    return (nb or (pb and nxt_tok in _SIGUE_VOCATIVO)) and nxt_tok not in _NO_VOCATIVO_SIGUE
+    prev_tok = (re.findall(r'\w+', prev[-30:]) or [''])[-1]
+    # vocativo: (abre la cláusula Y la cierra, o sigue un pronombre/verbo típico) o (la cierra Y lo antecede un saludo/
+    # interjección). "toda mi vida", "el cariño", "al cielo" no lo son: los antecede una preposición o un artículo.
+    return ((pb and (nb or nxt_tok in _SIGUE_VOCATIVO)) or (nb and prev_tok in _PRE_VOCATIVO)) and nxt_tok not in _NO_VOCATIVO_SIGUE
 
 
 def detect(text, lex):

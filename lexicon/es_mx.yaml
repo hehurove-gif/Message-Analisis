@@ -88,16 +88,22 @@ reglas:
     categoria: propuesta_de_verse
     pregunta_cuenta: true
     regex:
-      - 'nos vemos (?:manana|hoy|el|la|esta|este|mas tarde|en la|en el|a las|en un rato|el fin)'
-      - 'te veo (?:manana|hoy|el|la|esta|este|mas tarde|a las|en un rato)'
       - 'quedamos (?:el|la|manana|hoy|este|esta|a las)'
-      - 'salimos (?:el|la|manana|hoy|este|esta|a las|juntos|juntas)'
+      - 'salimos (?:el|la|manana|hoy|este|esta|juntos|juntas)'
       - 'quieres (?:ir|salir|venir|que nos veamos|que salgamos|que quedemos|vernos|cenar|comer|tomar|desayunar|ir al|ir a)'
       - 'quieres (?:que )?(?:vayamos|vamos)'
       - 'vamos a (?:comer|cenar|tomar|desayunar|salir|vernos|ver una|ver la|ir a|ir al)'
       - 'te invito (?:a|al)'
       - 'podemos (?:vernos|salir|quedar|juntarnos)'
       - 'nos juntamos'
+
+  - id: verse.ambigua.v1                # "nos vemos mañana" suele ser despedida; solo la variante amplia
+    categoria: propuesta_de_verse
+    pregunta_cuenta: true
+    ambiguo: true
+    regex:
+      - 'nos vemos (?:manana|hoy|el|la|esta|este|mas tarde|en la|en el|a las|en un rato|el fin)'
+      - 'te veo (?:manana|hoy|el|la|esta|este|mas tarde|a las|en un rato)'
 
   # --- apoyo: ofrecimiento de ayuda o consuelo ---
   - id: apoyo.ofrecimiento.v1
@@ -107,11 +113,17 @@ reglas:
   - id: apoyo.consuelo.v1
     categoria: apoyo
     subetiqueta: consuelo
-    patrones: ["echale ganas", "tu puedes", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
+    patrones: ["echale ganas", "tu puedes", "animo", "todo va a estar bien", "todo va a salir bien", "todo va a pasar", "ya pasara", "te abrazo", "te mando un abrazo", "un abrazo fuerte", "te mando fuerza", "mucha fuerza"]
   - id: apoyo.ambigua.v1
     categoria: apoyo
-    patrones: ["animo", "un abrazo", "abrazo", "tranquila", "tranquilo"]
-    ambiguo: true                       # fórmulas de cortesía, despedida o "tranquilo = no pasa nada"
+    patrones: ["un abrazo"]
+    ambiguo: true                       # fórmula de cortesía o despedida
+
+  - id: apoyo.tranquilizar.v1           # "tranquila, ya pasó" (vocativo); "estoy tranquila" no cuenta
+    categoria: apoyo
+    patrones: ["tranquila", "tranquilo"]
+    vocativo: true
+    ambiguo: true
 
   # --- conflicto: reclamo, enojo expreso, ruptura de contacto, insulto ---
   - id: conflicto.reclamo.v1
@@ -130,14 +142,18 @@ reglas:
     categoria: conflicto
     subetiqueta: ruptura_de_contacto
     patrones: ["no me hables", "no me escribas", "no me busques", "no me llames", "dejame en paz", "dejame tranquilo", "dejame tranquila", "no quiero hablar contigo", "ya no quiero hablar", "no quiero verte", "me voy a bloquear", "te voy a bloquear", "te bloquee"]
-  - id: conflicto.insulto.v1
+  - id: conflicto.insulto.v1            # DIRIGIDO al otro ("eres un idiota"); el insulto a terceros o a uno mismo no es conflicto entre ambos
     categoria: conflicto
     subetiqueta: insulto
-    patrones: ["idiota", "estupido", "estupida", "imbecil", "inutil", "asco de persona"]
-  - id: conflicto.insulto_coloquial.v1  # entre amistades suele ser broma: falso positivo CONOCIDO
+    regex:
+      - 'eres (?:un |una |el |la )?(?:muy |bien |tan |re |tremend[ao] |puro |pura )?(?:idiota|estupid[ao]|imbecil|inutil)'
+      - 'que (?:idiota|estupid[ao]|imbecil) eres'
+  - id: conflicto.insulto_coloquial.v1  # entre amistades suele ser broma: falso positivo CONOCIDO; también solo dirigido
     categoria: conflicto
     subetiqueta: insulto
-    patrones: ["pendejo", "pendeja", "cabron", "cabrona", "tonto", "tonta", "menso", "mensa", "baboso", "babosa"]
+    regex:
+      - 'eres (?:un |una |el |la )?(?:muy |bien |tan |re |tremend[ao] |puro |pura )?(?:pendej[ao]|cabron(?:a)?|tont[ao]|mens[ao]|babos[ao])'
+      - 'que (?:pendej[ao]|cabron(?:a)?|tont[ao]|mens[ao]|babos[ao]) eres'
     ambiguo: true
 
   # --- disculpa: reconocimiento de falta o petición de perdón ---
@@ -150,14 +166,13 @@ reglas:
       - 'disculpa(?:me)? (?:por|que|si)'
       - 'fue mi culpa'
       - 'es mi culpa'
-      - 'me equivoque'
       - 'mi error'
       - 'no fue mi intencion'
       - 'no debi'
     no_si_sigue_pregunta: true
   - id: disculpa.ambigua.v1             # "lo siento" puede ser condolencia; "perdón"/"disculpa" sueltos, un "con permiso"
     categoria: disculpa
-    patrones: ["lo siento", "lo sient", "perdon", "disculpa", "disculpame", "sorry", "perdon!"]
+    patrones: ["lo siento", "lo sient", "perdon", "disculpa", "disculpame", "sorry", "me equivoque"]
     ambiguo: true
     no_si_sigue_pregunta: true
 

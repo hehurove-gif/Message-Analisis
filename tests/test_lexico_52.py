@@ -72,7 +72,7 @@ def test_negativos(cat, texts):
 def test_ambiguas_solo_en_amplia():
     assert wide('lo siento', 'disculpa') and not strict('lo siento', 'disculpa')
     assert strict('perdón por lo de ayer', 'disculpa')
-    assert wide('ánimo', 'apoyo') and not strict('ánimo', 'apoyo')
+    assert strict('ánimo', 'apoyo') and wide('un abrazo', 'apoyo') and not strict('un abrazo', 'apoyo')
     assert wide('eres un cabrón', 'conflicto') and not strict('eres un cabrón', 'conflicto')
     assert wide('hola amor', 'apodo_carinoso') and not strict('hola amor', 'apodo_carinoso')
     assert strict('hola mi amor', 'apodo_carinoso')
@@ -107,3 +107,26 @@ def test_ajustes_con_datos_reales():
     assert not wide('mucha suerte en el examen', 'apoyo')
     # "quedamos en que" es un acuerdo, no una invitación
     assert not wide('quedamos en que lo hacías tú', 'propuesta_de_verse') and wide('quedamos el sábado', 'propuesta_de_verse')
+
+
+def test_ajustes_con_revision_manual():
+    # apodos: "mi vida"/"corazón"/"cariño"/"cielo" como sustantivo no son vocativos
+    for t in ['los mejores 20 minutos de mi vida', 'no van a estar conmigo toda mi vida', 'se nota el cariño',
+              'me lo clavan en el corazon', 'al cielo', 'llorar por amor', 'versión bebe']:
+        assert not wide(t, 'apodo_carinoso'), t
+    for t in ['mi vida', 'gracias mi vida', 'hola, mi amor', 'descansa, cielo', 'ya llegué, corazoncito']:
+        assert wide(t, 'apodo_carinoso'), t
+    # insultos: solo dirigidos al otro (no a terceros ni a uno mismo)
+    for t in ['soy pendejo', 'el estúpido de Juan', 'que cabron el de comida', 'estoy pendejo', 'es un imbécil']:
+        assert not wide(t, 'conflicto'), t
+    for t in ['eres un idiota', 'qué idiota eres', 'eres bien pendejo', 'eres muy tonta']:
+        assert wide(t, 'conflicto'), t
+    assert strict('eres un idiota', 'conflicto') and not strict('eres bien pendejo', 'conflicto')
+    # apoyo: "ánimo" es estricta; "tranquila" solo como vocativo y ambigua; "abrazo" suelto no cuenta
+    assert strict('ánimo', 'apoyo') and not wide('duermes tranquila', 'apoyo') and not wide('me saluda de abrazo', 'apoyo')
+    assert wide('tranquila, ya pasó', 'apoyo') and not strict('tranquila, ya pasó', 'apoyo')
+    # "nos vemos mañana" es despedida: solo amplia; la invitación explícita sigue siendo estricta
+    assert wide('nos vemos mañana', 'propuesta_de_verse') and not strict('nos vemos mañana', 'propuesta_de_verse')
+    assert strict('¿quieres salir?', 'propuesta_de_verse') and not wide('solo los lunes salimos a las 8', 'propuesta_de_verse')
+    # "me equivoqué" ya no es disculpa estricta
+    assert not strict('me equivoqué de sticker', 'disculpa') and wide('me equivoqué de sticker', 'disculpa')
