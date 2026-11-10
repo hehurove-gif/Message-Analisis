@@ -258,6 +258,10 @@ def resumen(out, gap=None):
             lines.append('      aparte (no cuentan): ' + '; '.join(aparte))
     lines.append('  mensajes por regla (qué regla produce cada conteo): ' + '; '.join(
         f"{r} " + '/'.join(f'{lab[k]} {n}' for k, n in v.items()) for r, v in lx['mensajes_por_regla'].items()))
+    lines.append('  expresiones más frecuentes por categoría (mensajes; las reglas locales aparecen como "(local)"):')
+    for cat, ex in lx['mensajes_por_expresion'].items():
+        lines.append(f'      {cat}: ' + '; '.join(f"{x} " + '/'.join(f'{lab[k]} {n}' for k, n in v.items())
+                                                  for x, v in list(ex.items())[:int(os.environ.get('LEXICO_TOP', 10))]))
     if lx['descartes_por_regla']:
         lines.append('  coincidencias descartadas por excepción: ' + ', '.join(f'{r} {n}' for r, n in lx['descartes_por_regla'].items()))
     lines.append('  ' + lx['nota'])

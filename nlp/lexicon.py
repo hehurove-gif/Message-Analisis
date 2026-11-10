@@ -55,6 +55,7 @@ class Event:
     reglas: tuple
     forma: str                    # afirmativa | negada | pregunta
     ambiguo: bool                 # verdadero si TODAS las coincidencias del evento vienen de reglas ambiguas
+    expresiones: tuple            # ((expresión, n), …) coincidentes; '(local)' en reglas locales
     n_coincidencias: int
     clase_provisional: str
 
@@ -161,8 +162,19 @@ def _vocative(t, start, end):
 
 def detect(text, lex):
     """Coincidencias de UN mensaje. Devuelve (hits, descartes): hits = [(regla, forma, n)], descartes = Counter(id)."""
+    hits, desc, _ = detect_full(text, lex)
+    return hits, desc
+
+
+def _expr(r, s):
+    """Expresión que se reporta: la coincidencia (vocabulario de la regla) o, en reglas locales, solo '(local)'."""
+    return '(local)' if r.origen == 'local' else s[:40]
+
+
+def detect_full(text, lex):
+    """Como `detect`, y además la lista de expresiones coincidentes [(regla, forma, expresión, n)]."""
     t = normalize(text)
-    hits, desc = [], Counter()
+    hits, desc, exprs = [], Counter(), []
     spans = {}                                   # categoría -> tramos ya usados (aceptados o descartados)
     for r in lex.rules:
         n_by_form = Counter()
@@ -183,20 +195,23 @@ def detect(text, lex):
                 if forma == 'pregunta' and r.pregunta_cuenta:
                     forma = 'afirmativa'
                 n_by_form[forma] += 1
+                exprs.append((r, forma, _expr(r, m.group()), 1))
         for e in r.emojis:
             c = t.count(e)
             if c:
                 n_by_form['afirmativa'] += c
+                exprs.append((r, 'afirmativa', _expr(r, e), c))
         hits += [(r, f, n) for f, n in n_by_form.items()]
-    otros = sum(1 for c in EMOJI_RE.findall(t) if c not in lex.emoji_cubiertos)
+    otros = [c for c in EMOJI_RE.findall(t) if c not in lex.emoji_cubiertos]
     if otros:
-        hits.append((OTRO_RULE, 'afirmativa', otros))
-    return hits, desc
+        hits.append((OTRO_RULE, 'afirmativa', len(otros)))
+        exprs += [(OTRO_RULE, 'afirmativa', c, k) for c, k in Counter(otros).items()]
+    return hits, desc, exprs
 
 
 def events_for_message(msg, lex):
     """Eventos del mensaje: UNO por (categoría, forma). Devuelve (eventos, descartes)."""
-    hits, desc = detect(msg.texto, lex)
+    hits, desc, exprs = detect_full(msg.texto, lex)
     groups = {}
     for r, f, n in hits:
         groups.setdefault((r.categoria, f), []).append((r, n))
@@ -206,6 +221,9 @@ def events_for_message(msg, lex):
                          participante=msg.participante, categoria=cat,
                          subetiquetas=tuple(sorted({r.subetiqueta for r, _ in lst if r.subetiqueta})),
                          reglas=tuple(sorted({r.id for r, _ in lst})), forma=f,
-                         ambiguo=all(r.ambiguo for r, _ in lst), n_coincidencias=sum(n for _, n in lst),
+                         ambiguo=all(r.ambiguo for r, _ in lst),
+                         expresiones=tuple(sorted(Counter({x: sum(n for rr, ff, xx, n in exprs if rr.categoria == cat and ff == f and xx == x)
+                                                           for x in {xx for rr, ff, xx, _ in exprs if rr.categoria == cat and ff == f}}).items())),
+                         n_coincidencias=sum(n for _, n in lst),
                          clase_provisional=lst[0][0].clase_provisional))
     return evs, desc

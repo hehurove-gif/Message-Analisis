@@ -40,6 +40,7 @@ def lexical_counts(messages, lexicon=None, local_path=None, cfg_path=None):
                 'dias_activos': len({day(m) for m in people if m.participante == n})} for n in names}
 
     descartes, cats = Counter(), {}
+    por_expr = {}                     # categoría -> expresión -> {persona: mensajes} (afirmativas, amplia)
     por_regla = {}                    # id de regla -> {persona: mensajes con evento afirmativo (variante amplia)}
     acc = {}      # (cat, variante, persona) -> dict de conjuntos/contadores
     for m in people:
@@ -62,6 +63,8 @@ def lexical_counts(messages, lexicon=None, local_path=None, cfg_path=None):
                 a['dias'].add(day(m))
             cats.setdefault(e.categoria, e.clase_provisional)
             if e.forma == 'afirmativa':
+                for x, _ in e.expresiones:
+                    por_expr.setdefault(e.categoria, {}).setdefault(x, Counter())[e.participante] += 1
                 for rid in e.reglas:
                     d = por_regla.setdefault(rid, Counter())
                     d[e.participante] += 1
@@ -96,6 +99,8 @@ def lexical_counts(messages, lexicon=None, local_path=None, cfg_path=None):
                                              'robusto_ante_indicadores' if dirs['estricta'] == dirs['amplia'] else
                                              'sensible_a_indicadores')}
     return {'base': base, 'por_categoria': out, 'descartes_por_regla': dict(sorted(descartes.items())),
+            'mensajes_por_expresion': {c: {x: {n: v.get(n, 0) for n in names} for x, v in sorted(d.items(), key=lambda kv: -sum(kv[1].values()))}
+                                       for c, d in sorted(por_expr.items())},
             'mensajes_por_regla': {r: {n: c.get(n, 0) for n in names} for r, c in sorted(por_regla.items())},
             'reglas': {'n': len(lex.rules), 'n_locales': lex.n_local},
             'nota': 'conteo bruto de coincidencias léxicas; un evento es un dato sobre el texto, no sobre la persona ni la relación'}

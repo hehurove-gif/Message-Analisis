@@ -123,7 +123,7 @@ def test_conteo_bruto_por_persona():
 def test_sin_texto_en_resultado():
     r = lexical_counts(parse_text(T, date_order_hint='dmy').messages)
     s = str(r)
-    assert 'Ana' not in s and 'Beto' not in s and 'quiero' not in s.replace('te_quiero', '').replace('afecto.te_quiero.v1', '')
+    assert 'Ana' not in s and 'Beto' not in s and 'hola' not in s and 'decir algo' not in s
 
 
 def test_local_apodos_vocativo(tmp_path):
@@ -188,3 +188,19 @@ def test_emoji_otro_cubre_todo_emoji():
 def test_pensativo_es_ambiguo():
     evs, _ = events_for_message(_msg('😔'), LEX)
     assert evs[0].categoria == 'emoji_tristeza' and evs[0].ambiguo
+
+
+def test_expresiones_por_categoria():
+    r = lexical_counts(parse_text(T, date_order_hint='dmy').messages)
+    ex = r['mensajes_por_expresion']
+    assert ex['afecto_explicito']['te quiero']['A'] == 1 and ex['afecto_explicito']['te amo']['A'] == 1
+    assert ex['gratitud']['gracias'] == {'A': 0, 'B': 1}
+    assert 'Ana' not in str(r)
+
+
+def test_expresion_local_se_oculta(tmp_path):
+    p = tmp_path / 'lexicon_local.yaml'
+    p.write_text('apodos: ["tigre"]\n', encoding='utf-8')
+    lex = load_lexicon(local_path=str(p))
+    evs, _ = events_for_message(_msg('hola, tigre'), lex)
+    assert evs[0].expresiones == (('(local)', 1),) and 'tigre' not in repr(evs[0])
