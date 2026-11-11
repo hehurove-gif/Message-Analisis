@@ -6,6 +6,7 @@ r"""Informe completo de TODOS tus chats con un solo comando, y comparación entr
    Escribe en CARPETA\informes\ (fuera del repo):
      informe_<etiqueta>_<fecha>.md    informe legible: tabla comparativa, léxico por archivo y resumen completo por archivo
      informe_<etiqueta>_<fecha>.json  "foto" de todos los números (para comparar después)
+   Con --html escribe además informe_<etiqueta>_<fecha>.html: la versión visual (ver informe_visual_local.py).
    Solo números e índices (0, 1, …): ningún nombre de archivo, de persona ni texto de mensajes.
    Cada informe registra la versión del código (commit) y la huella del léxico y de la configuración usados.
 
@@ -149,6 +150,11 @@ def generar(a):
         f.write('\n'.join(md))
     with open(base + '.json', 'w', encoding='utf-8') as f:
         json.dump({'meta': meta, 'archivos': outs}, f, ensure_ascii=False, default=str, sort_keys=True)
+    if a.html:
+        from informe_visual_local import render
+        with open(base + '.html', 'w', encoding='utf-8') as f:
+            f.write(render({'meta': meta, 'archivos': json.loads(json.dumps(outs, default=str))}))
+        print('Visual  :', base + '.html  (ábrelo con doble clic)')
     print('\nInforme :', base + '.md')
     print('Foto    :', base + '.json  (para --comparar)')
     print(f"Código {meta['commit']} · léxico {meta['huella_lexico']} · config {meta['huella_config']}")
@@ -228,6 +234,7 @@ def main(argv=None):
     ap.add_argument('--etiqueta', help='nombre del informe, p. ej. inicio, fase5, final')
     ap.add_argument('--salida', help='carpeta de los informes (por defecto CARPETA\\informes)')
     ap.add_argument('--comparar', nargs=2, metavar=('ANTES.json', 'DESPUES.json'))
+    ap.add_argument('--html', action='store_true', help='además del .md y el .json, genera el informe visual .html')
     ap.add_argument('--anonimo', action='store_true', help='no usar nombres: dejar A y B (por defecto se usan los nombres de cada chat)')
     ap.add_argument('--max', type=int, default=40, help='valores por sección en la comparación')
     a = ap.parse_args(argv)
