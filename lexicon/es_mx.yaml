@@ -134,8 +134,13 @@ reglas:
       - 'estoy (?:harto|harta|enojad[ao]|molest[ao]|decepcionad[ao])'
       - 'estoy cansad[ao] de (?:esto|que|ti|tus|tu)'
       - 'me (?:decepcionas|decepcionaste|tienes harto|tienes harta|hartas|hartaste)'
-      - 'siempre (?:haces|dices|haces lo mismo|me dejas)'
       - 'nunca (?:me escuchas|me haces caso|avisas|contestas|me contestas)'
+  - id: conflicto.reclamo_ambigua.v1    # revisión 1: "siempre dices..." y "ya basta" suelen ser descripciones o bromas (3 de 3 no correctos)
+    categoria: conflicto
+    subetiqueta: reclamo
+    ambiguo: true
+    regex:
+      - 'siempre (?:haces|dices|haces lo mismo|me dejas)'
       - 'ya basta'
       - 'no es justo'
   - id: conflicto.ruptura.v1

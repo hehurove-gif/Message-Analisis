@@ -130,3 +130,9 @@ def test_ajustes_con_revision_manual():
     assert strict('¿quieres salir?', 'propuesta_de_verse') and not wide('solo los lunes salimos a las 8', 'propuesta_de_verse')
     # "me equivoqué" ya no es disculpa estricta
     assert not strict('me equivoqué de sticker', 'disculpa') and wide('me equivoqué de sticker', 'disculpa')
+
+
+def test_reclamo_ambiguo_solo_en_amplia():
+    for txt in ("siempre dices que no", "ya basta"):
+        assert not strict(txt, 'conflicto') and wide(txt, 'conflicto')
+    assert strict("nunca me escuchas", 'conflicto')
