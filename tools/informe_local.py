@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 from comparar_local import COLS, fila, tabla  # noqa: E402
-from metricas_local import analizar, resumen  # noqa: E402
+from metricas_local import analizar, aplicar_nombres, resumen  # noqa: E402
 from validar_exportacion_local import is_inside  # noqa: E402
 
 
@@ -65,6 +65,26 @@ def tabla_lexico(out):
     return f'_Base — {base}_\n\n' + md_tabla(head, rows)
 
 
+def cargar_nombres(carpeta):
+    """nombres_local.json: {nombre completo del chat: nombre corto para los informes}. Vive junto a tus chats (fuera del repo)."""
+    ruta = os.path.join(carpeta, 'nombres_local.json')
+    if os.path.exists(ruta):
+        with open(ruta, encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+
+def guardar_plantilla_nombres(carpeta, vistos):
+    """Agrega al archivo los nombres completos detectados que aún no están (sin pisar lo que ya editaste)."""
+    actual = cargar_nombres(carpeta)
+    nuevos = {n: n for n in sorted(vistos) if n not in actual}
+    if nuevos:
+        actual.update(nuevos)
+        with open(os.path.join(carpeta, 'nombres_local.json'), 'w', encoding='utf-8') as f:
+            json.dump(actual, f, ensure_ascii=False, indent=2)
+    return len(nuevos)
+
+
 def md_tabla(head, rows):
     esc = lambda x: str(x).replace('|', '\\|')   # noqa: E731
     return '\n'.join(['| ' + ' | '.join(esc(h) for h in head) + ' |', '|' + '|'.join('---' for _ in head) + '|']
@@ -88,17 +108,27 @@ def generar(a):
             'huella_lexico': _huella(os.path.join(ROOT, 'lexicon', 'es_mx.yaml')),
             'huella_config': _huella(os.path.join(ROOT, 'config.yaml'))}
     outs, filas, trozos = {}, [], []
+    cortos = cargar_nombres(carpeta)
+    nombres_por_archivo, vistos = {}, set()
     for i, f in enumerate(files):
         if solo is not None and i not in solo:
             continue
         kb = str(round(os.path.getsize(f) / 1024))
         print(f'[{i}] analizando ({kb} KB)…', flush=True)
         out = analizar(f, confirmo=a.confirmo_individual, date_order_hint=hints.get(i), aceptar_alias=i in a.alias,
-                       yo=None)
+                       yo=None,
+                       con_nombres=not a.anonimo)
         outs[str(i)] = {'kb': kb, 'out': out}
         filas.append(fila(i, out, kb))
         if out['analisis_habilitado']:
-            trozos.append(f"## Archivo {i} ({kb} KB)\n\n### Léxico (mensajes con evento)\n\n{tabla_lexico(out)}\n\n"
+            if out.get('nombres'):
+                vistos.update(out['nombres'].values())
+                out['nombres_completos'] = dict(out['nombres'])
+                out['nombres'] = {k: cortos.get(v) or v for k, v in out['nombres'].items()}
+                nombres_por_archivo[str(i)] = out['nombres']
+            quien = ' × '.join(out['nombres'].values()) if out.get('nombres') else ''
+            trozos.append(f"## Archivo {i} ({kb} KB){' — ' + quien if quien else ''}\n\n### Léxico (mensajes con evento)\n\n"
+                          f"{aplicar_nombres(tabla_lexico(out), out.get('nombres'))}\n\n"
                           f"### Resumen completo\n\n```text\n{resumen(out)}\n```\n")
         else:
             trozos.append(f"## Archivo {i} ({kb} KB)\n\nNo se analizó: {out['importacion']} — "
@@ -106,9 +136,14 @@ def generar(a):
     md = [f"# Informe «{etiqueta}» — {meta['fecha']}", '',
           f"- Código: `{meta['commit']}` · léxico `{meta['huella_lexico']}` · configuración `{meta['huella_config']}`",
           f"- Archivos analizados: {len(outs)} de {len(files)} (índices como `$archivos[N]`)",
-          '- Solo números: ningún nombre de archivo, de persona ni texto de mensajes. A = primer autor de cada archivo.', '',
+          ('- Solo números, ningún texto de mensajes. CONTIENE nombres de participantes: archivo local, no lo subas al repo ni lo compartas.'
+           if nombres_por_archivo else '- Solo números: ningún nombre de archivo, de persona ni texto de mensajes. A = primer autor de cada archivo.'), '',
           '## Tabla comparativa (% de A; B = resto)', '', '```text', tabla(filas), '```', '', *trozos]
     os.makedirs(sal, exist_ok=True)
+    if vistos:
+        n = guardar_plantilla_nombres(carpeta, vistos)
+        if n:
+            print(f'Se agregaron {n} nombre(s) a nombres_local.json (edita el valor para usar un nombre corto).')
     base = os.path.join(sal, f'informe_{etiqueta}_{sello}')
     with open(base + '.md', 'w', encoding='utf-8') as f:
         f.write('\n'.join(md))
@@ -155,7 +190,7 @@ def comparar(a):
         sec = {}
         for k in sorted(set(x) | set(y)):
             vx, vy = x.get(k, '(no existía)'), y.get(k, '(ya no existe)')
-            if vx != vy:
+            if vx != vy and k.split('.')[0] not in ('nombres', 'nombres_completos'):
                 sec.setdefault(k.split('.')[0], []).append((k, vx, vy))
         total = sum(len(v) for v in sec.values())
         L += [f'## Archivo {idx}: {total} valores distintos', '']
@@ -193,6 +228,7 @@ def main(argv=None):
     ap.add_argument('--etiqueta', help='nombre del informe, p. ej. inicio, fase5, final')
     ap.add_argument('--salida', help='carpeta de los informes (por defecto CARPETA\\informes)')
     ap.add_argument('--comparar', nargs=2, metavar=('ANTES.json', 'DESPUES.json'))
+    ap.add_argument('--anonimo', action='store_true', help='no usar nombres: dejar A y B (por defecto se usan los nombres de cada chat)')
     ap.add_argument('--max', type=int, default=40, help='valores por sección en la comparación')
     a = ap.parse_args(argv)
     if a.comparar:

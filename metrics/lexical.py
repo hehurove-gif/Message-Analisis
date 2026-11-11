@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import yaml
 
 from nlp.lexicon import events_for_message, load_lexicon
+from metrics.trends import _all_periods, _cfg as _tcfg, period_key
 from segmentation.turns import DEFAULT_CONFIG_PATH, build_turns
 
 
@@ -104,3 +105,84 @@ def lexical_counts(messages, lexicon=None, local_path=None, cfg_path=None):
             'mensajes_por_regla': {r: {n: c.get(n, 0) for n in names} for r, c in sorted(por_regla.items())},
             'reglas': {'n': len(lex.rules), 'n_locales': lex.n_local},
             'nota': 'conteo bruto de coincidencias léxicas; un evento es un dato sobre el texto, no sobre la persona ni la relación'}
+
+
+def lexical_series(messages, lexicon=None, local_path=None, cfg_path=None, granularity=None, compare_granularity=True):
+    """Serie del conteo bruto por periodo (Fase 5.3), mes o semana ISO, por categoría y persona.
+
+    Por periodo: mensajes con evento (estricta y amplia) y mensajes de texto (denominador). La "dirección" de un
+    periodo (quién tiene más mensajes con evento por cada 100 mensajes de texto, variante estricta) solo se da si el
+    periodo tiene al menos `min_events_per_period_for_trend` eventos y la diferencia es ≥ 25 %; si no, es None o 'igual'. El resumen cuenta en cuántos
+    periodos válidos lidera cada persona y se repite con la otra granularidad: `robusto` si coincide el líder
+    dominante, `sensible_a_granularidad` si no. Sin interpretación: es el mismo conteo bruto, solo repartido en el tiempo."""
+    lex = lexicon or load_lexicon(local_path=local_path, cfg_path=cfg_path)
+    tc = _tcfg(cfg_path)
+    gran = granularity or tc['gran']
+    day_start, min_ev = tc['day_start'], tc['min_ev']
+    names = sorted({m.participante for m in messages if m.participante})
+    people = [m for m in messages if m.participante and m.timestamp_local]
+    day = lambda m: (datetime.fromisoformat(m.timestamp_local) - timedelta(hours=day_start)).date()   # noqa: E731
+    if not people:
+        return {'granularidad': gran, 'periodos': [], 'por_categoria': {}}
+    evs_by = []                                   # (periodo_mes, periodo_semana, persona, [(cat, ambiguo)])
+    for m in people:
+        if m.tipo != 'texto':
+            evs_by.append((day(m), m.participante, None))
+            continue
+        evs, _ = events_for_message(m, lex)
+        evs_by.append((day(m), m.participante, {(e.categoria, e.ambiguo) for e in evs if e.forma == 'afirmativa'}))
+
+    def build(g):
+        keys = _all_periods(evs_by[0][0], max(d for d, _, _ in evs_by), g)
+        base = {k: Counter() for k in keys}
+        cnt = {}                                  # (cat, variante) -> periodo -> Counter(persona)
+        for d, who, cats_ in evs_by:
+            k = period_key(d, g)
+            if cats_ is None:
+                continue
+            base[k][who] += 1
+            for cat in {c for c, _ in cats_}:
+                cnt.setdefault((cat, 'amplia'), {}).setdefault(k, Counter())[who] += 1
+            for cat in {c for c, amb in cats_ if not amb}:
+                cnt.setdefault((cat, 'estricta'), {}).setdefault(k, Counter())[who] += 1
+        res = {}
+        for cat in sorted({c for c, _ in cnt}):
+            rows, lead = [], Counter()
+            for k in keys:
+                e = cnt.get((cat, 'estricta'), {}).get(k, Counter())
+                w = cnt.get((cat, 'amplia'), {}).get(k, Counter())
+                r = {'periodo': k}
+                for n in names:
+                    r['estricta_' + n], r['amplia_' + n], r['texto_' + n] = e.get(n, 0), w.get(n, 0), base[k].get(n, 0)
+                    r['estricta_por_100_' + n] = _pct(e.get(n, 0), base[k].get(n, 0))
+                tot = sum(e.values())
+                direc = None
+                if tot >= min_ev and len(names) == 2:
+                    ra, rb = (r['estricta_por_100_' + n] or 0 for n in names)
+                    direc = 'igual' if max(ra, rb) < 1.25 * min(ra, rb) or ra == rb else (names[0] if ra > rb else names[1])   # margen: ≥ 25 % de diferencia
+                r['direccion'] = direc
+                if direc and direc != 'igual':
+                    lead[direc] += 1
+                rows.append(r)
+            valid = sum(1 for r in rows if r['direccion'])
+            dom = None
+            if valid >= 3 and lead:
+                top, nt = lead.most_common(1)[0]
+                dom = top if nt / valid >= 0.75 else 'mixto'
+            elif valid < 3:
+                dom = 'insuficiente'
+            res[cat] = {'periodos': rows, 'periodos_validos': valid, 'lidera': {n: lead.get(n, 0) for n in names},
+                        'dominante': dom}
+        return keys, res
+
+    keys, res = build(gran)
+    out = {'granularidad': gran, 'min_eventos_periodo': min_ev, 'periodos': keys, 'por_categoria': res}
+    if compare_granularity:
+        other = 'week' if gran == 'month' else 'month'
+        _, alt = build(other)
+        for cat, d in res.items():
+            a, b = d['dominante'], alt.get(cat, {}).get('dominante')
+            d['sensibilidad_granularidad'] = {'otra': other, 'dominante_otra': b,
+                                              'etiqueta': 'robusto' if a == b else 'sensible_a_granularidad'}
+    out['nota'] = 'conteo bruto repartido por periodo; no interpreta interés, cercanía ni reciprocidad'
+    return out

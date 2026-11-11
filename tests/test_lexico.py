@@ -204,3 +204,24 @@ def test_expresion_local_se_oculta(tmp_path):
     lex = load_lexicon(local_path=str(p))
     evs, _ = events_for_message(_msg('hola, tigre'), lex)
     assert evs[0].expresiones == (('(local)', 1),) and 'tigre' not in repr(evs[0])
+
+
+def test_serie_lexica_por_periodo():
+    from metrics.lexical import lexical_series
+    from parsers import parse_text
+    L = []
+    for mes, (a, b) in enumerate([(6, 0), (6, 1), (5, 0), (6, 6)], start=1):
+        for i in range(max(a, b) + 1):
+            if i < a:
+                L.append(f'{i + 1:02d}/{mes:02d}/2025, 10:{i:02d} - Ana: te quiero mucho')
+            else:
+                L.append(f'{i + 1:02d}/{mes:02d}/2025, 11:{i:02d} - Beto: hola')
+            if i < b:
+                L.append(f'{i + 1:02d}/{mes:02d}/2025, 12:{i:02d} - Beto: te quiero mucho')
+    res = parse_text('\n'.join(L) + '\n', date_order_hint='dmy').confirm_individual()
+    s = lexical_series(res.messages)
+    d = s['por_categoria']['afecto_explicito']
+    assert s['granularidad'] == 'month' and d['periodos_validos'] >= 3
+    assert d['lidera']['A'] >= 2 and d['dominante'] in ('A', 'mixto')
+    assert d['sensibilidad_granularidad']['etiqueta'] in ('robusto', 'sensible_a_granularidad')
+    assert all('texto' not in str(k) or isinstance(v, (int, float, type(None))) for r in d['periodos'] for k, v in r.items() if k != 'periodo')

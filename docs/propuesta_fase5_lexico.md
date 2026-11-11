@@ -1,6 +1,6 @@
 # Propuesta: capa léxica y afectiva basada en reglas (Fase 5) — v0.2
 
-> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1, 5.2 y 5.4 implementadas; 5.3 pendiente).
+> Estado: **decisiones del usuario recibidas (§10); en implementación por partes** (5.1, 5.2, 5.3 y 5.4 implementadas).
 > v0.2 recoge sus cinco respuestas. Principio rector: **primero una base sólida de conteo bruto**, medible y verificable a mano; el análisis por contexto del mensaje se construye después, encima de esa base.
 > Complementa `definiciones_operativas.md` §4 (eventos léxicos y clases de evento), §8 (evaluación de la evidencia) y §9 (reglas generales). No redefine esas secciones: las usa.
 > Todos los ejemplos son inventados. El repo es público: no se versionan apodos, frases ni mensajes reales (ver §7).
@@ -143,7 +143,7 @@ Cada hallazgo declara si la **dirección** (quién tiene más) se mantiene en am
 |---|---|
 | 5.1 | Esquema de evento, normalización, límites de palabra, negación/pregunta, descartes, `lexicon/es_mx.yaml` con `afecto_explicito` y emojis, métricas de conteo bruto por persona (estricta/amplia), `tools/crear_lexico_local.py`, pruebas sintéticas |
 | 5.2 | Categorías restantes (apodos, cumplidos, propuestas de verse, apoyo, conflicto, disculpa, gratitud, risa_texto) y sus pruebas |
-| 5.3 | Serie por periodo, sensibilidad, integración con `metricas_local` y `comparar_local` |
+| 5.3 | Serie por periodo (`lexical_series`), sensibilidad a la granularidad, integración con `metricas_local` e `informe_local` (hecho; `comparar_local` la recibe por el informe) |
 | 5.4 | `revisar_eventos_local.py` (muestra por porcentaje, §8), protocolo y reporte |
 
 ## 10. Decisiones (respondidas por el usuario)

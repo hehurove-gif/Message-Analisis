@@ -15,6 +15,7 @@ descriptivas: no interpretan interés, cercanía ni reciprocidad."""
 import argparse
 import json
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ from metrics.correspondence import correspondence  # noqa: E402
 from metrics.greetings import greetings  # noqa: E402
 from metrics.habits import habits  # noqa: E402
 from metrics.latency import latency_sensitivity  # noqa: E402
-from metrics.lexical import lexical_counts  # noqa: E402
+from metrics.lexical import lexical_counts, lexical_series  # noqa: E402
 from metrics.participants import participant_guide, role_name  # noqa: E402
 from metrics.participation import participation  # noqa: E402
 from metrics.rhythm import rhythm  # noqa: E402
@@ -61,7 +62,7 @@ def main(argv=None):
 
 
 def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_alias=False, perdidas=None, yo=None,
-             granularity=None, lexico_local=None):
+             granularity=None, lexico_local=None, con_nombres=False):
     """Todas las métricas de UNA exportación (solo números). Reutilizado por comparar_local."""
     real = os.path.realpath(ruta)
     if is_inside(real, os.path.realpath(ROOT)):
@@ -85,6 +86,12 @@ def analizar(ruta, confirmo=False, date_order_hint=None, merge=None, aceptar_ali
         out['correspondencia'] = correspondence(res.messages)
         local = lexico_local or os.path.join(os.path.dirname(real), 'lexicon_local.yaml')
         out['lexico'] = lexical_counts(res.messages, local_path=local)
+        out['lexico_serie'] = lexical_series(res.messages, local_path=local, granularity=granularity)
+        if con_nombres:           # SOLO para informes locales fuera del repo: etiqueta -> nombre tal como viene en el chat
+            inv = {}
+            for nombre, etiqueta in res.anonymization_map().items():
+                inv.setdefault(etiqueta, nombre)
+            out['nombres'] = dict(sorted(inv.items()))
         out['evolucion'] = trends(res.messages, granularity=granularity)
     return out
 
@@ -265,6 +272,16 @@ def resumen(out, gap=None):
     if lx['descartes_por_regla']:
         lines.append('  coincidencias descartadas por excepción: ' + ', '.join(f'{r} {n}' for r, n in lx['descartes_por_regla'].items()))
     lines.append('  ' + lx['nota'])
+    ls = out.get('lexico_serie')
+    if ls and ls['por_categoria']:
+        lines += ['', f"== Léxico por periodo (estricta, mensajes con evento por 100 mensajes de texto; un periodo cuenta solo con "
+                      f"≥ {ls['min_eventos_periodo']} eventos; granularidad {'mes' if ls['granularidad'] == 'month' else 'semana'}) =="]
+        for cat, d in ls['por_categoria'].items():
+            sg = d['sensibilidad_granularidad']
+            lines.append(f"  {cat}: {d['periodos_validos']} periodos válidos; lidera " + ' / '.join(f"{lab[k]} {n}" for k, n in d['lidera'].items())
+                         + f" -> {d['dominante'] if d['dominante'] in ('insuficiente', 'mixto', None) else lab[d['dominante']]}"
+                         + f" [{sg['etiqueta']}]")
+        lines.append('  ' + ls['nota'])
 
     c = out['correspondencia']
     lines += ['', f"== Correspondencia formal (pares en la misma sesión, hueco {c['hueco_horas']} h: "
@@ -284,7 +301,17 @@ def resumen(out, gap=None):
     lines.append('  ' + c['nota'])
     lines += ['', *_evolucion(out['evolucion'], lab)]
     lines += ['', 'Observaciones descriptivas: no interpretan interés, cercanía ni reciprocidad.']
-    return '\n'.join(lines)
+    texto = '\n'.join(lines)
+    return aplicar_nombres(texto, out['nombres']) if out.get('nombres') else texto
+
+
+def aplicar_nombres(texto, nombres):
+    """Sustituye las etiquetas sueltas A/B (y A_a_B…) por los nombres. Solo para informes locales fuera del repo."""
+    if not nombres:
+        return texto
+    ks = '|'.join(re.escape(k) for k in nombres)
+    texto = re.sub(rf'\b({ks})_a_({ks})\b', lambda m: f'{nombres[m.group(1)]}_a_{nombres[m.group(2)]}', texto)
+    return re.sub(rf'\b({ks})\b', lambda m: nombres[m.group(1)], texto)
 
 
 if __name__ == '__main__':
