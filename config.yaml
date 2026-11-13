@@ -159,6 +159,7 @@ romantic_interest:
     - limite_interpersonal_suave
     - limite_interpersonal_explicito
     - sin_respuesta_semantica_observable
+    - no_determinada               # v0.23 (Fase 6): no se pudo clasificar; no equivale a "sin respuesta"
   # Un límite se registra con su ALCANCE (apodos, trato, relación romántica,
   # contacto) y no se extiende automáticamente a otros aspectos.
   # La respuesta a un indicador es la siguiente intervención del otro
@@ -173,6 +174,34 @@ romantic_interest:
   require_individual_baseline: true
   # Si la evidencia no alcanza, el resultado es "no concluyente".
   allow_inconclusive: true
+
+  # ---- FASE 6 (definiciones v0.23; propuesta_fase6_interes_romantico.md §I.3). Todo EXPERIMENTAL y configurable.
+  # Ningún umbral de la Fase 6 vive en el código.
+  recurrence:
+    unit: logical_day              # día lógico con >=1 evento (habits.day_start_hour); sustituye a event_unit en la Fase 6
+    # min_events_for_pattern (3) y min_distinct_periods (2) se reutilizan: patrón = 3 días en >=2 semanas
+  context:
+    reported_speech_window_tokens: 4
+    joke_markers_categories: [risa_texto, emoji_risa, emoji_posible_ironia]
+    # las listas de marcadores (cita, a solas, grupal) viven en lexicon/
+  response:
+    window: next_intervention      # sin límite máximo (definiciones §3)
+    mark_between_sessions: true    # se marca si la respuesta fue dentro o entre sesiones
+    default_category: no_determinada
+    no_semantic_subtypes: [sin_respuesta_observada, sin_intervencion_previa, intervencion_sin_texto]
+    precedence: [limite_interpersonal_explicito, limite_interpersonal_suave, invitacion, correspondencia_afectiva,
+                 reciprocidad_amistosa_ambigua, reconocimiento_sin_correspondencia_afectiva, respuesta_directa, cambio_de_tema]
+    families:
+      devuelve_afecto: [correspondencia_afectiva, invitacion_aceptada]
+      acusa_sin_devolver: [reconocimiento_sin_correspondencia_afectiva, reciprocidad_amistosa_ambigua, respuesta_directa]
+      redirige_o_aplaza: [cambio_de_tema, respuesta_no_relacionada, invitacion_pospuesta_o_no_comprometida]
+      declina_o_delimita: [invitacion_declinada, limite_interpersonal_suave, limite_interpersonal_explicito]
+      no_evaluable: [sin_respuesta_semantica_observable, no_determinada]
+  response_pattern:
+    min_stimuli: 8
+    min_share: 0.70
+    min_distinct_periods: 2
+    sensitivity: {min_stimuli: [6, 8, 10], min_share: [0.60, 0.70, 0.80]}
 
 participation:
   # BALANCE DE PARTICIPACIÓN: distribución de turnos, mensajes y palabras.
