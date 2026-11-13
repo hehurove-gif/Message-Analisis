@@ -1,0 +1,89 @@
+# Fase 6: clase de evento de cada regla del léxico (definiciones §4 v0.23; propuesta_fase6 §A.1, decisión 1 aprobada).
+# Reemplaza al marcador provisional `pendiente_fase_6` SIN tocar las reglas `.v1` de lexicon/es_mx.yaml
+# (así los conteos de la Fase 5 siguen siendo reproducibles).
+# Todo EXPERIMENTAL. La clase y la especificidad son anotaciones de qué tan específico es el evento; no puntúan ni ponderan.
+#
+# Campos por regla:
+#   clase:          linea_base | calidez_no_especifica | indicador_candidato | declaracion_explicita | no_candidato
+#   especificidad:  baja | media | alta | null   (anotación cualitativa; null si no aplica)
+#   ambiguo:        true si su inclusión es discutible (sale en la variante S2)
+#   sube_a:         elevación condicionada por el contexto (se resuelve en metrics/romantic_context.py, no aquí)
+#   marcador_de_respuesta: la regla puede usarse como marcador de la respuesta del otro (propuesta §D)
+version: 1
+
+clases_validas:
+  - linea_base
+  - calidez_no_especifica
+  - indicador_candidato
+  - declaracion_explicita
+  - no_candidato
+
+# Cada id debe existir en lexicon/es_mx.yaml y cada regla de ese archivo debe tener entrada aquí
+# (tests/test_clases_fase6.py lo comprueba).
+reglas:
+  # --- afecto explícito ---
+  afecto.te_quiero.v1:      {clase: calidez_no_especifica, especificidad: baja,  ambiguo: false}   # habitual entre amistades y familia
+  afecto.mucho_carino.v1:   {clase: calidez_no_especifica, especificidad: baja,  ambiguo: false}   # aprecio general
+  afecto.te_amo.v1:         {clase: indicador_candidato,   especificidad: media, ambiguo: true}    # más específico, pero se usa fuera de lo romántico
+  afecto.te_extrano.v1:     {clase: indicador_candidato,   especificidad: baja,  ambiguo: true}    # echar de menos cabe en muchos vínculos
+
+  # --- emojis ---
+  emoji.afectivo.v1:
+    clase: calidez_no_especifica
+    especificidad: baja
+    ambiguo: false
+    sube_a: {clase: indicador_candidato, ambiguo: true, cuando: [en_saludo, coocurre_con_apodo_afecto_o_cumplido]}
+  emoji.risa.v1:            {clase: linea_base,    especificidad: null, ambiguo: false}
+  emoji.base.v1:            {clase: linea_base,    especificidad: null, ambiguo: false}
+  emoji.tristeza.v1:        {clase: no_candidato,  especificidad: null, ambiguo: false}
+  emoji.tristeza_ambigua.v1: {clase: no_candidato, especificidad: null, ambiguo: false}
+  emoji.enojo.v1:           {clase: no_candidato,  especificidad: null, ambiguo: false}
+  emoji.posible_ironia.v1:  {clase: no_candidato,  especificidad: null, ambiguo: false, marca_de_contexto: broma_o_ironia}   # solo posibilidad
+
+  # --- apodos ---
+  apodo.fuerte.v1:          {clase: indicador_candidato,   especificidad: media, ambiguo: false}   # vocativo estricto
+  apodo.general.v1:         {clase: calidez_no_especifica, especificidad: baja,  ambiguo: true}    # uso general entre amistades y familia
+
+  # --- cumplidos ---
+  cumplido.aspecto.v1:      {clase: indicador_candidato,   especificidad: media, ambiguo: false}   # personal o físico (definiciones §4)
+  cumplido.cualidad.v1:     {clase: calidez_no_especifica, especificidad: baja,  ambiguo: false}   # el elogio de una habilidad es no_candidato
+
+  # --- propuestas de verse ---
+  verse.plan.v1:
+    clase: indicador_candidato
+    especificidad: baja
+    ambiguo: false
+    sube_especificidad: {a: alta, cuando: [marcador_a_solas]}
+  verse.ambigua.v1:         {clase: no_candidato,  especificidad: null, ambiguo: false}            # suelen ser despedidas ("nos vemos mañana")
+
+  # --- apoyo, conflicto, disculpa: pertenecen a otras dimensiones; sirven como marcadores de respuesta ---
+  apoyo.ofrecimiento.v1:       {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  apoyo.consuelo.v1:           {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  apoyo.ambigua.v1:            {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  apoyo.tranquilizar.v1:       {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  conflicto.reclamo.v1:        {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  conflicto.reclamo_ambigua.v1: {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  conflicto.ruptura.v1:        {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  conflicto.insulto.v1:        {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  conflicto.insulto_coloquial.v1: {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  disculpa.explicita.v1:       {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+  disculpa.ambigua.v1:         {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
+
+  # --- línea base ---
+  gratitud.v1:              {clase: linea_base, especificidad: null, ambiguo: false}
+  risa.texto.v1:            {clase: linea_base, especificidad: null, ambiguo: false}
+
+# Eventos que no vienen de una regla (se cuentan por categoría).
+categorias_sin_regla:
+  emoji_otro: {clase: no_candidato, especificidad: null, ambiguo: false}   # todo emoji que ninguna regla específica cubre
+
+# Reglas NUEVAS previstas (propuesta §A.2). Aquí solo se reserva su clase; las reglas se redactan y validan en el paso 4
+# del plan, con ids nuevos. Esta lista NO se comprueba contra es_mx.yaml hasta que existan.
+reglas_nuevas_previstas:
+  declaracion.romantica.v1:       {clase: declaracion_explicita, especificidad: alta,  ambiguo: false}
+  vida_sentimental.v1:            {clase: indicador_candidato,   especificidad: media, ambiguo: false}
+  verse.plan_ampliado.v1:         {clase: indicador_candidato,   especificidad: baja,  ambiguo: false}
+  apodo.adjetivo_vocativo.v1:     {clase: calidez_no_especifica, especificidad: baja,  ambiguo: true}
+
+# Marcadores de contexto (no son eventos): se usan en metrics/romantic_context.py.
+marcadores_previstos: [contexto.a_solas.v1, contexto.grupal.v1]
