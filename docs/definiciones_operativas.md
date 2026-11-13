@@ -1,6 +1,6 @@
 # Definiciones operativas
 
-Versión 0.6 · 2026-11-03 · Los tipos de mensaje se alinean con el contrato del parser v0.2 (única enumeración vigente). El resto de definiciones es el de la v0.5 aprobada para iniciar la Fase 1. El registro de cambios está al final.
+Versión 0.23 · 2026-11-13 · Fase 6 (interés romántico y respuesta) aprobada en sus 14 decisiones: recurrencia por día lógico, clases asignadas por `lexicon/clases_fase6.yaml`, ventana de respuesta y `no_determinada`. Los tipos de mensaje siguen el contrato del parser v0.2. El registro de cambios está al final (v0.2 a v0.23).
 
 Fijan qué significa cada término en el código y en los reportes. Los valores numéricos viven en `config.yaml`. Todo valor marcado como *provisional* o *experimental* es un criterio operativo configurable, no una afirmación sobre la realidad. El sistema analiza **lo que las personas comunican y cómo responden**; no pretende conocer directamente sus sentimientos.
 
@@ -69,6 +69,12 @@ Ambos son **observaciones**. Un mismo turno puede ser a la vez una reanudación 
 
 Un deseo amable no contribuye igual que una invitación explícita a verse a solas: por eso no se cuentan en la misma clase. **No hay suma ponderada ni índice romántico.**
 
+**Unidad de recurrencia (v0.23, Fase 6).** El conteo de eventos sigue siendo uno por mensaje, pero la **recurrencia** se mide en **días lógicos con al menos un evento** (`romantic_interest.recurrence.unit: logical_day`, con `habits.day_start_hour`). Diez mensajes seguidos el mismo día cuentan como un día. **Patrón** = `min_events_for_pattern` (3) días con evento en `min_distinct_periods` (2) o más semanas ISO, y que se mantenga en toda la parte evaluable de la rejilla de robustez.
+
+**Clase de cada regla (v0.23).** La clase de evento de cada regla no vive en el código: la asigna `lexicon/clases_fase6.yaml` (regla → clase), con la regla de que toda regla del diccionario debe tener clase. Asignación aprobada: `te quiero`, aprecio y apodos generales a `calidez_no_especifica` (entra en S1); `te amo`, `te extraño` y emoji en saludo a `declaracion_explicita` o `indicador_candidato` marcados `ambiguo` (salen en S2). Las reglas nuevas de la Fase 6 (declaración romántica, vida sentimental, invitaciones ampliadas, adjetivo vocativo) llevan **ids nuevos**; las reglas `.v1` no se modifican.
+
+**Señales de contexto (v0.23).** Se registran por evento, sin cambiar su clase: cita o discurso reportado (el evento se excluye), broma o ironía (lo marca como `ambiguo`), saludo, co-ocurrencia con otros eventos, iniciado frente a devuelto, reanudación, franja horaria y marcadores «a solas»/«grupal». Los marcadores viven en `lexicon/`, no en el código.
+
 **Un candidato no equivale a interés romántico.** Un cumplido puede ser amistoso, romántico, sarcástico, cortés o parte de la manera habitual de hablar de alguien. Para considerarse algo más que ruido se exige: (1) **recurrencia** (`min_events_for_pattern` eventos en `min_distinct_periods` periodos distintos); (2) **línea base individual**; (3) **contexto**; (4) **respuesta de la otra persona** (sección 5). Los umbrales de recurrencia son **valores experimentales**: tres eventos en dos semanas no son una validación científica de interés romántico; solo deciden si el sistema reporta una recurrencia **descriptiva**, necesaria pero no suficiente.
 
 **Dos dimensiones separadas** de los candidatos:
@@ -95,6 +101,12 @@ Para cada candidato se registran, por separado: (a) la **siguiente intervención
 | `respuesta_no_relacionada` | La siguiente intervención no hace referencia al mensaje. |
 | `limite_interpersonal_suave` / `limite_interpersonal_explicito` | Pide que cese una conducta o delimita la relación. Se registra con su **alcance** (apodos, trato, relación romántica, contacto) y **no se extiende automáticamente** a otros aspectos. |
 | `sin_respuesta_semantica_observable` | No hay intervención evaluable (sin respuesta observada o sin intervención previa a un nuevo turno). |
+
+**Ventana y categoría por defecto (v0.23).** La respuesta es la **siguiente intervención** del otro participante, sin límite de tiempo, y se marca si ocurrió **dentro o entre sesiones**; la sensibilidad recorre el hueco de sesión de 2, 6 y 12 h. Si no se puede clasificar, la categoría es `no_determinada` (no equivale a ausencia de respuesta). Los subtipos de «sin respuesta» son `sin_respuesta_observada`, `sin_intervencion_previa` e `intervencion_sin_texto`.
+
+**Qué se automatiza (v0.23).** Solo las categorías observables mediante marcadores léxicos (`lexicon/respuestas_es_mx.yaml`). `respuesta_no_relacionada` se asigna solo por revisión manual. Cuando varias categorías coinciden, se aplica la precedencia de `romantic_interest.response.precedence` (límite explícito, límite suave, invitación, correspondencia afectiva, reciprocidad amistosa ambigua, reconocimiento, respuesta directa, cambio de tema).
+
+**Límite suave y explícito (v0.23).** Se detectan por separado, cada uno con su **alcance**. Un límite explícito exige una frase que delimite o pida que cese la conducta; un límite suave es una evasiva o aplazamiento que delimita sin decirlo. Un límite no se extiende a otros aspectos y no demuestra por sí solo ausencia de interés.
 
 **Reglas.** Una respuesta ambigua no se clasifica como rechazo: si el texto no establece una negativa, se usa `invitacion_pospuesta_o_no_comprometida` o `reciprocidad_amistosa_ambigua`. Ni la demora ni la ausencia de respuesta se interpretan como indiferencia. Una respuesta corta o lenta puede ser el estilo normal de esa persona, por lo que se compara con su línea base de longitud y latencia y con el **tipo de mensaje** al que responde.
 
@@ -148,6 +160,8 @@ Resultado por familia: `robusto ante <familia>` (mantiene dirección y categorí
 - Un hallazgo `sensible` no puede presentarse como patrón.
 - **La robustez ante parámetros no equivale a validez científica**: indica que un resultado no depende de un parámetro, no que mida lo que se pretende medir.
 
+**Patrón de respuesta (v0.23).** Las categorías se agrupan en cinco familias (`devuelve_afecto`, `acusa_sin_devolver`, `redirige_o_aplaza`, `declina_o_delimita`, `no_evaluable`; ver `romantic_interest.response.families`). Hay patrón de respuesta cuando, con al menos `min_stimuli` (8) indicadores, una familia reúne `min_share` (70 %) o más de las respuestas clasificadas, en `min_distinct_periods` (2) o más periodos. Se prueba con la sensibilidad 6/8/10 estímulos y 60/70/80 %; si la familia dominante cambia, el hallazgo es `sensible` y no se presenta como patrón.
+
 No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas experimentales; no están calibradas estadísticamente. Reglas generales: una observación no sube a patrón sin recurrencia y sin robustez; un patrón nunca sube a hecho sobre intenciones; **no concluyente** es un resultado legítimo.
 
 ## 9. Reglas generales
@@ -169,6 +183,10 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 - Reciprocidad semántica (seguimiento de temas, apoyo, respuesta efectiva a preguntas); calibración de los umbrales de correspondencia.
 - Cómo estimar automáticamente la relación semántica de una intervención.
 - Calibración de los umbrales experimentales con datos reales.
+- Fase 6: qué cuenta como afecto «equivalente» al devolverlo (correspondencia afectiva), si se añade un campo `confidencia` por evento, y qué hacer con «a solas» cuando no hay marcador léxico (queda como dato abierto, no se infiere).
+- Fase 6: la unidad de recurrencia del día lógico es una decisión operativa; la unidad «mensaje» de v0.5 se conserva solo para el conteo bruto de la Fase 5.
+- Sin índice compuesto: se retira el «índice de asimetría» que mencionaba el Plan; expresar, reconocer y corresponder se reportan por separado, con descriptores de asimetría separados.
+- Sin hipótesis automáticas en la Fase 6: el reporte lleva un bloque fijo de límites.
 
 ## Registro de cambios
 
@@ -220,3 +238,4 @@ No hay niveles de confianza ni probabilidades. Las etiquetas son heurísticas ex
 
 **v0.22 (2026-11-11).** Informe visual (`tools/informe_visual_local.py`, o `informe_local.py --html`): una página HTML con scroll a partir de la "foto" .json del informe. Tailwind por CDN para los estilos (con respaldo local de las mismas utilidades) y gráficas SVG propias; ningún dato sale del equipo. Secciones por chat: participación, evolución por periodo, tiempo de respuesta, hábitos horarios, estilo, ritmo, saludos, léxico (conteo bruto con marca de referencia = reparto esperado por participación), léxico por periodo, correspondencia formal. Sin índices compuestos ni interpretación: solo las mismas métricas ya definidas, con sus etiquetas de suficiencia y robustez. Nunca incluye texto de mensajes; incluye nombres solo si el informe se generó con nombres (v0.21). No se lee ni se escribe dentro del repo.
 
+**v0.23 (2026-11-13).** Fase 6, decisiones de la propuesta `propuesta_fase6_interes_romantico.md` v0.1 aprobadas (14 de 14, tal como se recomendaban). Se fija: (1) encabezado corregido (decía v0.6); (2) recurrencia por día lógico con evento, patrón = 3 días en ≥2 semanas (§4); (3) clases de regla en `lexicon/clases_fase6.yaml`, reglas nuevas con ids nuevos sin tocar las `.v1` (§4); (4) señales de contexto, incluidos «a solas»/«grupal» (§4); (5) ventana = siguiente intervención sin límite, con dentro/entre sesiones y sensibilidad 2/6/12 h, `no_determinada` y subtipos de «sin respuesta», solo respuestas observables automatizadas, precedencia, límite suave/explícito con alcance (§5); (6) familias de respuesta y patrón 8 estímulos / 70 % / 2 periodos (§8); (7) sin índice compuesto y sin hipótesis automáticas (§10). Claves nuevas en `config.yaml` (`romantic_interest.recurrence`, `context`, `response`, `response_pattern`). No hay cambios de código ni de léxico en esta versión.
