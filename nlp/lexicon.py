@@ -16,7 +16,8 @@ DEFAULT_LEXICON_PATH = os.path.join(ROOT, 'lexicon', 'es_mx.yaml')
 LOCAL_LEXICON_NAME = 'lexicon_local.yaml'
 CATEGORIAS = ('afecto_explicito', 'apodo_carinoso', 'cumplido', 'propuesta_de_verse', 'apoyo', 'conflicto',
               'disculpa', 'gratitud', 'risa_texto', 'emoji_afectivo', 'emoji_risa', 'emoji_tristeza',
-              'emoji_enojo', 'emoji_posible_ironia', 'emoji_base', 'emoji_otro')
+              'emoji_enojo', 'emoji_posible_ironia', 'emoji_base', 'emoji_otro',
+              'declaracion_romantica', 'vida_sentimental')       # las dos últimas: Fase 6 (definiciones v0.23)
 FORMAS = ('afirmativa', 'negada', 'pregunta')
 DEFAULT_CFG = {'negators': ['no', 'nunca', 'jamas', 'ni', 'tampoco', 'nadie'], 'negation_window_tokens': 3}
 _PUNCT = ',.!?¡¿;:\n'

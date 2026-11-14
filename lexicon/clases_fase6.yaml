@@ -69,7 +69,14 @@ reglas:
   disculpa.explicita.v1:       {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
   disculpa.ambigua.v1:         {clase: no_candidato, especificidad: null, ambiguo: false, marcador_de_respuesta: true}
 
-  # --- línea base ---
+    # --- reglas nuevas de la Fase 6 (paso 4); ids nuevos, las .v1 anteriores no se tocan ---
+  declaracion.romantica.v1:         {clase: declaracion_explicita, especificidad: alta,  ambiguo: false}
+  declaracion.propuesta_pareja.v1:  {clase: declaracion_explicita, especificidad: alta,  ambiguo: false}
+  vida_sentimental.v1:              {clase: indicador_candidato,   especificidad: media, ambiguo: false}
+  verse.plan_ampliado.v1:           {clase: indicador_candidato,   especificidad: baja,  ambiguo: false}   # sube a alta con marcador "a solas"
+  apodo.adjetivo_vocativo.v1:       {clase: calidez_no_especifica, especificidad: baja,  ambiguo: true}
+
+# --- línea base ---
   gratitud.v1:              {clase: linea_base, especificidad: null, ambiguo: false}
   risa.texto.v1:            {clase: linea_base, especificidad: null, ambiguo: false}
 
@@ -77,13 +84,8 @@ reglas:
 categorias_sin_regla:
   emoji_otro: {clase: no_candidato, especificidad: null, ambiguo: false}   # todo emoji que ninguna regla específica cubre
 
-# Reglas NUEVAS previstas (propuesta §A.2). Aquí solo se reserva su clase; las reglas se redactan y validan en el paso 4
-# del plan, con ids nuevos. Esta lista NO se comprueba contra es_mx.yaml hasta que existan.
-reglas_nuevas_previstas:
-  declaracion.romantica.v1:       {clase: declaracion_explicita, especificidad: alta,  ambiguo: false}
-  vida_sentimental.v1:            {clase: indicador_candidato,   especificidad: media, ambiguo: false}
-  verse.plan_ampliado.v1:         {clase: indicador_candidato,   especificidad: baja,  ambiguo: false}
-  apodo.adjetivo_vocativo.v1:     {clase: calidez_no_especifica, especificidad: baja,  ambiguo: true}
+# Reglas previstas que aún no existen en el léxico (vacío: las de A.2 ya se redactaron en el paso 4).
+reglas_nuevas_previstas: {}
 
 # Marcadores de contexto (no son eventos): se usan en metrics/romantic_context.py.
 marcadores_previstos: [contexto.a_solas.v1, contexto.grupal.v1]

@@ -201,3 +201,59 @@ reglas:
       - 'lol'
       - 'lmao'
     clase_provisional: linea_base
+
+  # ================= Fase 6 (definiciones v0.23; propuesta_fase6 §A.2). Reglas NUEVAS: no modifican las .v1 anteriores =================
+  # Se redactan a partir de la definición (declaración, interés en la vida íntima, invitación a solas, vocativo tras saludo), no de los fixtures.
+  # --- declaracion_romantica: manifestación directa de interés; la clase (declaracion_explicita) la asigna lexicon/clases_fase6.yaml ---
+  - id: declaracion.romantica.v1
+    categoria: declaracion_romantica
+    regex:
+      - 'me gustas'
+      - 'estoy (?:muy |perdidamente |locamente )?enamorad[ao] de ti'
+      - 'me (?:enamore|estoy enamorando) de ti'
+      - 'siento (?:algo|cosas|mucho) por ti'
+  - id: declaracion.propuesta_pareja.v1     # la pregunta ES la declaración
+    categoria: declaracion_romantica
+    subetiqueta: propuesta_pareja
+    pregunta_cuenta: true
+    regex:
+      - 'quieres ser mi (?:novi[ao]|pareja)'
+      - 'quieres que seamos (?:novi[ao]s|pareja)'
+      - 'te gustaria ser mi (?:novi[ao]|pareja)'
+
+  # --- vida_sentimental: interés en la vida íntima del otro (pregunta en 2.ª persona); responder sobre uno mismo no cuenta ---
+  - id: vida_sentimental.v1
+    categoria: vida_sentimental
+    pregunta_cuenta: true
+    excepto_si_sigue: ["de baile", "de equipo", "de laboratorio", "de trabajo", "de practica", "para el", "para la"]
+    regex:
+      - 'tienes (?:novi[ao]|pareja)'
+      - 'andas (?:saliendo|con alguien|con alguna|con algun)'
+      - 'estas saliendo con (?:alguien|alguna|algun)'
+      - 'sales con (?:alguien|alguna|algun)'
+      - 'estas solter[ao]'
+      - 'eres solter[ao]'
+      - 'te gusta alguien'
+      - 'te gusta (?:algun|alguna) (?:chico|chica|companer[ao])'
+
+  # --- propuesta_de_verse ampliada: invitaciones a solas que verse.plan.v1 no detectaba ---
+  - id: verse.plan_ampliado.v1
+    categoria: propuesta_de_verse
+    pregunta_cuenta: true
+    regex:
+      - 'vamos (?:tu y yo|los dos|solos|solas)'
+      - 'salimos (?:tu y yo|los dos|solos|solas)'
+      - 'podriamos (?:salir|cenar|comer|tomar|desayunar|vernos|quedar|ir a|ir al)'
+      - 'dejame invitarte'
+      - 'invitarte (?:a|al)'
+      - 'te gustaria (?:salir|ir a|ir al|cenar|comer|tomar|que salgamos|que nos veamos)'
+      - 'una cita (?:conmigo|contigo|los dos)'
+
+  # --- apodo_carinoso: adjetivo vocativo solo tras saludo o despedida; ambiguo (solo variante amplia / S1) ---
+  - id: apodo.adjetivo_vocativo.v1
+    categoria: apodo_carinoso
+    subetiqueta: adjetivo_vocativo
+    ambiguo: true
+    excepto_si_sigue: ["manana", "dia", "tarde", "noche"]
+    regex:
+      - '(?:buenos dias|buenas noches|buenas tardes|hola|descansa|cuidate|que descanses|adios|bye),? (?:linda|lindo|hermosa|hermoso|guapa|guapo|bonita|bonito|preciosa|precioso)'

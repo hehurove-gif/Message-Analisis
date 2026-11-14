@@ -43,7 +43,7 @@ def test_sin_indicadores_ni_declaraciones_sin_especificidad():
             assert e['especificidad'] is not None, rid
 
 
-def test_ids_nuevos_no_chocan_con_las_v1():
+def test_reglas_previstas_no_estan_ya_en_el_lexico():
     assert not set(CLASES['reglas_nuevas_previstas']) & {r.id for r in LEX.rules}
 
 
