@@ -1,0 +1,7 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-15 20:30,Hugo,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-15 20:40,Daniela,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-17 22:00,Hugo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,600,entre,directa,reciprocidad_amistosa_ambigua,,,evento aislado: un solo día con candidato en todo el chat
+2026-09-21 12:00,Hugo,indicador_candidato,no,cumplido_fisico,media,con_intervencion,30,dentro,directa,respuesta_directa,,,"segundo candidato, otra semana; con 2 días no alcanza el patrón (mínimo 3)"
+2026-09-23 21:00,Daniela,indicador_candidato,si,extrano,baja,con_intervencion,15,dentro,directa,respuesta_directa,,,"candidato de Daniela, aislado; ambiguo"
+2026-09-28 18:00,Hugo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,30,dentro,directa,invitacion_pospuesta_o_no_comprometida,,,"tercer día de Hugo con candidato, en la semana S40; con 3 eventos la rejilla semanal cumple solo 6 de 12 combinaciones"
