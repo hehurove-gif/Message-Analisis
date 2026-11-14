@@ -1,0 +1,17 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-08 19:00,Iván,no_candidato,,cita_reportada,,con_intervencion,5,dentro,,,,,"afecto y apodo dentro de comillas y tras 'dice': discurso reportado, excluido de P"
+2026-09-09 21:00,Iván,no_candidato,,cancion,,con_intervencion,10,dentro,,,,,"tras 'canción' y 'dice': cita de una letra, excluida de P"
+2026-09-10 12:00,Marina,no_candidato,,negada_infinitivo,,con_intervencion,3,dentro,,,,,"'no te quiero molestar': 'te quiero' seguido de infinitivo, no es afecto"
+2026-09-11 18:00,Iván,no_candidato,,verse_ambigua,,con_intervencion,10,dentro,,,,,"'nos vemos mañana' es una despedida/acuerdo, no una propuesta a solas"
+2026-09-14 17:00,Iván,no_candidato,,propuesta_grupal,,con_intervencion,10,dentro,,,,,marcador grupal explícito: se degrada a no_candidato
+2026-09-15 20:00,Marina,no_candidato,,negada,,con_intervencion,5,dentro,,,,,"forma negada de 'te extraño' y en broma: se cuenta aparte, fuera de P"
+2026-09-15 20:30,Marina,no_candidato,,pregunta_disculpa,,con_intervencion,5,dentro,,,,,"'perdón' como pregunta de aclaración: forma pregunta, no disculpa"
+2026-09-16 22:00,Iván,no_candidato,,despedida_cortesia,,con_intervencion,5,dentro,,,,,despedida y fórmula de cortesía; sin apodo ni emoji afectivo
+2026-09-16 22:05,Marina,no_candidato,,despedida_cortesia,,con_intervencion,715,entre,,,,,fórmula de cortesía
+2026-09-17 10:00,Iván,no_candidato,,acuerdo,,con_intervencion,5,dentro,,,,,"'quedamos en que' es un acuerdo de trabajo, no una propuesta de verse"
+2026-09-18 13:00,Iván,no_candidato,,queja_en_broma,,con_intervencion,2,dentro,,,,,queja en broma; no es conflicto ni candidato
+2026-09-21 08:00,Iván,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-21 08:30,Marina,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-22 21:00,Marina,no_candidato,,cita_reportada,,con_intervencion,5,dentro,,,,,afecto y apodo entre comillas: discurso reportado
+2026-09-24 19:00,Iván,no_candidato,,cita_reportada,,con_intervencion,10,dentro,,,,,tras 'dijo que' y entre comillas
+2026-09-28 17:00,Marina,no_candidato,,verse_ambigua,,con_intervencion,5,dentro,,,,,'nos vemos mañana': acuerdo de trabajo
