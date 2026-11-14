@@ -1,0 +1,37 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-07 18:04,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,6,dentro,directa,reciprocidad_amistosa_ambigua,,,"'te quiero' entre amistades; calidez no específica, S1"
+2026-09-07 18:10,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,1610,entre,directa,reciprocidad_amistosa_ambigua,,,"devuelve el mismo afecto, cabe en una amistad"
+2026-09-08 21:00,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,'amiga' como vocativo; apodo general ambiguo (S1)
+2026-09-08 21:05,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,2,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-10 20:30,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,'te quiero' en un contexto de grupo
+2026-09-10 20:35,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,5010,entre,directa,reciprocidad_amistosa_ambigua,,,❤️ junto a 'te quiero amigo': cortesía afectuosa propia de la amistad
+2026-09-14 08:05,Andrés,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-14 08:30,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,2,dentro,directa,respuesta_directa,,,'amigo' + ☀️ no afectivo
+2026-09-15 22:00,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,3,dentro,directa,reciprocidad_amistosa_ambigua,,,agradecimiento afectuoso
+2026-09-15 22:03,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,10,dentro,directa,reciprocidad_amistosa_ambigua,,,apoyo y apodo general
+2026-09-16 12:00,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,10,dentro,directa,respuesta_directa,,,pregunta con vocativo
+2026-09-16 12:10,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,4,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,
+2026-09-18 19:00,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,4,dentro,directa,reciprocidad_amistosa_ambigua,,,'nunca cambies' es afecto amistoso
+2026-09-18 19:04,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,10,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-21 07:55,Andrés,calidez_no_especifica,,deseo_amable,baja,con_intervencion,10,dentro,directa,reciprocidad_amistosa_ambigua,,,deseo que excede la convención; calidez no específica
+2026-09-21 08:05,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,3,dentro,directa,respuesta_directa,,,
+2026-09-23 23:00,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,10,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-23 23:10,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,10,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-24 09:00,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,10,dentro,directa,respuesta_directa,,,
+2026-09-24 09:10,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,4,dentro,directa,respuesta_directa,,,
+2026-09-24 09:15,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,elogio general de la persona como amigo; calidez no específica
+2026-09-24 09:20,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-28 08:00,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,respuesta_directa,,,
+2026-09-28 08:05,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,4,dentro,directa,respuesta_directa,,,
+2026-09-29 20:00,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,4,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-09-29 20:04,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-10-01 18:00,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,invitacion_pospuesta_o_no_comprometida,,,pregunta abierta sin propuesta a solas; ni la propuesta es candidata ni la respuesta rechazo
+2026-10-03 22:00,Camila,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-10-03 22:05,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,2045,entre,directa,reciprocidad_amistosa_ambigua,,,
+2026-10-05 08:10,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,respuesta_directa,,,
+2026-10-05 08:15,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,10,dentro,directa,respuesta_directa,,,
+2026-10-07 21:00,Andrés,calidez_no_especifica,si,apodo_general,baja,con_intervencion,10,dentro,directa,respuesta_directa,,,
+2026-10-09 19:00,Camila,calidez_no_especifica,si,apodo_general,baja,con_intervencion,5,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-10-09 19:05,Andrés,calidez_no_especifica,,afecto_explicito_amistoso,baja,con_intervencion,20,dentro,directa,reciprocidad_amistosa_ambigua,,,
+2026-10-12 08:00,Andrés,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-10-12 08:20,Camila,calidez_no_especifica,si,apodo_general,baja,sin_respuesta_observada,,,,respuesta_directa,,,
