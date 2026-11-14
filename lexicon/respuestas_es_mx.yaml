@@ -1,0 +1,59 @@
+# Fase 6, paso 5: marcadores léxicos para clasificar la RESPUESTA de la otra persona (propuesta_fase6 §D.3 y §D.5; decisiones 6 a 9 aprobadas).
+# GENÉRICO y público: nada específico de un chat real. Los marcadores propios de una conversación irán en un archivo local, fuera del repo.
+# Los patrones se comparan sin acentos y en minúsculas (nlp/text.py), como PALABRA(S) COMPLETA(S).
+# Alta precisión y recall bajo A PROPÓSITO: lo que no coincide queda en `no_determinada` (nunca se fuerza una categoría).
+# `inicio: true` = el marcador solo cuenta al inicio de una cláusula (inicio del mensaje o tras . , ! ? ;), para que "si" no se lea en "si quieres".
+# La clasificación (precedencia, estímulo, familias) vive en metrics/romantic_response.py y config.yaml; aquí solo hay vocabulario.
+# EXPERIMENTAL: las listas no han pasado la validación manual con datos reales.
+version: 1
+
+# Vocabulario de alcance de un límite (se registra siempre y NO se extiende). Alias: nombre usado en etiquetas anteriores (fixture 02, 06).
+alcances: [relacion_romantica, apodos_o_trato, contacto, encuentros, no_determinado]
+alias_de_alcance:
+  apodos_y_forma_de_tratamiento: apodos_o_trato
+
+grupos:
+  aceptacion:                    # invitación aceptada (solo se evalúa si el estímulo era propuesta de verse)
+    inicio: true
+    patrones: ["si", "claro", "va", "sale", "dale", "ok", "vale", "perfecto", "de acuerdo", "me late", "me parece bien", "con gusto",
+               "me encantaria", "me encantaria!", "obvio", "por supuesto", "seguro"]
+  rechazo:                       # rechazo de ESA invitación
+    patrones: ["no puedo", "no podre", "no podria", "no voy a poder", "no me es posible", "no gracias", "estoy ocupada", "estoy ocupado",
+               "no tengo tiempo", "mejor no"]
+  aplazamiento:                  # ni acepta ni rechaza: la ambigüedad no es rechazo (definiciones §5)
+    patrones: ["veamos", "a ver", "ya veremos", "no se", "tal vez", "quiza", "quizas", "depende", "luego te aviso", "otro dia", "cuando pueda",
+               "mas adelante", "despues vemos", "lo pienso", "lo voy a pensar"]
+  eco_afectivo:                  # devuelve el afecto expresado; "igual/igualmente" NO es eco (va en cortesia_devuelta)
+    patrones: ["yo tambien te quiero", "yo tambien te extrano", "yo tambien te amo", "yo tambien me enamore de ti", "tambien te quiero",
+               "tambien te extrano", "tambien te amo", "y yo a ti", "tu tambien me gustas", "tambien me gustas", "yo igual te quiero",
+               "yo tambien me muero por ti"]
+  cortesia_devuelta:             # "igual", "igualmente": cortesía, no afecto
+    inicio: true
+    patrones: ["igual", "igualmente", "para ti tambien", "tambien tu", "lo mismo digo"]
+  reconocimiento:                # acuse sin devolver afecto
+    patrones: ["gracias", "muchas gracias", "mil gracias", "te lo agradezco", "que lindo", "que linda", "que amable", "que tierno", "que tierna",
+               "que bonito detalle", "aww", "awww", "ay gracias"]
+    excepto_si_sigue: ["a dios", "al cielo"]
+  amistosa:                      # cordialidad o confianza que cabe en una amistad y en otros vínculos
+    patrones: ["te tengo confianza", "cuenta conmigo", "aqui estoy", "para eso estoy", "para eso estamos", "me caes bien", "me caes muy bien",
+               "me divierto contigo", "me la paso bien contigo", "me da gusto platicar contigo"]
+  encuadre_amistad:              # solo se ANOTA; no cambia la categoría
+    patrones: ["amigo", "amiga", "amigos", "mi amigo", "mi amiga", "buen amigo", "buena amiga", "como amigo", "como amiga"]
+  polar:                         # contesta una pregunta polar como cláusula propia
+    inicio: true
+    patrones: ["si", "no", "claro", "aja", "pues si", "pues no", "nel", "simon", "nop", "nope", "claro que si", "claro que no"]
+  cambio_de_tema:                # solo con marcador explícito; "oye" solo no basta
+    patrones: ["por cierto", "cambiando de tema", "a todo esto", "hablando de otra cosa", "hablando de otra cosa,"]
+
+limites:
+  explicito:                     # delimita el vínculo o rechaza expresamente lo expresado; o exige cesar el contacto
+    - {alcance: relacion_romantica, patrones: ["te veo como amigo", "te veo como amiga", "solo te veo como amigo", "solo te veo como amiga",
+                                              "solo amigos", "solo somos amigos", "somos solo amigos", "prefiero que seamos amigos",
+                                              "no siento lo mismo", "no me gustas", "no quiero nada contigo", "no quiero una relacion",
+                                              "no busco una relacion"]}
+    - {alcance: contacto,          patrones: ["deja de escribirme", "no me escribas", "no me hables", "no quiero que me escribas", "dejame en paz"]}
+  suave:                         # pide cesar o cambiar UNA conducta concreta, o expresa reserva sin delimitar el vínculo
+    - {alcance: apodos_o_trato,    patrones: ["no me digas asi", "no me llames asi", "mejor no me digas", "no me gusta que me digas",
+                                              "prefiero que me hables como siempre", "prefiero que me llames", "no me digas linda", "no me digas amor"]}
+    - {alcance: no_determinado,    patrones: ["me incomoda", "me incomodas", "me hace sentir incomoda", "me hace sentir incomodo"]}
+  # "ahorita no" NO está aquí a propósito: se lee como aplazamiento (grupo `aplazamiento`), no como límite.
