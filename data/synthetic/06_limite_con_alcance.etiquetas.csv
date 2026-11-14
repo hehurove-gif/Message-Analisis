@@ -1,0 +1,12 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-14 08:05,Ernesto,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-14 08:30,Lucía,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-21 22:00,Ernesto,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,570,entre,directa,reciprocidad_amistosa_ambigua,,,"'buenas noches' de vuelta, sin apodo"
+2026-09-23 12:00,Ernesto,indicador_candidato,no,cumplido_fisico,media,con_intervencion,10,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,
+2026-09-25 08:00,Ernesto,indicador_candidato,no,apodo_carinoso,media,con_intervencion,30,dentro,directa,limite_interpersonal_suave,,apodos_y_forma_de_tratamiento,"primer límite, suave: 'jaja no me digas así' (25/09 08:30)"
+2026-09-27 19:00,Ernesto,indicador_candidato,no,apodo_carinoso,media,con_intervencion,20,dentro,directa,limite_interpersonal_explicito,,apodos_y_forma_de_tratamiento,tras el límite suave; ahora explícito y con alcance: apodos y forma de tratamiento
+2026-09-29 08:05,Ernesto,linea_base,,saludo_convencional,,,,,,,,,saludo convencional tras el límite; sin apodo
+2026-10-02 18:00,Ernesto,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,10,dentro,directa,invitacion_aceptada,,,el límite fue sobre apodos; Lucía acepta esta invitación: el límite no se extiende
+2026-10-04 22:00,Ernesto,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-10-06 13:00,Ernesto,indicador_candidato,no,cumplido_fisico,media,con_intervencion,5,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,sin apodo; Lucía agradece
+2026-10-12 17:00,Ernesto,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,20,dentro,directa,invitacion_declinada,,,"declina ESA invitación, con motivo; no demuestra ausencia de interés ni se extiende a otras"
