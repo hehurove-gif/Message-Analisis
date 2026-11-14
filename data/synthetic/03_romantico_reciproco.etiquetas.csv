@@ -1,0 +1,33 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-14 08:05,Mateo,linea_base,,saludo_convencional,,,,,,,,,saludo convencional sin elemento afectivo
+2026-09-14 08:30,Valeria,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-16 21:00,Valeria,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-16 21:10,Mateo,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-18 13:00,Mateo,no_candidato,,elogio_de_habilidad,,con_intervencion,5,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,elogio de una habilidad dentro de una tarea; no es candidato
+2026-09-21 07:50,Mateo,calidez_no_especifica,,deseo_amable,baja,con_intervencion,20,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,"expresión amable que excede la convención; entra en S1, no en P"
+2026-09-22 15:20,Mateo,indicador_candidato,no,cumplido_fisico,media,con_intervencion,6,dentro,directa,correspondencia_afectiva,,,V devuelve un cumplido físico equivalente
+2026-09-22 15:26,Valeria,indicador_candidato,no,cumplido_fisico,media,con_intervencion,4,dentro,directa,respuesta_directa,reconocimiento_sin_correspondencia_afectiva,,cumplido físico devuelto; M continúa con una propuesta en vez de comentarlo
+2026-09-22 15:30,Mateo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,3,dentro,directa,invitacion_aceptada,,,'tú y yo' marca la propuesta a solas; V acepta
+2026-09-23 22:40,Valeria,indicador_candidato,si,saludo+emoji_afectivo,baja,con_intervencion,4,dentro,directa,correspondencia_afectiva,,,❤️ es el elemento afectivo; ambiguo: puede ser cortesía afectuosa
+2026-09-23 22:44,Mateo,indicador_candidato,si,saludo+emoji_afectivo,baja,con_intervencion,616,entre,directa,correspondencia_afectiva,,,devuelve el mismo gesto; V contesta a la mañana siguiente con apodo y emoji
+2026-09-24 09:00,Valeria,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,10,dentro,directa,correspondencia_afectiva,,,apodo + ❤️; M responde con apodo + ❤️
+2026-09-24 09:10,Mateo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,2,dentro,directa,correspondencia_afectiva,,,apodo + ❤️
+2026-09-24 09:12,Valeria,calidez_no_especifica,,emoji_afectivo,baja,con_intervencion,1968,entre,no_relacionada,respuesta_no_relacionada,,,"❤️ aislado, sin saludo ni apodo; M contesta a las 18:00 otro tema"
+2026-09-26 22:50,Mateo,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,15,dentro,directa,correspondencia_afectiva,,,V devuelve la misma confidencia
+2026-09-26 23:05,Valeria,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,655,entre,directa,invitacion_aceptada,,,M propone repetir a la mañana siguiente y V acepta
+2026-09-27 10:00,Mateo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,20,dentro,directa,invitacion_aceptada,,,V acepta con día concreto
+2026-09-28 08:00,Valeria,indicador_candidato,no,apodo_carinoso,media,con_intervencion,3,dentro,directa,correspondencia_afectiva,,,vocativo estricto
+2026-09-28 08:03,Mateo,calidez_no_especifica,si,apodo_carinoso,baja,con_intervencion,687,entre,directa,respuesta_directa,,,"adjetivo vocativo tras saludo: calidez ambigua, solo S1"
+2026-09-30 21:15,Valeria,indicador_candidato,no,interes_en_vida_intima,media,con_intervencion,5,dentro,directa,respuesta_directa,,,M contesta y devuelve la pregunta
+2026-09-30 21:20,Mateo,indicador_candidato,no,interes_en_vida_intima,media,con_intervencion,5,dentro,directa,respuesta_directa,,,devuelve la pregunta; V contesta directamente
+2026-10-02 23:40,Mateo,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,10,dentro,directa,correspondencia_afectiva,,,V devuelve la confidencia con ❤️
+2026-10-02 23:50,Valeria,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,580,entre,directa,correspondencia_afectiva,,,la respuesta de M el 03/10 es otro evento
+2026-10-03 09:30,Mateo,calidez_no_especifica,si,saludo+emoji_afectivo,baja,con_intervencion,10,dentro,directa,correspondencia_afectiva,,,saludo con ❤️ y pregunta; ambiguo
+2026-10-05 08:10,Mateo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,2,dentro,directa,correspondencia_afectiva,,,vocativo estricto + ❤️
+2026-10-05 08:12,Valeria,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,3,dentro,directa,correspondencia_afectiva,,,devuelve el mismo vocativo; M escribe de nuevo antes de la siguiente respuesta de V
+2026-10-06 22:00,Valeria,indicador_candidato,si,extrano,baja,con_intervencion,3,dentro,directa,correspondencia_afectiva,,,echar de menos cabe en muchos vínculos: ambiguo
+2026-10-06 22:03,Mateo,indicador_candidato,si,extrano,baja,con_intervencion,657,entre,directa,respuesta_directa,,,correspondencia en el mismo turno
+2026-10-09 20:00,Mateo,declaracion_explicita,,declaracion_explicita,alta,con_intervencion,4,dentro,directa,correspondencia_afectiva,,,declaración directa; V la devuelve en 4 min
+2026-10-09 20:04,Valeria,declaracion_explicita,,declaracion_explicita,alta,con_intervencion,1,dentro,directa,correspondencia_afectiva,,,correspondencia explícita
+2026-10-09 20:05,Mateo,calidez_no_especifica,,emoji_afectivo,baja,con_intervencion,1495,entre,directa,respuesta_directa,,,❤️ tras la declaración
+2026-10-10 21:00,Valeria,declaracion_explicita,,declaracion_explicita,alta,con_intervencion,2,dentro,directa,invitacion_aceptada,,,propuesta de relación; M acepta
