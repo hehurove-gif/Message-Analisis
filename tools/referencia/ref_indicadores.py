@@ -141,6 +141,9 @@ def main(chat, labels):
         print('  categorías de respuesta (P):', dict(Counter(r['categoria_respuesta'] for r in pre)))
         print('  secundarias (P):', dict(Counter(r['categoria_secundaria'] for r in pre if r['categoria_secundaria'])))
         decl = {(r['ts'], r['autor']) for r in L if r['clase_evento'] == 'declaracion_explicita'}
+        if not pre:
+            print('\n== LATENCIA DEL INTERLOCUTOR SEGÚN EL TIPO DE TURNO: no hay candidatos P en este chat (no se calcula)')
+            return
         autor = pre[0]['autor']
         print('\n== LATENCIA DEL INTERLOCUTOR SEGÚN EL TIPO DE TURNO DE %s (mínimo para comparar: %d turnos)' % (autor, MIN_TURNS_LATENCY))
         for vname, fn in VARIANTES.items():
