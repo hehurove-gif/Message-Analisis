@@ -1,0 +1,15 @@
+fecha_hora,autor,clase_evento,ambiguo,categoria_candidata,especificidad_provisional,estado_del_turno,latencia_siguiente_intervencion_min,sesion_hueco_6h,intervencion_semantica,categoria_respuesta,categoria_secundaria,alcance_limite,nota
+2026-09-16 09:00,Ricardo,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-16 09:20,Paola,linea_base,,saludo_convencional,,,,,,,,,saludo convencional
+2026-09-21 19:00,Ricardo,indicador_candidato,no,cumplido_fisico,media,con_intervencion,15,dentro,directa,reconocimiento_sin_correspondencia_afectiva,,,responde 'jaja gracias' sin devolver el cumplido
+2026-09-22 18:00,Ricardo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,20,dentro,directa,invitacion_pospuesta_o_no_comprometida,,,"'uy no sé, a ver cómo me queda el viernes' no es negativa definitiva"
+2026-09-23 22:30,Ricardo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,570,entre,directa,reciprocidad_amistosa_ambigua,,,responde con cordialidad amistosa; sin apodo ni emoji
+2026-09-25 21:00,Ricardo,indicador_candidato,no,interes_en_vida_intima,media,con_intervencion,10,dentro,directa,respuesta_directa,,,"contesta directamente, sin devolver la pregunta"
+2026-09-29 22:00,Ricardo,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,15,dentro,no_determinada,no_determinada,,,"'ay Ric jaja' no deja ver si reconoce, devuelve o evita; no se clasifica"
+2026-10-01 20:00,Ricardo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,30,dentro,directa,invitacion_pospuesta_o_no_comprometida,,,"'veamos cómo va la semana': aplaza, no rechaza"
+2026-10-03 08:05,Ricardo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,35,dentro,directa,reciprocidad_amistosa_ambigua,,,devuelve el saludo con cordialidad
+2026-10-05 13:00,Ricardo,indicador_candidato,no,cumplido_fisico,media,con_intervencion,5,dentro,directa,respuesta_directa,reconocimiento_sin_correspondencia_afectiva,,"contesta la pregunta, no el cumplido"
+2026-10-08 21:30,Ricardo,indicador_candidato,si,extrano,baja,con_intervencion,630,entre,directa,invitacion_pospuesta_o_no_comprometida,,,"'pronto jaja, mucho trabajo' aplaza; ambiguo: echar de menos cabe en muchos vínculos"
+2026-10-10 22:00,Ricardo,indicador_candidato,no,confidencia_afectiva,media,con_intervencion,20,dentro,directa,reciprocidad_amistosa_ambigua,,,'yo también me divierto contigo': cabe en una amistad
+2026-10-14 12:00,Ricardo,indicador_candidato,no,propuesta_a_solas,media,con_intervencion,20,dentro,directa,invitacion_pospuesta_o_no_comprometida,,,"'ando muy ocupada esta semana, luego te aviso': aplaza"
+2026-10-17 23:00,Ricardo,indicador_candidato,no,apodo_carinoso+emoji_afectivo,media,con_intervencion,660,entre,no_determinada,no_determinada,,,la siguiente intervención es 'buenas noches' sin más; no se puede clasificar entre cordialidad y evasión
