@@ -2,7 +2,8 @@
 # GENÉRICO y público: nada específico de un chat real. Los marcadores propios de una conversación irán en un archivo local, fuera del repo.
 # Los patrones se comparan sin acentos y en minúsculas (nlp/text.py), como PALABRA(S) COMPLETA(S).
 # Alta precisión y recall bajo A PROPÓSITO: lo que no coincide queda en `no_determinada` (nunca se fuerza una categoría).
-# `inicio: true` = el marcador solo cuenta al inicio de una cláusula (inicio del mensaje o tras . , ! ? ;), para que "si" no se lea en "si quieres".
+# `inicio: true` = el marcador solo cuenta al inicio de una cláusula (inicio del mensaje o tras . , ! ? ;); si es UNA palabra debe además cerrar la cláusula
+# (coma, signo o fin), para que "si" no se lea en "si quieres".
 # La clasificación (precedencia, estímulo, familias) vive en metrics/romantic_response.py y config.yaml; aquí solo hay vocabulario.
 # EXPERIMENTAL: las listas no han pasado la validación manual con datos reales.
 version: 1
@@ -16,7 +17,7 @@ grupos:
   aceptacion:                    # invitación aceptada (solo se evalúa si el estímulo era propuesta de verse)
     inicio: true
     patrones: ["si", "claro", "va", "sale", "dale", "ok", "vale", "perfecto", "de acuerdo", "me late", "me parece bien", "con gusto",
-               "me encantaria", "me encantaria!", "obvio", "por supuesto", "seguro"]
+               "me encantaria", "obvio", "por supuesto", "seguro", "si claro"]
   rechazo:                       # rechazo de ESA invitación
     patrones: ["no puedo", "no podre", "no podria", "no voy a poder", "no me es posible", "no gracias", "estoy ocupada", "estoy ocupado",
                "no tengo tiempo", "mejor no"]
